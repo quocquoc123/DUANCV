@@ -4,14 +4,30 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
+<style>
+    .col-6 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
 
+    .form-inline {
+        display: flex;
+        justify-content: center;
+    }
+
+    .masked-password {
+        color: #888; /* Màu xám để mật khẩu bị ẩn */
+    }
+</style>
 <h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
+<table class="table table-bordered">
+    <thead class="thead-dark">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.TenDm)
@@ -26,9 +42,9 @@
                 @Html.DisplayFor(modelItem => item.TenDm)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.MaDm">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaDm">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaDm">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.MaDm" class="btn btn-info btn-sm">Edit</a> 
+                    <a asp-action="Details" asp-route-id="@item.MaDm" class="btn btn-warning btn-sm">Details</a> 
+                    <a asp-action="Delete" asp-route-id="@item.MaDm" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
 }

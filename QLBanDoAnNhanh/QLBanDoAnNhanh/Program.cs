@@ -1,43 +1,60 @@
 ﻿using QLBanDoAnNhanh.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using QLBanDoAnNhanh.Hubs;
+using QLBanDoAnNhanh.Common;
+using DinkToPdf.Contracts;
+using DinkToPdf;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<QlbanDoAnNhanhContext>(options =>
+// Cấu hình dịch vụ
+builder.Services.AddDbContext<QlbanDoAnNhanh3Context>(options =>
 {
     options.UseSqlServer(builder.Configuration["QLBanDoAnNhanh"]);
-});//
+});
 
-// Thêm dịch vụ lưu trữ session
-builder.Services.AddDistributedMemoryCache(); // Dùng để lưu session vào bộ nhớ tạm thời
+// Thêm dịch vụ SignalR cho chat
+builder.Services.AddSignalR();
+
+// Đăng ký Common class cho Dependency Injection
+builder.Services.AddScoped<Common>();
+
+// Cấu hình MVC
+builder.Services.AddControllersWithViews();
+
+// Cấu hình dịch vụ lưu trữ session
+builder.Services.AddDistributedMemoryCache(); // Lưu session vào bộ nhớ tạm
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn của session
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian timeout cho session
     options.Cookie.HttpOnly = true; // Cookie chỉ truy cập qua HTTP
     options.Cookie.IsEssential = true; // Cho phép session luôn hoạt động
 });
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+
+// Thêm dịch vụ PDF converter
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Cấu hình pipeline xử lý request
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
 app.UseStaticFiles();
-// Kích hoạt session
-app.UseSession();
-
+app.UseSession(); // Kích hoạt session
 app.UseRouting();
-
 app.UseAuthorization();
 
+// Cấu hình routing
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=SanPhams}/{action=TrangChu}/{id?}");
+
+// Định tuyến SignalR cho chat
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

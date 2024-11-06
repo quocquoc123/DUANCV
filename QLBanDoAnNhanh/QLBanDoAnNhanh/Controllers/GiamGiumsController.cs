@@ -11,9 +11,9 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class GiamGiumsController : Controller
     {
-        private readonly QlbanDoAnNhanhContext _context;
+        private readonly QlbanDoAnNhanh3Context _context;
 
-        public GiamGiumsController(QlbanDoAnNhanhContext context)
+        public GiamGiumsController(QlbanDoAnNhanh3Context context)
         {
             _context = context;
         }

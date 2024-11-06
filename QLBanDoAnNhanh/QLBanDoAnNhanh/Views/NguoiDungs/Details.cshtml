@@ -41,11 +41,17 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Sdt)
         </dd>
-        <dt class = "col-sm-2">
+       @*  <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Matkhau)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Matkhau)
+        </dd> *@
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Matkhau)
+        </dt>
+        <dd class="col-sm-10">
+            @(string.Concat(Enumerable.Repeat("*", Model.Matkhau.Length)))
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Role)
@@ -56,6 +62,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.MaNguoiDung">Edit</a> |
+@*     <a asp-action="Edit" asp-route-id="@Model?.MaNguoiDung">Edit</a> | *@
     <a asp-action="Index">Back to List</a>
 </div>

@@ -6,6 +6,21 @@
 
 <h1 style="font-size:25px; width:1200px; margin:auto;">Danh Sách Sản Phẩm</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+<!-- Hiển thị danh sách sản phẩm -->
 <div class="row">
     @foreach (var product in Model)
     {
@@ -14,10 +29,26 @@
                 <img src="@Url.Content(product.HinhAnh1)" class="card-img-top" alt="Hình ảnh @product.TenSp" />
                 <div class="card-body">
                     <h5 class="card-title">@product.TenSp</h5>
-                    <p class="card-text">@product.GiaTien.ToString("C") VND</p>
+
+                    @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
+                    {
+                        <p class="card-text">
+                            <span class="discount-badge">@product.MaGiamGiaNavigation.GiaTri % Off</span>
+                        </p>
+                        <p class="card-text old-price">@product.GiaTien.ToString("C") VND</p>
+                        <p class="card-text">
+                            Giá sau giảm: <strong>@product.GiaSauGiam?.ToString("C") VND</strong>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="card-text">@product.GiaTien.ToString("C") VND</p>
+                    }
+
                     <p class="card-text">Thành phần: @product.ThanhPhan</p>
                     <p class="card-text">Số lượng bán trong ngày: @product.SlbanTrongNgay</p>
                     <p class="card-text">Chi tiết: @product.ChitietSp</p>
+
                     <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn btn-primary">Mua Ngay</a>
                 </div>
             </div>
@@ -25,6 +56,32 @@
     }
 </div>
 
+
+
+<!-- Phần hiển thị sản phẩm gợi ý -->
+<h2 style="font-size:22px; width:1200px; margin:auto; margin-top:30px;">Sản Phẩm Gợi Ý</h2>
+<div class="row">
+    @* Giả sử bạn có một danh sách sản phẩm gợi ý trong ViewData hoặc ViewBag *@
+    @foreach (var suggestedProduct in ViewBag.SuggestedProducts ?? new List<QLBanDoAnNhanh.Models.SanPham>())
+    {
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="card-img-top" alt="Hình ảnh @suggestedProduct.TenSp" />
+                <div class="card-body">
+                    <h5 class="card-title">@suggestedProduct.TenSp</h5>
+                    <p class="card-text">@suggestedProduct.GiaTien.ToString("C") VND</p>
+                    <p class="card-text">Thành phần: @suggestedProduct.ThanhPhan</p>
+                    <p class="card-text">Số lượng bán trong ngày: @suggestedProduct.SlbanTrongNgay</p>
+                    <p class="card-text">Chi tiết: @suggestedProduct.ChitietSp</p>
+                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn btn-primary">Mua Ngay</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<br />
+
+<!-- CSS và JavaScript như cũ -->
 <style>
     .row {
         display: flex;
@@ -35,8 +92,8 @@
     }
 
     .col-md-4 {
-        flex: 1 0 300px; /* Minimum width 300px */
-        max-width: 300px; /* Ensures no item is larger than 300px */
+        flex: 1 0 300px;
+        max-width: 300px;
         display: flex;
         justify-content: center;
     }
@@ -47,7 +104,13 @@
         overflow: hidden;
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Thêm hiệu ứng chuyển động */
     }
+
+        .card:hover {
+            transform: scale(1.05); /* Phóng to thẻ khi hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ bóng */
+        }
 
         .card img {
             width: 100%;
@@ -55,7 +118,7 @@
             object-fit: contain;
             padding: 10px;
             border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 10px; /* Thêm khoảng cách dưới ảnh */
+            margin-bottom: 10px;
         }
 
     .card-body {
@@ -72,11 +135,11 @@
         font-size: 16px;
         color: #555;
         margin-bottom: 15px;
-        margin-top: 5px; /* Thêm khoảng cách trên cho văn bản */
+        margin-top: 5px;
     }
 
     .btn {
-        background-color: #007bff;
+        background-color: #f2b633;
         color: #fff;
         padding: 10px 20px;
         border-radius: 5px;
@@ -86,7 +149,47 @@
     }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #e3a112;
             color: #fff;
         }
+
+    .alert {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        z-index: 1000;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        text-align: center;
+        display: none;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+    }
+
+    .show-alert {
+        display: block;
+    }
 </style>
+
+<script>
+    window.onload = function () {
+        var alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.classList.add('show-alert');
+            // Ẩn thông báo sau 2 giây
+            setTimeout(function () {
+                alertBox.classList.remove('show-alert');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        }
+    };
+</script>

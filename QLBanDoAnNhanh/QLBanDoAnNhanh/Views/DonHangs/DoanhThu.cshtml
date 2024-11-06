@@ -1,0 +1,38 @@
+﻿@model IEnumerable<dynamic>  
+@{
+    ViewData["Title"] = "Thống Kê Doanh Thu Theo Danh Mục";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<h2>@ViewData["Title"]</h2>
+
+<canvas id="doanhThuChart" width="400" height="200"></canvas>
+
+<script>
+    var ctx = document.getElementById('doanhThuChart').getContext('2d');
+    var labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(m => m.DanhMuc).ToList()));
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(m => m.DoanhThu).ToList()));
+
+    var doanhThuChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Doanh Thu',
+                data: data,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

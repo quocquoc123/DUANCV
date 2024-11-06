@@ -1,0 +1,41 @@
+﻿@{
+    var userLogin = ViewBag.UserLogin; // Username từ session
+    var isAdmin = ViewBag.IsAdmin; // Kiểm tra nếu là admin
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+<div>
+    <input type="text" id="username" value="@userLogin" placeholder="Enter your username" readonly />
+    <input type="text" id="message" placeholder="Enter your message" />
+    <button id="sendButton">Send</button>
+</div>
+<div id="chatBox"></div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+    connection.on("ReceiveMessage", function (user, message) {
+        var encodedUser = $("<div />").text(user).html();
+        var encodedMsg = $("<div />").text(message).html();
+        $("#chatBox").append("<p><strong>" + encodedUser + "</strong>: " + encodedMsg + "</p>");
+    });
+
+    $("#sendButton").click(function () {
+        var userLogin = $("#username").val();
+        var message = $("#message").val();
+
+        if (message) {
+            connection.invoke("SendMessage", userLogin, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            $("#message").val("").focus();
+        }
+    });
+
+    connection.start().then(function () {
+        console.log("Connected to chat hub!");
+    }).catch(function (err) {
+        console.error(err.toString());
+    });
+</script>

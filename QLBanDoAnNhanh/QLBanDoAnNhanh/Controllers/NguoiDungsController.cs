@@ -11,9 +11,11 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class NguoiDungsController : Controller
     {
-        private readonly QlbanDoAnNhanhContext _context;
+        private QlbanDoAnNhanh3Context db = new QlbanDoAnNhanh3Context();
 
-        public NguoiDungsController(QlbanDoAnNhanhContext context)
+        private readonly QlbanDoAnNhanh3Context _context;
+
+        public NguoiDungsController(QlbanDoAnNhanh3Context context)
         {
             _context = context;
         }
@@ -21,8 +23,8 @@ namespace QLBanDoAnNhanh.Controllers
         // GET: NguoiDungs
         public async Task<IActionResult> Index()
         {
-            var qlbanDoAnNhanhContext = _context.NguoiDungs.Include(n => n.Role);
-            return View(await qlbanDoAnNhanhContext.ToListAsync());
+            var QlbanDoAnNhanh3Context = _context.NguoiDungs.Include(n => n.Role);
+            return View(await QlbanDoAnNhanh3Context.ToListAsync());
         }
 
         // GET: NguoiDungs/Details/5
@@ -97,7 +99,10 @@ namespace QLBanDoAnNhanh.Controllers
                 return NotFound();
             }
 
-          
+            if (ModelState.IsValid)
+            {
+
+
                 try
                 {
                     _context.Update(nguoiDung);
@@ -112,7 +117,8 @@ namespace QLBanDoAnNhanh.Controllers
                     else
                     {
                         throw;
-                    
+
+                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -158,5 +164,85 @@ namespace QLBanDoAnNhanh.Controllers
         {
             return _context.NguoiDungs.Any(e => e.MaNguoiDung == id);
         }
+        public ActionResult Search(string searchTerm)
+        {
+
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+
+                return RedirectToAction("Index");
+            }
+
+
+            var searchTermLower = searchTerm.ToLower();
+
+            var searchResults = db.NguoiDungs
+                .Where(p => p.Username.ToLower().Contains(searchTermLower))
+                .ToList();
+            ViewBag.SearchTerm = searchTerm;
+            return View("Index", searchResults);
+        }
+        // Phương thức GET để xác nhận việc vô hiệu hóa tài khoản
+        public async Task<IActionResult> Disable(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var nguoiDung = await _context.NguoiDungs.FindAsync(id);
+            if (nguoiDung == null)
+            {
+                return NotFound();
+            }
+
+            return View(nguoiDung); // Hiển thị view để xác nhận việc vô hiệu hóa
+        }
+
+        // Phương thức POST để thực hiện việc vô hiệu hóa
+        [HttpPost, ActionName("Disable")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DisableConfirmed(int id)
+        {
+            var nguoiDung = await _context.NguoiDungs.FindAsync(id);
+            if (nguoiDung != null)
+            {
+                nguoiDung.TrangThai = "inactive"; // Đặt trạng thái thành không kích hoạt
+                _context.Update(nguoiDung);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+        public IActionResult EnableAccount(int id)
+        {
+            var nguoiDung = _context.NguoiDungs.Find(id);
+            if (nguoiDung == null)
+            {
+                return NotFound();
+            }
+
+            nguoiDung.TrangThai = "active"; // Cập nhật trạng thái
+            _context.Update(nguoiDung);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+        public IActionResult DisableAccount(int id)
+        {
+            var nguoiDung = _context.NguoiDungs.Find(id);
+            if (nguoiDung == null)
+            {
+                return NotFound();
+            }
+
+            // Đặt trạng thái tài khoản thành không hoạt động
+            nguoiDung.TrangThai = "inactive"; // Hoặc giá trị phù hợp với hệ thống của bạn
+            _context.Update(nguoiDung);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
     }
+
 }

@@ -1,0 +1,73 @@
+﻿@model QLBanDoAnNhanh.Models.DonHang
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa; 
+        margin: 20px;
+    }
+
+    h2 {
+        width: 1400px;
+        color: #343a40;
+        margin: auto;
+    }
+
+    .table {
+        width: 1400px;
+        border-collapse: collapse;
+        margin: auto;
+    }
+
+        .table th, .table td {
+            padding: 12px; 
+            text-align: left; 
+            border: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background-color: #007bff; 
+            color: white; 
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f2f2f2; 
+        }
+
+        .table tr:hover {
+            background-color: #e9ecef; 
+        }
+
+    strong {
+        
+        color: #343a40; 
+    }
+</style>
+<br />
+<h2>Chi Tiết Đơn Hàng @Model.MaDh</h2>
+<br />
+<p style="width: 1400px;margin: auto;"><strong>Tổng Tiền:</strong> @Model.TongTien.ToString("C")</p>
+<br />
+<p style="width: 1400px;margin: auto;"><strong>Trạng Thái:</strong> @Model.TrangThai</p>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>Sản Phẩm</th>
+            <th>Số Lượng</th>
+            <th>Giá</th>
+            <th>Tổng Tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var chiTiet in Model.ChiTietDonHangs)
+        {
+            <tr>
+                <td>@chiTiet.MaSpNavigation.TenSp</td>
+                <td>@chiTiet.SoLuong</td>
+                <td>@chiTiet.MaSpNavigation.GiaTien.ToString("C")</td>
+                <td>@chiTiet.TongTien.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>

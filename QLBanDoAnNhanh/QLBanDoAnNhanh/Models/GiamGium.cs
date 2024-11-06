@@ -9,5 +9,9 @@ public partial class GiamGium
 
     public int GiaTri { get; set; }
 
+    public DateTime ThoiGianBatDau { get; set; }
+
+    public DateTime ThoiGianKetThuc { get; set; }
+
     public virtual ICollection<SanPham> SanPhams { get; set; } = new List<SanPham>();
 }

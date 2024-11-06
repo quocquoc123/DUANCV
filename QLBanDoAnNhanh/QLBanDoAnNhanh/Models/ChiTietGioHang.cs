@@ -13,10 +13,9 @@ public partial class ChiTietGioHang
 
     public int? MaSp { get; set; }
 
-    public int? TongTien { get; set; }
-    public int MaKhuyenMai { get; set; }
+    public double? TongTien { get; set; }
 
-    public virtual GioHang? MaGhNavigation { get; set; }
+    public virtual GioHang MaGhNavigation { get; set; }
 
-    public virtual SanPham? MaSpNavigation { get; set; }
+    public virtual SanPham MaSpNavigation { get; set; }
 }

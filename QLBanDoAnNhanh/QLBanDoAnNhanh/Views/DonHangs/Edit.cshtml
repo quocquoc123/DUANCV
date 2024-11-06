@@ -9,21 +9,51 @@
     <input type="hidden" asp-for="MaDh" />
 
     <div class="form-group">
+        <label>Tên</label>
+        <input class="form-control" type="text" asp-for="Username" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Tổng Tiền</label>
+        <input class="form-control" type="text" asp-for="TongTien" readonly /> <!-- Nếu không muốn chỉnh sửa -->
+    </div>
+
+    <div class="form-group">
+        <label>Số Lượng</label>
+        <input class="form-control" type="number" asp-for="SoLuong" />
+    </div>
+
+    <div class="form-group">
+        <label>Ngày Tạo</label>
+        <input class="form-control" type="text" asp-for="CreatedAt" readonly /> <!-- Ngày tạo chỉ để xem, không sửa -->
+    </div>
+
+    <div class="form-group">
+        <label>Ngày Cập Nhật</label>
+        <input class="form-control" type="text" asp-for="UpdatedAt" readonly /> <!-- Ngày cập nhật sẽ tự động cập nhật -->
+    </div>
+
+    <div class="form-group">
         <label>Địa Chỉ</label>
         <input class="form-control" type="text" asp-for="Diachi" />
     </div>
 
     <div class="form-group">
+        <label>Mã Khuyến mãi </label>
+        <input class="form-control" type="text" asp-for="MaKhuyenMai" />
+        <span asp-validation-for="MaKhuyenMai" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
         <label>Trạng Thái</label>
         <select class="form-control" asp-for="TrangThai">
-            <option value="Chưa Giao" selected>Chưa Giao</option>
+            <option value="Chưa Giao">Chưa Giao</option>
+            <option value="Chưa Giao">Đang giao</option>
             <option value="Đã Giao">Đã Giao</option>
-            <option value="Hủy Đơn">Hủy Đơn</option>
+            <option value="Đã Hủy">Đã Hủy</option>
         </select>
     </div>
 
     <button type="submit" class="btn btn-success">Cập Nhật</button>
     <a class="btn btn-secondary" asp-action="Index">Hủy</a>
 </form>
-
-

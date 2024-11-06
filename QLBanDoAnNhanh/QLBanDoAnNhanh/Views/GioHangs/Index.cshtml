@@ -47,26 +47,41 @@
             <td colspan="4" style="text-align: left; font-weight: bold;">Tổng số lượng:</td>
             <td colspan="2">@Model.ChiTietGioHangs.Sum(x => x.SoLuongSp)</td>
         </tr>
-        @* <tr>
+
+        <!-- Form Checkout bên trong bảng -->
+        <tr class="form-row">
             <td colspan="6">
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="diachi">Địa chỉ giao hàng:</label>
-                    <input type="text" id="diachi" name="DiaChi" class="form-control" required placeholder="Nhập địa chỉ giao hàng">
-                </div>
+                <form asp-action="Checkout" method="post" class="checkout-form">
+                    <div class="form-group">
+                        <label for="username">Họ tên</label>
+                        <input type="text" class="form-control" id="username" name="username" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="DiaChi">Địa chỉ</label>
+                        <input type="text" class="form-control" id="DiaChi" name="DiaChi" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Phone">Số điện thoại</label>
+                        <input type="text" class="form-control" id="Phone" name="Phone" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Thanh toán</button>
+                </form>
             </td>
-        </tr> *@
+        </tr>
     </tbody>
 </table>
 
-<div style="text-align:center; margin-top: 20px;margin-bottom:40px;">
-    <a href="/SanPham/Index" class="btn btn-success">Tiếp tục mua sắm</a>
-    <a asp-controller="GioHangs" asp-action="Checkout" class="btn btn-primary">Thanh toán</a>
+<div style="text-align:center; margin-top: 20px; margin-bottom:40px;">
+    <a href="/SanPhams/TrangChu" class="btn btn-success">Tiếp tục mua sắm</a>
 </div>
 
 
 
-
 <style>
+    /* Căn chỉnh bảng */
     /* Căn chỉnh bảng */
     .table {
         width: 80%;
@@ -165,5 +180,51 @@
             background-color: #0056b3;
             transform: scale(1.05);
         }
+
+    /* CSS cho form checkout bên trong bảng */
+    .form-row {
+        background-color: #f9f9f9;
+    }
+
+    .checkout-form {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+
+        .checkout-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .checkout-form label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .checkout-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .checkout-form button {
+            width: 100%;
+            padding: 12px 0;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .checkout-form button:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
 
 </style>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<QLBanDoAnNhanh.Models.BinhLuan>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+<style>
+    .col-6 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
+
+    .form-inline {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<div class="col-6 text-right">
+    <form method="GET" action="@Url.Action("Search", "BinhLuans")" class="form-inline d-inline-block">
+        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm sản phẩm">
+        <button class="btn btn-primary" id="searchButton" type="submit">
+            <i class="fas fa-search"></i> Tìm kiếm
+        </button>
+    </form>
+</div>
+
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.NoiDung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgayBinhLuan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaNguoiDungNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaSpNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoiDung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgayBinhLuan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaNguoiDungNavigation.MaNguoiDung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaSpNavigation.MaSp)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaBinhLuan">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaBinhLuan">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaBinhLuan">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

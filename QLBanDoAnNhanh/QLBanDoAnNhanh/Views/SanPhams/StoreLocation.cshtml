@@ -1,0 +1,25 @@
+﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@{
+    ViewData["Title"] = "Vị trí cửa hàng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Phần này sẽ hiển thị bản đồ -->
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.ApiKey"></script>
+<script>
+    function initMap() {
+        var storeLocation = { lat: 10.77603, lng: 106.66735 };
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: storeLocation
+        });
+        var marker = new google.maps.Marker({
+            position: storeLocation,
+            map: map
+        });
+    }
+    window.onload = initMap;
+</script>

@@ -1,0 +1,108 @@
+﻿@model IEnumerable<QLBanDoAnNhanh.Models.DonHang>
+
+<style>
+    body {
+        font-family: Arial, sans-serif; 
+        background-color: #f8f9fa; 
+        margin: 20px; 
+    }
+
+    h2 {
+        width:1400px;
+        color: #343a40;
+        margin: auto;
+    }
+
+    .table {
+        width: 1400px; 
+        border-collapse: collapse; 
+        margin:auto; 
+    }
+
+        .table th, .table td {
+            padding: 12px; 
+            text-align: left; 
+            border: 1px solid #dee2e6; 
+        }
+
+        .table th {
+            background-color: #007bff;
+            color: white; 
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f2f2f2; 
+        }
+
+        .table tr:hover {
+            background-color: #e9ecef; 
+        }
+
+    a {
+        color: #007bff; 
+        text-decoration: none; 
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    strong {
+        color: #343a40; 
+    }
+
+
+</style>
+<br />
+<h2>Lịch Sử Đơn Hàng</h2>
+<br />
+
+@if (!Model.Any())
+{
+    <p>Bạn chưa có đơn hàng nào.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã Đơn Hàng</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th>Chi Tiết</th>
+                <th>Hủy Đơn</th> 
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var donHang in Model)
+            {
+                <tr>
+                    <td>@donHang.MaDh</td>
+                    <td>@donHang.TongTien.ToString("C")</td>
+                    <td>@donHang.TrangThai</td>
+                    <td>
+                        <a href="@Url.Action("OrderDetails", "GioHangs", new { maDh = donHang.MaDh })">Xem Chi Tiết</a>
+                    </td>
+                    <td>
+                        @if (donHang.TrangThai != "Đã hủy") 
+                        {
+                            @if (donHang.TrangThai == "Đã Giao")
+                            {
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("CancelOrder", "GioHangs", new { maDh = donHang.MaDh })" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">Hủy Đơn</a>
+
+                            }
+                        }
+                        else
+                        {
+                            <span style="color: #dc3545;font-weight: bold;">Đã hủy</span>
+                        }
+                    </td>
+                </tr>
+                
+            }
+        </tbody>
+    </table>
+}

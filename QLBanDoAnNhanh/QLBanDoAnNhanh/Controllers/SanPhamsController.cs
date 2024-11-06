@@ -6,28 +6,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using QLBanDoAnNhanh.Models;
-using System.IO; // Để sử dụng FileStream và Path
-using Microsoft.AspNetCore.Http; // Để sử dụng IFormFile
-    
+using System.IO; 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Configuration;
+using Microsoft.Data.SqlClient;
+using System.Data;
 namespace QLBanDoAnNhanh.Controllers
 {
     public class SanPhamsController : Controller
     {
-        private QlbanDoAnNhanhContext db = new QlbanDoAnNhanhContext();
+        private readonly IConfiguration _configuration;
+        private QlbanDoAnNhanh3Context db = new QlbanDoAnNhanh3Context();
 
-        private readonly QlbanDoAnNhanhContext _context;
+        private readonly QlbanDoAnNhanh3Context _context;
 
-        public SanPhamsController(QlbanDoAnNhanhContext context)
+        public SanPhamsController(QlbanDoAnNhanh3Context context, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
         }
 
         // GET: SanPhams
         public async Task<IActionResult> Index()
         {
-            var qlbanDoAnNhanhContext = _context.SanPhams.Include(s => s.MaDmNavigation).Include(s => s.MaGiamGiaNavigation);
-            return View(await qlbanDoAnNhanhContext.ToListAsync());
+            // Lấy tất cả sản phẩm cùng với các thông tin liên quan
+            var sanPhams = db.SanPhams
+
+                .Include(sp => sp.MaDmNavigation)
+                .Include(sp => sp.MaGiamGiaNavigation);// Lấy thông tin giảm giá
+                
+
+            return View(await sanPhams.ToListAsync());
         }
+
 
         // GET: SanPhams/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -55,9 +68,9 @@ namespace QLBanDoAnNhanh.Controllers
                 return NotFound();
             }
 
-            // Lấy sản phẩm và thông tin liên quan
+            // Lấy sản phẩm và các bình luận liên quan
             var sanPham = await _context.SanPhams
-                .Include(sp => sp.HinhAnhs) // Nếu bạn cần thông tin hình ảnh liên quan
+                .Include(sp => sp.HinhAnhs) // Nếu cần thông tin hình ảnh
                 .FirstOrDefaultAsync(sp => sp.MaSp == id);
 
             if (sanPham == null)
@@ -65,8 +78,141 @@ namespace QLBanDoAnNhanh.Controllers
                 return NotFound();
             }
 
+            // Lấy bình luận cho sản phẩm này
+            var binhLuans = await _context.BinhLuans
+                .Where(bl => bl.MaSp == id)
+                .OrderByDescending(bl => bl.NgayBinhLuan)
+                .ToListAsync();
+
+            // Tính điểm trung bình từ bảng đánh giá
+            var diemTrungBinh = await _context.DanhGia
+                .Where(dg => dg.MaSanPham == id)
+                .AverageAsync(dg => (double?)dg.SoSao) ?? 0; // Trả về 0 nếu không có đánh giá
+
+            // Truyền sản phẩm, bình luận và điểm trung bình vào View
+            ViewBag.BinhLuans = binhLuans;
+            ViewBag.DiemTrungBinh = diemTrungBinh;
+
             return View(sanPham);
         }
+
+
+
+        [HttpPost]
+        public IActionResult AddComment(int maSP, string noiDung)
+        {
+            // Kiểm tra xem người dùng đã đăng nhập chưa
+            if (HttpContext.Session.GetString("userLogin") == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            string username = HttpContext.Session.GetString("userLogin");
+            var nguoiDung = db.NguoiDungs.FirstOrDefault(nd => nd.Username == username);
+
+            if (nguoiDung == null)
+            {
+                return RedirectToAction("Index", "LoginUser");
+            }
+
+            // Tạo một đối tượng bình luận mới
+            BinhLuan binhLuan = new BinhLuan
+            {
+                MaSp = maSP,
+                MaNguoiDung = nguoiDung.MaNguoiDung,
+                NoiDung = noiDung,
+                NgayBinhLuan = DateTime.Now
+            };
+
+            // Thêm bình luận vào cơ sở dữ liệu
+            db.BinhLuans.Add(binhLuan);
+            db.SaveChanges();
+
+            // Chuyển hướng về trang chi tiết sản phẩm
+            return RedirectToAction("ChiTietSanPham", new { id = maSP });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAndUpdateRating(int maSP, decimal rating)
+        {
+            try
+            {
+                // Kiểm tra xem người dùng đã đăng nhập chưa
+                if (HttpContext.Session.GetString("userLogin") == null)
+                {
+                    return RedirectToAction("Login", "User");
+                }
+
+                // Lấy thông tin người dùng từ session
+                string username = HttpContext.Session.GetString("userLogin");
+                var nguoiDung = await db.NguoiDungs.FirstOrDefaultAsync(nd => nd.Username == username);
+
+                if (nguoiDung == null)
+                {
+                    return RedirectToAction("Index", "LoginUser");
+                }
+
+                // Kiểm tra giá trị đánh giá hợp lệ
+                if (rating < 1 || rating > 5)
+                {
+                    TempData["ErrorMessage"] = "Đánh giá không hợp lệ. Vui lòng chọn số sao từ 1 đến 5.";
+                    return RedirectToAction("ChiTietSanPham", new { id = maSP });
+                }
+
+                // Kiểm tra người dùng đã mua sản phẩm chưa
+                var daMuaHang = await db.ChiTietDonHangs
+            .AnyAsync(ct => ct.MaSp == maSP);
+
+                if (!daMuaHang)
+                {
+                    TempData["ErrorMessage"] = "Bạn chưa mua sản phẩm này, không thể đánh giá.";
+                    return RedirectToAction("ChiTietSanPham", new { id = maSP });
+                }
+                // Kiểm tra xem người dùng đã đánh giá sản phẩm này chưa
+                var daDanhGia = await db.DanhGia
+            .AnyAsync(dg => dg.MaNguoiDung == nguoiDung.MaNguoiDung && dg.MaSanPham == maSP);
+
+                if (daDanhGia)
+                {
+                    TempData["ErrorMessage"] = "Bạn đã đánh giá sản phẩm này rồi.";
+                    return RedirectToAction("ChiTietSanPham", new { id = maSP });
+                }
+
+                // Thêm đánh giá mới vào cơ sở dữ liệu
+                var danhGia = new DanhGium
+                {
+                    MaSanPham = maSP,
+                    MaNguoiDung = nguoiDung.MaNguoiDung,
+                    SoSao = rating,
+                    NgayBinhLuan = DateTime.Now
+                };
+
+                await db.DanhGia.AddAsync(danhGia);
+                await db.SaveChangesAsync();
+
+                // Tính và cập nhật điểm trung bình
+                var averageRating = await db.DanhGia
+                    .Where(dg => dg.MaSanPham == maSP)
+                    .AverageAsync(dg => dg.SoSao);
+
+                // Cập nhật lại SoSaoTrungBinh của sản phẩm trong bảng DanhGia
+                //danhGia.SoSaoTrungBinh = averageRating;
+                await db.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Đánh giá của bạn đã được thêm thành công!";
+            }
+            catch (Exception ex)
+            {
+                // Thêm lỗi vào ModelState để hiển thị lỗi nếu có
+                ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi thêm đánh giá: " + ex.Message);
+            }
+
+            return RedirectToAction("ChiTietSanPham", new { id = maSP });
+        }
+
+
+
 
         // GET: SanPhams/Create
         public IActionResult Create()
@@ -248,6 +394,13 @@ namespace QLBanDoAnNhanh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var chiTietDonHangs = await _context.ChiTietDonHangs
+         .Where(c => c.MaSp == id)
+         .ToListAsync();
+
+            _context.ChiTietDonHangs.RemoveRange(chiTietDonHangs);
+
+            // Xóa sản phẩm
             var sanPham = await _context.SanPhams.FindAsync(id);
             if (sanPham != null)
             {
@@ -259,14 +412,42 @@ namespace QLBanDoAnNhanh.Controllers
         }
         public IActionResult TrangChu()
         {
+            var products = _context.SanPhams.ToList();
 
-            var products = _context.SanPhams.ToList(); // L?y danh sách s?n ph?m
-            return View(products); // Truy?n danh sách s?n ph?m vào view
+            // Lấy sản phẩm gợi ý dựa trên số lượng đã được mua
+            var suggestedProducts = GetMostPurchasedProducts(4); // Lấy 2 sản phẩm bán chạy nhất
+
+            ViewBag.SuggestedProducts = suggestedProducts;
+
+            return View(products); // Truyền danh sách sản phẩm vào view
         }
+        private List<SanPham> GetMostPurchasedProducts(int topN = 5)
+        {
+            using (var context = new QlbanDoAnNhanh3Context())
+            {
+                // Lấy top N sản phẩm được mua nhiều nhất
+                var mostPurchasedProducts = context.ChiTietDonHangs
+                    .GroupBy(ct => ct.MaSp) // Nhóm theo mã sản phẩm
+                    .Select(g => new
+                    {
+                        MaSp = g.Key,
+                        TotalQuantity = g.Sum(ct => ct.SoLuong) // Tổng số lượng mua
+                    })
+                    .OrderByDescending(g => g.TotalQuantity) // Sắp xếp theo số lượng giảm dần
+                    .Take(topN) // Lấy N sản phẩm mua nhiều nhất
+                    .Join(context.SanPhams, // Join để lấy thông tin sản phẩm
+                        topProduct => topProduct.MaSp,
+                        sanPham => sanPham.MaSp,
+                        (topProduct, sanPham) => sanPham)
+                    .ToList();
 
+                return mostPurchasedProducts;
+            }
+        }
         private bool SanPhamExists(int id)
         {
             return _context.SanPhams.Any(e => e.MaSp == id);
+
         }
         public IActionResult SanPhamTheoTenDanhMuc(string TenHang)
         {
@@ -277,5 +458,21 @@ namespace QLBanDoAnNhanh.Controllers
             ViewBag.TenDanhMuc = TenHang; // Truyền tên danh mục cho View
             return View(sanPhams);
         }
+        public async Task<List<SanPham>> GetPopularProducts(int topN = 5)
+{
+    return await _context.ChiTietDonHangs
+        .GroupBy(ct => ct.MaSp)
+        .OrderByDescending(g => g.Sum(ct => ct.SoLuong)) // Sắp xếp theo tổng số lượng bán
+        .Take(topN) // Lấy top N sản phẩm
+        .Select(g => g.First().MaSpNavigation) // Lấy thông tin sản phẩm
+        .ToListAsync();
+}
+
+        public IActionResult StoreLocation()
+        {
+            ViewBag.ApiKey = _configuration["GoogleMaps:ApiKey"];
+            return View();
+        }
+
     }
 }

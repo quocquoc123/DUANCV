@@ -11,9 +11,9 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class KhuyenMaisController : Controller
     {
-        private readonly QlbanDoAnNhanhContext _context;
+        private readonly QlbanDoAnNhanh3Context _context;
 
-        public KhuyenMaisController(QlbanDoAnNhanhContext context)
+        public KhuyenMaisController(QlbanDoAnNhanh3Context context)
         {
             _context = context;
         }
@@ -25,7 +25,7 @@ namespace QLBanDoAnNhanh.Controllers
         }
 
         // GET: KhuyenMais/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -65,7 +65,7 @@ namespace QLBanDoAnNhanh.Controllers
         }
 
         // GET: KhuyenMais/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
@@ -85,7 +85,7 @@ namespace QLBanDoAnNhanh.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaKhuyenMai,GiaTri,ThoiGianBatDau,ThoiGianKetThuc,TrangThai,NgayTao,DieuKienApDung,SoLuong")] KhuyenMai khuyenMai)
+        public async Task<IActionResult> Edit(string id, [Bind("MaKhuyenMai,GiaTri,ThoiGianBatDau,ThoiGianKetThuc,TrangThai,NgayTao,DieuKienApDung,SoLuong")] KhuyenMai khuyenMai)
         {
             if (id != khuyenMai.MaKhuyenMai)
             {
@@ -116,7 +116,7 @@ namespace QLBanDoAnNhanh.Controllers
         }
 
         // GET: KhuyenMais/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -136,7 +136,7 @@ namespace QLBanDoAnNhanh.Controllers
         // POST: KhuyenMais/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var khuyenMai = await _context.KhuyenMais.FindAsync(id);
             if (khuyenMai != null)
@@ -148,7 +148,7 @@ namespace QLBanDoAnNhanh.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool KhuyenMaiExists(int id)
+        private bool KhuyenMaiExists(string id)
         {
             return _context.KhuyenMais.Any(e => e.MaKhuyenMai == id);
         }

@@ -6,7 +6,7 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class LoginUserController : Controller
     {
-        private QlbanDoAnNhanhContext db = new QlbanDoAnNhanhContext();
+        private QlbanDoAnNhanh3Context db = new QlbanDoAnNhanh3Context();
 
         public IActionResult Index()
         {

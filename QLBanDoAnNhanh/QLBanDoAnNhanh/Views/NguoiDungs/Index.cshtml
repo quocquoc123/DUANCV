@@ -1,72 +1,86 @@
 ﻿@model IEnumerable<QLBanDoAnNhanh.Models.NguoiDung>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách Người Dùng";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
 
-<h1>Index</h1>
+<style>
+    .col-6 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
+
+    .form-inline {
+        display: flex;
+        justify-content: center;
+    }
+
+    .masked-password {
+        color: #888; /* Màu xám để mật khẩu bị ẩn */
+    }
+    
+</style>
+
+<div class="col-6 text-right">
+    <form method="GET" action="@Url.Action("Search", "NguoiDungs")" class="form-inline d-inline-block">
+        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm người dùng">
+        <button class="btn btn-primary" id="searchButton" type="submit">
+            <i class="fas fa-search"></i> Tìm kiếm
+        </button>
+    </form>
+</div>
+
+<h1>Danh sách Người Dùng</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Thêm mới</a>
 </p>
-<table class="table">
-    <thead>
+
+<table class="table table-bordered">
+    <thead class="thead-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Username)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TrangThai)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HoTen)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sdt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Matkhau)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Role)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.Username)</th>
+            <th>@Html.DisplayNameFor(model => model.TrangThai)</th>
+            <th>@Html.DisplayNameFor(model => model.HoTen)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.Sdt)</th>
+            <th>@Html.DisplayNameFor(model => model.Matkhau)</th>
+            <th>@Html.DisplayNameFor(model => model.Role)</th>
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TrangThai)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoTen)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sdt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Matkhau)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role.RoleId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MaNguoiDung">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaNguoiDung">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaNguoiDung">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Username)</td>
+                <td>
+                    @(item.TrangThai == "active" ? "Kích hoạt" : "Vô hiệu")
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>@Html.DisplayFor(modelItem => item.Sdt)</td>
+                <td class="masked-password">
+                    @(string.Concat(Enumerable.Repeat("*", item.Matkhau.Length)))
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Role.RoleId)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.MaNguoiDung" class="btn btn-info btn-sm">Xem</a>
+                    <a asp-action="Edit" asp-route-id="@item.MaNguoiDung" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.MaNguoiDung" class="btn btn-danger btn-sm">Xóa</a>
+                    @if (item.TrangThai == "active")
+                    {
+                        <a asp-action="DisableAccount" asp-route-id="@item.MaNguoiDung" class="btn btn-secondary btn-sm">Vô hiệu</a>
+                    }
+                    else
+                    {
+                        <a asp-action="EnableAccount" asp-route-id="@item.MaNguoiDung" class="btn btn-success btn-sm">Kích hoạt</a>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

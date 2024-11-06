@@ -1,0 +1,50 @@
+﻿@model QLBanDoAnNhanh.Models.DonHang // Thay đổi namespace và model cho chính xác
+
+@{
+    ViewBag.Title = "Chi Tiết Đơn Hàng";
+}
+
+<h2>Chi Tiết Đơn Hàng</h2>
+
+<div>
+    <h4>Thông Tin Đơn Hàng</h4>
+    <p><strong>Mã Đơn Hàng:</strong> @Model.MaDh</p>
+    <p><strong>Khách Hàng:</strong> @Model.Username</p>
+    <p><strong>Ngày Đặt Hàng:</strong> @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Không có dữ liệu")</p>
+    <p><strong>Tổng Tiền:</strong> @Model.TongTien.ToString("C")</p>
+</div>
+
+<h4>Chi Tiết Sản Phẩm</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Sản Phẩm</th>
+            <th>Số Lượng</th>
+            <th>Giá Đơn Vị</th>
+            <th>Tổng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detail in Model.ChiTietDonHangs)
+        {
+            <tr>
+                <td>@detail.MaSpNavigation.TenSp</td>
+                <td>@detail.SoLuong</td>
+                <td>@detail.MaSpNavigation.GiaTien.ToString("C")</td>
+                <td>@detail.TongTien.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <h4>Tổng Tiền</h4>
+    <p><strong>@Model.TongTien.ToString("C")</strong></p>
+</div>
+
+<!-- Nút xuất hóa đơn PDF -->
+<div>
+    <a href="@Url.Action("ExportInvoiceToPdf", "DonHangs", new { maDh = Model.MaDh })" class="btn btn-primary">
+        Xuất Hóa Đơn PDF
+    </a>
+</div>

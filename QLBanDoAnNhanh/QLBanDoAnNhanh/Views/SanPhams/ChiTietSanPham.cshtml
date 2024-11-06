@@ -1,101 +1,372 @@
-﻿@model QLBanDoAnNhanh.Models.SanPham
+﻿    @model QLBanDoAnNhanh.Models.SanPham
 
-@{
-    ViewData["Title"] = "Chi Tiết Sản Phẩm";
-}
-<div style="margin-left: 380px"><h1 style=" margin:auto;width:1200px;">Chi Tiết Sản Phẩm</h1></div>
+    @{
+        ViewData["Title"] = "Chi Tiết Sản Phẩm";
+    }
+    <div style="margin-left: 380px"><h1 style=" margin:auto;width:1200px;">Chi Tiết Sản Phẩm</h1></div>
 
-<br />
-@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"> *@
-<div class="product-container">
-    <div class="col-5">
+    <br />
+    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"> *@
+    <div class="product-container">
+        <div class="col-5">
 
-        <img class="product-image" src="@Url.Content(Model.HinhAnh1)" alt="@Model.TenSp" />
+            <img class="product-image" src="@Url.Content(Model.HinhAnh1)" alt="@Model.TenSp" />
 
 
+        </div>
+        <div class="col-7 product-details">
+        <p><strong>Tên Sản Phẩm:</strong> @Model.TenSp</p>
+        <p><strong>Giá:</strong> @String.Format("{0:0,0} VND", Model.GiaTien)</p>
+        <p><strong>Thành Phần:</strong> @Model.ThanhPhan</p>
+        <p><strong>Số Lượng Bán Trong Ngày:</strong> @Model.SlbanTrongNgay</p>
+        <p><strong>Chi Tiết Sản Phẩm:</strong> @Model.ChitietSp</p>
+
+        <form method="post" action="@Url.Action("AddToCart", "GioHangs")" id="muaNgayForm">
+            <input type="hidden" name="MaSp" value="@Model.MaSp" />
+            <label for="quantity">Số Lượng:</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="1" style="width: 40px;" />
+            <button type="submit" id="muaNgayButton" class="btn btn-primary">Mua Ngay</button>
+        </form>
+
+        </div>
     </div>
-    <div class="col-7 product-details">
-    <p><strong>Tên Sản Phẩm:</strong> @Model.TenSp</p>
-    <p><strong>Giá:</strong> @String.Format("{0:0,0} VND", Model.GiaTien)</p>
-    <p><strong>Thành Phần:</strong> @Model.ThanhPhan</p>
-    <p><strong>Số Lượng Bán Trong Ngày:</strong> @Model.SlbanTrongNgay</p>
-    <p><strong>Chi Tiết Sản Phẩm:</strong> @Model.ChitietSp</p>
+    <br>
 
-        <form method="post" action="@Url.Action("AddToCart", "GioHangs")">
-        <input type="hidden" name="MaSp" value="@Model.MaSp" />
-        <label for="quantity">Số Lượng:</label>
-        <input type="number" id="quantity" name="quantity" min="1" value="1" style="width: 100px;" />
-        <button type="submit" class="btn btn-primary">Mua Ngay</button>
-    </form>
-    </div>
-</div>
-<br>
-
-<style>
-        .product-container {
-            display: flex;
-            align-items: flex-start;
-            margin:auto;
-            width:1200px;
+    <style>
+            .product-container {
+                display: flex;
+                align-items: flex-start;
+                margin:auto;
+                width:1200px;
             
+            }
+
+        .product-image {
+            width: 300px;
+            height: 270px;
+            margin-left: 225px;
+            border-radius: 8px; /* Bo tròn các góc */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Tạo bóng đổ */
+            object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng khi hover */
         }
 
-    .product-image {
-        width: 300px;
-        height: 270px;
-        margin-left: 225px;
-        border-radius: 8px; /* Bo tròn các góc */
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Tạo bóng đổ */
-        object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng khi hover */
+            .product-image:hover {
+                transform: scale(1.05); /* Phóng to nhẹ khi hover */
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh hơn khi hover */
+            }
+
+            .product-details {
+                margin-left: 70px;
+            }
+
+                .product-details p {
+                    font-size: 18px;
+                    margin: 5px 0;
+                }
+
+                .product-details form {
+                    margin-top: 15px;
+                }
+
+    #muaNgayForm {
+        border: 1px solid #ccc; /* Viền cho form */
+        padding: 15px; /* Padding cho form */
+        border-radius: 8px; /* Bo góc cho form */
+        background-color: #f9f9f9; /* Màu nền cho form */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bóng đổ cho form */
+        margin-top: 20px; /* Khoảng cách trên */
     }
 
-        .product-image:hover {
-            transform: scale(1.05); /* Phóng to nhẹ khi hover */
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh hơn khi hover */
+    #quantity {
+        margin-bottom: 10px; /* Thêm khoảng cách dưới cho input số lượng */
+
+    }
+
+    #muaNgayButton {
+        background-color: #f2b633;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        display: block; /* Đảm bảo nút được hiển thị trên một dòng riêng */
+    }
+
+        #muaNgayButton:hover {
+            background-color: #e3a112;
+        }
+        .MoTaDanhGia {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .product-details {
-            margin-left: 70px;
+            .MoTaDanhGia h3 {
+                font-size: 24px;
+                color: #333;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+        .binhLuanItem {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-            .product-details p {
-                font-size: 18px;
+            .binhLuanItem strong.username {
+                display: block;
+                font-size: 16px;
+                color: #d9534f;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            .binhLuanItem p {
+                font-size: 14px;
+                color: #333;
                 margin: 5px 0;
             }
 
-            .product-details form {
-                margin-top: 15px;
+            .binhLuanItem small {
+                display: block;
+                font-size: 12px;
+                color: #777;
+                text-align: right;
             }
 
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-        form label {
-            margin-bottom: 10px;
+        #xemThemButton {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
 
-        form input {
-            margin-bottom: 15px;
+            #xemThemButton:hover {
+                background-color: #0056b3;
+            }
+
+        form .form-group label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        form .form-group textarea {
+            width: 100%;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
         }
 
         form button {
-            align-self: flex-start;
-            padding: 10px 20px;
-            background-color: #0af030;
-            border: none;
+            background-color: #007bff;
             color: white;
+            padding: 10px 20px;
+            border: none;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
             form button:hover {
-                background-color: #00a61b;
+            background-color: #0056b3;
             }
+    /* Đảo ngược thứ tự sao */
+    .rating {
+        margin-right: 230px;
+        display: flex;
+        flex-direction: row-reverse;
+    }
 
+        /* Đảm bảo rằng các sao sáng lên từ phải sang trái */
+        .rating input[type="radio"] {
+            display: none;
+        }
 
-</style>
+        .rating label {
+            font-size: 30px;
+            color: gray;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .rating input[type="radio"]:checked ~ label {
+            color: gold;
+        }
+
+        /* Khi di chuột vào sao, các sao trước đó sẽ sáng lên */
+        .rating input[type="radio"]:hover ~ label,
+        .rating input[type="radio"]:hover ~ label:hover {
+            color: gold;}
+
+    .alert {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        z-index: 1000;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        text-align: center;
+        display: none;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+    }
+
+    .show-alert {
+        display: block;
+    }
+    </style>
+    <script>
+        function showAllComments() {
+            // Hiển thị tất cả các bình luận
+            document.getElementById("hiddenComments").style.display = "block";
+            // Ẩn nút "Xem thêm" sau khi nhấn
+            document.getElementById("xemThemButton").style.display = "none";
+        }
+    </script>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+    @{
+        var binhLuans = ViewBag.BinhLuans as List<QLBanDoAnNhanh.Models.BinhLuan>;
+    }
+
+    <div class="MoTaDanhGia">
+    <div>
+        <div style="margin-left:340px;width:1200px;">
+            <p>Điểm trung bình: @ViewBag.DiemTrungBinh</p>
+
+            <!-- Rating form -->
+
+            <div style="width:375px">
+
+                <!-- Form đánh giá số sao -->
+                <form asp-action="AddAndUpdateRating" asp-controller="SanPhams" method="post">
+                    <input type="hidden" name="maSP" value="@Model.MaSp" />
+
+                    <label for="rating">Chọn số sao:</label>
+                    <div class="rating">
+                        <input type="radio" name="rating" id="star5" value="5" />
+                        <label for="star5" class="star">&#9733;</label>
+
+                        <input type="radio" name="rating" id="star4" value="4" />
+                        <label for="star4" class="star">&#9733;</label>
+
+                        <input type="radio" name="rating" id="star3" value="3" />
+                        <label for="star3" class="star">&#9733;</label>
+
+                        <input type="radio" name="rating" id="star2" value="2" />
+                        <label for="star2" class="star">&#9733;</label>
+
+                        <input type="radio" name="rating" id="star1" value="1" />
+                        <label for="star1" class="star">&#9733;</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                </form>
+            </div>
+        </div>
+    </div>
+        <h3>Bình luận</h3>
+        @if (binhLuans != null && binhLuans.Count > 0)
+        {
+            <div id="binhLuanContainer">
+                <!-- Hiển thị tối đa 5 bình luận ban đầu -->
+                @for (int i = 0; i < binhLuans.Count && i < 5; i++)
+                {
+                    <div class="binhLuanItem">
+                        <strong class="username" style="color: red;">@binhLuans[i].MaNguoiDung</strong>
+                        <p>@binhLuans[i].NoiDung</p>
+                        <small>@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                    </div>
+                }
+
+                <!-- Các bình luận còn lại sẽ được ẩn -->
+                <div id="hiddenComments" style="display: none;">
+                    @for (int i = 5; i < binhLuans.Count; i++)
+                    {
+                        <div class="binhLuanItem">
+                            <strong class="username" style="color: red;">@binhLuans[i].MaNguoiDung</strong>
+                            <p>@binhLuans[i].NoiDung</p>
+                            <small>@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Nút Xem thêm nếu có hơn 5 bình luận -->
+            @if (binhLuans.Count > 5)
+            {
+                <button id="xemThemButton" class="btn btn-secondary" onclick="showAllComments()">Xem thêm</button>
+            }
+        }
+        else
+        {
+            <p>Chưa có bình luận nào.</p>
+        }
+
+        <!-- Form gửi bình luận -->
+        <h4>Gửi Bình Luận</h4>
+        @using (Html.BeginForm("AddComment", "SanPhams", FormMethod.Post))
+        {
+            @Html.Hidden("maSP", Model.MaSp)
+            <div class="form-group">
+                <label for="NoiDung">Nội dung</label>
+                <br>    
+                <br />
+                <textarea name="noiDung" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+        }
+    </div>
+<script>
+    window.onload = function () {
+        var alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.classList.add('show-alert');
+            // Ẩn thông báo sau 2 giây
+            setTimeout(function () {
+                alertBox.classList.remove('show-alert');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        }
+    };
+</script>

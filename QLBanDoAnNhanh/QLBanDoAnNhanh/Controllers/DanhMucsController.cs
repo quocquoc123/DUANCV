@@ -11,9 +11,9 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class DanhMucsController : Controller
     {
-        private readonly QlbanDoAnNhanhContext _context;
+        private readonly QlbanDoAnNhanh3Context _context;
 
-        public DanhMucsController(QlbanDoAnNhanhContext context)
+        public DanhMucsController(QlbanDoAnNhanh3Context context)
         {
             _context = context;
         }

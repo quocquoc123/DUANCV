@@ -11,11 +11,11 @@ public partial class BinhLuan
 
     public int MaNguoiDung { get; set; }
 
-    public string NoiDung { get; set; } = null!;
+    public string NoiDung { get; set; }
 
     public DateTime NgayBinhLuan { get; set; }
 
-    public virtual NguoiDung MaNguoiDungNavigation { get; set; } = null!;
+    public virtual NguoiDung MaNguoiDungNavigation { get; set; }
 
-    public virtual SanPham MaSpNavigation { get; set; } = null!;
+    public virtual SanPham MaSpNavigation { get; set; }
 }

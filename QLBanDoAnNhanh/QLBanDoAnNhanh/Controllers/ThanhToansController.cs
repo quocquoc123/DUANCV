@@ -11,9 +11,9 @@ namespace QLBanDoAnNhanh.Controllers
 {
     public class ThanhToansController : Controller
     {
-        private readonly QlbanDoAnNhanhContext _context;
+        private readonly QlbanDoAnNhanh3Context _context;
 
-        public ThanhToansController(QlbanDoAnNhanhContext context)
+        public ThanhToansController(QlbanDoAnNhanh3Context context)
         {
             _context = context;
         }
@@ -21,8 +21,8 @@ namespace QLBanDoAnNhanh.Controllers
         // GET: ThanhToans
         public async Task<IActionResult> Index()
         {
-            var qlbanDoAnNhanhContext = _context.ThanhToans.Include(t => t.MaDhNavigation);
-            return View(await qlbanDoAnNhanhContext.ToListAsync());
+            var QlbanDoAnNhanh3Context = _context.ThanhToans.Include(t => t.MaDhNavigation);
+            return View(await QlbanDoAnNhanh3Context.ToListAsync());
         }
 
         // GET: ThanhToans/Details/5

@@ -8,10 +8,10 @@ namespace QLBanDoAnNhanh.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly QlbanDoAnNhanhContext _context;
-        private QlbanDoAnNhanhContext db = new QlbanDoAnNhanhContext();
+        private readonly QlbanDoAnNhanh3Context _context;
+        private QlbanDoAnNhanh3Context db = new QlbanDoAnNhanh3Context();
 
-        public HomeController(ILogger<HomeController> logger, QlbanDoAnNhanhContext context)
+        public HomeController(ILogger<HomeController> logger, QlbanDoAnNhanh3Context context)
         {
             _logger = logger;
             _context = context; // Kh?i t?o DbContext thông qua Dependency Injection

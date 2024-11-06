@@ -1,0 +1,29 @@
+﻿@model QLBanDoAnNhanh.Models.DonHang // Thay YourNamespace bằng không gian tên của bạn
+
+@{
+    ViewBag.Title = "Xuất Hóa Đơn";
+}
+
+<h1>Hóa Đơn</h1>
+<p>Mã đơn hàng: @Model.MaDh</p>
+<p>Người mua: @Model.Username</p>
+<p>Địa chỉ: @Model.Diachi</p>
+<h2>Chi tiết đơn hàng:</h2>
+<table>
+    <tr>
+        <th>Tên sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+        <th>Tổng tiền</th>
+    </tr>
+    @foreach (var item in Model.ChiTietDonHangs)
+    {
+        <tr>
+            <td>@item.MaSpNavigation.TenSp</td>
+            <td>@item.SoLuong</td>
+            <td>@(item.TongTien / item.SoLuong)</td>
+            <td>@item.TongTien</td>
+        </tr>
+    }
+</table>
+<h3>Tổng tiền: @Model.TongTien</h3>

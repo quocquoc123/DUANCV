@@ -9,8 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <title>Quản lý bán đồ ăns</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.13/signalr.min.js"></script>
+    <title>Quản lý bán đồ ăn</title>
 
     <!-- Custom fonts for this template-->
     <link href="~/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -68,16 +69,19 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="nav-link text-dark" asp-area="" asp-controller="NguoiDungs" asp-action="Index">Người Dùng</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="DanhMucs" asp-action="Index">Danh Mục</a>
-                        <a class="nav-link text-dark" asp-area="" asp-controller="KhuyenMais" asp-action="Index">Khuyễn Mãi</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="KhuyenMais" asp-action="Index">Khuyến Mãi</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="SanPhams" asp-action="Index">Sản Phẩm</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="DonHangs" asp-action="Index">Đơn Hàng</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="BinhLuans" asp-action="Index">Bình luận</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="ChatAdmin">Yêu cầu ChatBot</a>
+                           
                     </div>
                 </div>
             </li>
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="@Url.Action("DoanhThu", "DonHangs")">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Thống Kê</span>
                 </a>
@@ -119,7 +123,7 @@
                     </button>
 
                     <!-- Topbar Search -->
-                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                   @*  <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                                    aria-label="Search" aria-describedby="basic-addon2">
@@ -130,7 +134,7 @@
                             </div>
                         </div>
                     </form>
-
+ *@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
