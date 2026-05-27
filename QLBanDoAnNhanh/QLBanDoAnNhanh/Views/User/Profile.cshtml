@@ -1,55 +1,99 @@
 ﻿@model QLBanDoAnNhanh.Models.NguoiDung
 
 <style>
-    /* Styles specifically for the user information page */
-    .user-info-container {
-        max-width: 600px; /* Set a maximum width for the container */
-        margin: 20px auto; /* Center the container */
-        padding: 20px; /* Add padding inside the container */
-        background-color: #ffffff; /* White background color */
-        border-radius: 8px; /* Rounded corners */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    }
+/* Container chính */
+.user-info-container {
+    max-width: 600px; /* Giới hạn chiều rộng */
+    margin: 20px auto; /* Căn giữa theo chiều ngang */
+    padding: 20px; /* Khoảng cách bên trong */
+    background-color: #ffffff; /* Màu nền trắng */
+    border-radius: 8px; /* Bo góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
 
-    .user-info-form {
-        display: flex; /* Use flexbox for layout */
-        flex-direction: column; /* Stack items vertically */
-    }
+/* Tiêu đề */
+.user-info-container h2 {
+    font-size: 24px; /* Kích thước chữ */
+    font-weight: bold; /* Chữ đậm */
+    margin-bottom: 20px; /* Khoảng cách phía dưới */
+    color: #333; /* Màu chữ */
+}
 
-        .user-info-form .form-group {
-            margin-bottom: 15px; /* Space between form groups */
-        }
+/* Form thông tin */
+.user-info-form {
+    display: flex; /* Sử dụng Flexbox */
+    flex-direction: column; /* Xếp dọc */
+}
 
-        .user-info-form .form-label {
-            font-weight: bold; /* Make the label bold */
-            margin-bottom: 5px; /* Space below the label */
-        }
+/* Nhóm form */
+.user-info-form .form-group {
+    margin-bottom: 15px; /* Khoảng cách giữa các nhóm */
+}
 
-        .user-info-form .form-control {
-            border: 1px solid #ced4da; /* Border color */
-            border-radius: 4px; /* Rounded borders */
-            padding: 10px; /* Add padding inside the input */
-            font-size: 14px; /* Font size for inputs */
-        }
+/* Nhãn */
+.user-info-form .form-label {
+    font-weight: bold; /* Chữ đậm */
+    margin-bottom: 5px; /* Khoảng cách với input */
+    display: block; /* Hiển thị nhãn trên dòng riêng */
+    color: #555; /* Màu chữ nhãn */
+}
 
-        .user-info-form .btn-primary {
-            background-color: #007bff; /* Primary button color */
-            border: none; /* Remove border */
-            color: white; /* White text color */
-            padding: 10px 15px; /* Padding for button */
-            border-radius: 4px; /* Rounded corners for button */
-            transition: background-color 0.3s; /* Smooth transition */
-        }
+/* Ô nhập liệu */
+.user-info-form .form-control {
+    border: 1px solid #ced4da; /* Viền ô nhập */
+    border-radius: 4px; /* Bo góc */
+    padding: 10px; /* Khoảng cách trong ô */
+    font-size: 14px; /* Kích thước chữ */
+    color: #333; /* Màu chữ */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển đổi */
+}
 
-            .user-info-form .btn-primary:hover {
-                background-color: #0056b3; /* Darker button color on hover */
-            }
+.user-info-form .form-control:focus {
+    border-color: #007bff; /* Màu viền khi chọn */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25); /* Hiệu ứng sáng */
+}
 
-        .user-info-form .alert {
-            margin-top: 20px; /* Space above alerts */
-        }
+/* Nút cập nhật */
+.user-info-form .btn-primary {
+    background-color: #f2b633; /* Màu nền */
+    border: none; /* Xóa viền */
+    color: white; /* Màu chữ */
+    padding: 10px 15px; /* Khoảng cách trong nút */
+    border-radius: 50px; /* Bo tròn hoàn toàn */
+    font-size: 16px; /* Kích thước chữ */
+    font-weight: bold; /* Chữ đậm */
+    transition: background-color 0.3s; /* Hiệu ứng màu nền */
+}
+
+.user-info-form .btn-primary:hover {
+    background-color: #c28500; /* Màu nền khi hover */
+}
+
+/* Cảnh báo */
+.user-info-form .alert {
+    margin-top: 20px; /* Khoảng cách phía trên */
+    padding: 10px 15px; /* Khoảng cách bên trong */
+    font-size: 14px; /* Kích thước chữ */
+    border-radius: 4px; /* Bo góc */
+}
+
+.user-info-form .alert-success {
+    background-color: #d4edda; /* Nền xanh nhạt */
+    color: #155724; /* Chữ xanh đậm */
+    border: 1px solid #c3e6cb; /* Viền */
+}
+
+.user-info-form .alert-danger {
+    background-color: #f8d7da; /* Nền đỏ nhạt */
+    color: #721c24; /* Chữ đỏ đậm */
+    border: 1px solid #f5c6cb; /* Viền */
+}
+
+/* Responsive */
+
 
 </style>
+
 <div class="user-info-container">
     <h2 class="text-center">Quản lý thông tin cá nhân</h2>
 

@@ -1,0 +1,161 @@
+﻿@model IEnumerable<QLBanDoAnNhanh.Models.PhanHoiBaoCao>
+@{
+    ViewData["Title"] = "SubmitFeedback";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="chat-container">
+    <!-- Header with brand name and close button -->
+    <div class="chat-header">
+        <div class="brand-name">Shop Chicken Yeah</div>
+        <button class="close-btn">&times;</button>
+    </div>
+
+    <!-- Chat messages section -->
+    <div class="chat-content">
+        @foreach (var item in Model)
+        {
+            <div class="chat-message @(item.NguoiTraLoi ? "admin" : "user")">
+                <span class="message-bubble">
+                    <p>@item.NoiDung</p>
+                    <small class="message-date">@item.NgayPhanHoi</small>
+                </span>
+            </div>
+        }
+    </div>
+
+    <!-- Feedback form -->
+    <div class="feedback-form">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <textarea style="width:450px" id="feedbackContent" name="feedbackContent" class="message-input" placeholder="Nhập nội dung..." required></textarea>
+            <button type="submit" class="send-btn">Gửi</button>
+        }
+    </div>
+</div>
+
+<style>
+    /* Chat container */
+    .chat-container {
+        width: 600px;
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header */
+    .chat-header {
+        background-color: #f2b633;
+        color: white;
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .chat-header .brand-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat-header .close-btn {
+            font-size: 20px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+    /* Chat messages */
+    .chat-content {
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column-reverse; /* Đảo ngược thứ tự các tin nhắn */
+    }
+
+    .chat-message {
+        display: flex;
+        margin: 5px 0;
+    }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.admin {
+            justify-content: flex-start;
+        }
+
+    .message-bubble {
+        max-width: 75%;
+        padding: 10px;
+        border-radius: 15px;
+        position: relative;
+        font-size: 14px;
+    }
+
+    .chat-message.user .message-bubble {
+        background-color: #d1eaff;
+        color: #000;
+        border-bottom-right-radius: 0;
+    }
+
+    .chat-message.admin .message-bubble {
+        background-color: #e0e0e0;
+        color: #000;
+        border-bottom-left-radius: 0;
+    }
+
+    .message-date {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        text-align: right;
+        margin-top: 5px;
+    }
+
+    /* Feedback form */
+    .feedback-form {
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        display: flex;
+    }
+
+    .message-input {
+        flex-grow: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+    }
+
+    .send-btn {
+        margin-left: 10px;
+        /*   margin-bottom:5px; */
+        padding: 12px 30px;
+        background-color: #f2b633;
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+        .send-btn:hover {
+            background-color: #c28500;
+        }
+</style>

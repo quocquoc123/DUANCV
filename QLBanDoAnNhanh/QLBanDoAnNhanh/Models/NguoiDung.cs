@@ -21,6 +21,8 @@ public partial class NguoiDung
 
     public int RoleId { get; set; }
 
+    public virtual ICollection<BaoCaoNguoiDung> BaoCaoNguoiDungs { get; set; } = new List<BaoCaoNguoiDung>();
+
     public virtual ICollection<BinhLuan> BinhLuans { get; set; } = new List<BinhLuan>();
 
     public virtual ICollection<DanhGium> DanhGia { get; set; } = new List<DanhGium>();
@@ -28,6 +30,8 @@ public partial class NguoiDung
     public virtual ICollection<DonHang> DonHangs { get; set; } = new List<DonHang>();
 
     public virtual ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();
+
+    public virtual ICollection<PhanHoiBaoCao> PhanHoiBaoCaos { get; set; } = new List<PhanHoiBaoCao>();
 
     public virtual PhanQuyen Role { get; set; }
 }

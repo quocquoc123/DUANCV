@@ -1,0 +1,59 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "SoLuongDaBan";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div style="display:flex;">
+<canvas id="pieChart" width="400" height="400"></canvas>
+
+<script>
+    var ctx = document.getElementById('pieChart').getContext('2d');
+
+    var pieChart = new Chart(ctx, {
+        type: 'pie',  // Loại biểu đồ tròn
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.TenSanPham)), // Danh sách tên sản phẩm
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(ViewBag.SoLuongDaBan)), // Danh sách số lượng đã bán
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#FF5733'], // Màu sắc các phân khúc
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + ' sản phẩm';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+<div style="margin-left:70px;">
+        <h3 style="margin-left:30px;">Nhận xét về sản phẩm</h3>
+<ul>
+    @foreach (var item in ViewBag.DanhGiaSanPham)
+    {
+        <li>
+                    <a href="@item.Url"><strong>@item.TenSanPham</strong></a> - Số lượng bán: @item.SoLuongDaBan sản phẩm.
+                    <span>@item.NhanXet</span>
+        </li>
+    }
+</ul>
+    </div>
+</div>
+
+<style>
+    #pieChart {
+        width: 500px !important;
+        height: 500px !important;
+    }
+
+</style>

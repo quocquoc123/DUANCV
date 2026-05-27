@@ -68,6 +68,8 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Thanh toán</button>
+                    <button asp-action="CreatePayment" asp-controller="GioHangs" type="submit" class="btn btn-primary">Thanh toán Paypal</button>
+
                 </form>
             </td>
         </tr>
@@ -151,7 +153,7 @@
 
         .btn-info:hover {
             background-color: #138496;
-            transform: scale(1.05);
+         
         }
 
     .btn-danger {
@@ -160,7 +162,7 @@
 
         .btn-danger:hover {
             background-color: #c82333;
-            transform: scale(1.05);
+           
         }
 
     .btn-success {
@@ -169,7 +171,7 @@
 
         .btn-success:hover {
             background-color: #218838;
-            transform: scale(1.05);
+       
         }
 
     .btn-primary {
@@ -178,7 +180,7 @@
 
         .btn-primary:hover {
             background-color: #0056b3;
-            transform: scale(1.05);
+           
         }
 
     /* CSS cho form checkout bên trong bảng */
@@ -215,7 +217,7 @@
             width: 100%;
             padding: 12px 0;
             font-size: 16px;
-            background-color: #007bff;
+            background-color: #f2b633;
             color: white;
             border: none;
             border-radius: 5px;
@@ -223,8 +225,8 @@
         }
 
             .checkout-form button:hover {
-                background-color: #0056b3;
-                transform: scale(1.05);
+                background-color: #c28500;
+               
             }
 
 </style>

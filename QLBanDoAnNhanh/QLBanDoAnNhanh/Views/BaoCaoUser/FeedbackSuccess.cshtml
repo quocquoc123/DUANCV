@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "FeedbackSuccess";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Div hiển thị thông báo -->
+<div id="success-alert" class="alert alert-success" role="alert">
+    <strong>Cảm ơn!</strong> Phản hồi của bạn đã được gửi thành công. Bạn sẽ được chuyển về trang chủ trong giây lát.
+</div>
+
+<!-- JavaScript để hiển thị thông báo và tự động chuyển về trang chủ -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Hiển thị thông báo
+        $("#success-alert").fadeIn();
+
+        // Sau 3 giây, ẩn thông báo và chuyển hướng về trang chủ
+        setTimeout(function () {
+            window.location.href = "@Url.Action("Index", "Home")";
+        }, 3000); // 3000ms = 3 giây
+    });
+</script>

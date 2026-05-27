@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Quản lý khuyến mãi</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Tạo khuyến mãi</a>
 </p>
 <table class="table">
     <thead>
@@ -70,3 +70,112 @@
 }
     </tbody>
 </table>
+<style>
+    /* CSS tổng thể */
+
+
+    /* Tiêu đề */
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    /* Form lọc */
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .form-select {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 10px;
+    }
+
+    button[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+    /* Bảng danh sách đơn hàng */
+    .table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .table thead tr {
+            background-color: #007bff;
+            color: white;
+            text-align: left;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+    /* Các nút hành động */
+    .btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-right: 5px;
+        text-decoration: none;
+        color: white;
+        transition: background-color 0.3s;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+    }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+    .btn-info {
+        background-color: #17a2b8;
+    }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+</style>

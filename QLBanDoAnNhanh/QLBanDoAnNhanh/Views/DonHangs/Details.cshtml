@@ -18,11 +18,14 @@
         <p><strong>Ngày Cập Nhật:</strong> @Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")</p>
 
         <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
+
     </div>
+    @if (Model.TrangThai == "Đã Giao")
+{
     <a href="@Url.Action("ExportInvoiceToPdf", "DonHangs", new { maDh = Model.MaDh })" class="btn btn-custom">
         Xuất hóa đơn
     </a>
-
+}
 </div>
 <style>
         .btn-custom {

@@ -6,15 +6,24 @@ using QLBanDoAnNhanh.Hubs;
 using QLBanDoAnNhanh.Common;
 using DinkToPdf.Contracts;
 using DinkToPdf;
+using QLBanDoAnNhanh.Services;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình dịch vụ
+builder.Services.AddHttpClient();
 builder.Services.AddDbContext<QlbanDoAnNhanh3Context>(options =>
 {
     options.UseSqlServer(builder.Configuration["QLBanDoAnNhanh"]);
 });
 
+
+
+builder.Services.AddScoped<PayPalService>();
+builder.Services.AddHttpClient();
 // Thêm dịch vụ SignalR cho chat
 builder.Services.AddSignalR();
 
@@ -58,3 +67,15 @@ app.MapControllerRoute(
 app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+
+// Sử dụng tiếng Việt
+var supportedCultures = new[] { "vi-VN", "en-US" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("vi-VN")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+

@@ -229,6 +229,18 @@ namespace QLBanDoAnNhanh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MaSp,TenSp,MaGiamGia,ThanhPhan,GiaTien,DonVi,ChitietSp,MaDm,SlbanTrongNgay")] SanPham sanPham, IFormFile HinhAnh1, IFormFile HinhAnh2)
         {
+            if (sanPham.SlbanTrongNgay < 0)
+            {
+                ModelState.AddModelError("SlbanTrongNgay", "Số lượng bán trong ngày không thể nhỏ hơn 0.");
+            }
+
+            // Nếu có lỗi, trả lại View với dữ liệu nhập trước đó
+            if (!ModelState.IsValid)
+            {
+                ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "MaDm", sanPham.MaDm);
+                ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia", sanPham.MaGiamGia);
+                return View(sanPham);
+            }
             // Kiểm tra tệp HinhAnh1 và HinhAnh2 có được chọn không
             if (HinhAnh1 != null && HinhAnh1.Length > 0)
             {
@@ -236,7 +248,7 @@ namespace QLBanDoAnNhanh.Controllers
                 var fileName1 = Path.GetFileName(HinhAnh1.FileName);
                 var filePath1 = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName1);
 
-                // Lưu tệp vào thư mục 'wwwroot/images'
+                // Lưu tệp vào thư mục 'wwwroot/images' 
                 using (var stream = new FileStream(filePath1, FileMode.Create))
                 {
                     await HinhAnh1.CopyToAsync(stream);
@@ -394,22 +406,28 @@ namespace QLBanDoAnNhanh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var chiTietDonHangs = await _context.ChiTietDonHangs
-         .Where(c => c.MaSp == id)
-         .ToListAsync();
+            // Kiểm tra xem sản phẩm có trong đơn hàng không
+            bool existsInOrders = await _context.ChiTietDonHangs.AnyAsync(c => c.MaSp == id);
+            if (existsInOrders)
+            {
+                TempData["DeleteError"] = "Không thể xóa! Sản phẩm này đang có trong đơn hàng.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            _context.ChiTietDonHangs.RemoveRange(chiTietDonHangs);
+            
 
-            // Xóa sản phẩm
+            // Xóa sản phẩm nếu không có ràng buộc
             var sanPham = await _context.SanPhams.FindAsync(id);
             if (sanPham != null)
             {
                 _context.SanPhams.Remove(sanPham);
+                await _context.SaveChangesAsync();
+                TempData["DeleteSuccess"] = "Sản phẩm đã được xóa thành công!";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult TrangChu()
         {
             var products = _context.SanPhams.ToList();

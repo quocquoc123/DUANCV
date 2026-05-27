@@ -4,192 +4,927 @@
     ViewData["Title"] = "Trang Chủ";
 }
 
-<h1 style="font-size:25px; width:1200px; margin:auto;">Danh Sách Sản Phẩm</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
+}
 
+<!-- Alert Messages -->
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Message1"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message1"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<!-- Hiển thị danh sách sản phẩm -->
-<div class="row">
-    @foreach (var product in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="@Url.Content(product.HinhAnh1)" class="card-img-top" alt="Hình ảnh @product.TenSp" />
-                <div class="card-body">
-                    <h5 class="card-title">@product.TenSp</h5>
+<!-- Hero Section -->
+<div class="home-hero-band">
+<div class="hero-section">
+    <div class="hero-background"></div>
 
+    <div class="hero-visual hero-visual-left">
+        <img src="@Url.Content("~/images/Burger-Flava.jpg")" alt="" class="hero-food-img hero-img-1">
+        <img src="@Url.Content("~/images/D-CBO-Bucket-2.jpg")" alt="" class="hero-food-img hero-img-2">
+        <img src="@Url.Content("~/images/P4-OR.jpg")" alt="" class="hero-food-img hero-img-3">
+    </div>
+
+    <div class="hero-content">
+        <h1 class="hero-title">Chào mừng bạn đến với</h1>
+        <h2 class="hero-subtitle">Food Fast</h2>
+        <p class="hero-description">Thực phẩm tươi ngon, chất lượng cao, giao hàng nhanh chóng</p>
+        <a href="#products-section" class="hero-btn">Khám Phá Ngay</a>
+    </div>
+
+    <div class="hero-visual hero-visual-right">
+        <img src="@Url.Content("~/images/MI-Y-GA-VIEN.jpg")" alt="" class="hero-food-img hero-img-4">
+        <img src="@Url.Content("~/images/COM.jpg")" alt="" class="hero-food-img hero-img-5">
+        <img src="@Url.Content("~/images/MON AN NHE.jpg")" alt="" class="hero-food-img hero-img-6">
+    </div>
+</div>
+</div>
+
+<!-- Promo Section -->
+<div class="promo-section">
+    <div class="promo-box">
+        <i class="icon">⚡</i>
+        <h3>Giao Hàng Nhanh</h3>
+        <p>Giao trong 30 phút</p>
+    </div>
+    <div class="promo-box">
+        <i class="icon">✓</i>
+        <h3>Chất Lượng Đảm Bảo</h3>
+        <p>100% sản phẩm tươi mới</p>
+    </div>
+    <div class="promo-box">
+        <i class="icon">💳</i>
+        <h3>Thanh Toán Dễ Dàng</h3>
+        <p>Nhiều phương thức thanh toán</p>
+    </div>
+    <div class="promo-box">
+        <i class="icon">👥</i>
+        <h3>Hỗ Trợ 24/7</h3>
+        <p>Luôn sẵn sàng phục vụ</p>
+    </div>
+</div>
+
+<!-- Products Section -->
+<div id="products-section" class="products-container">
+    <div class="section-header">
+        <h2>Danh Sách Sản Phẩm Nổi Bật</h2>
+        <p>Những món ăn được yêu thích nhất của chúng tôi</p>
+    </div>
+
+    <div class="products-grid">
+        @foreach (var product in Model)
+        {
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
                     @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
                     {
-                        <p class="card-text">
-                            <span class="discount-badge">@product.MaGiamGiaNavigation.GiaTri % Off</span>
-                        </p>
-                        <p class="card-text old-price">@product.GiaTien.ToString("C") VND</p>
-                        <p class="card-text">
-                            Giá sau giảm: <strong>@product.GiaSauGiam?.ToString("C") VND</strong>
-                        </p>
+                        <div class="discount-badge">-@product.MaGiamGiaNavigation.GiaTri%</div>
                     }
-                    else
-                    {
-                        <p class="card-text">@product.GiaTien.ToString("C") VND</p>
-                    }
-
-                    <p class="card-text">Thành phần: @product.ThanhPhan</p>
-                    <p class="card-text">Số lượng bán trong ngày: @product.SlbanTrongNgay</p>
-                    <p class="card-text">Chi tiết: @product.ChitietSp</p>
-
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn btn-primary">Mua Ngay</a>
+                    <div class="product-overlay">
+                        <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">@product.TenSp</h3>
+                    <p class="product-price">@product.GiaTien.ToString("C") VND</p>
+                    <div class="product-description">
+                        <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
+                        <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>
+                    </div>
+                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
 
-
-
-<!-- Phần hiển thị sản phẩm gợi ý -->
-<h2 style="font-size:22px; width:1200px; margin:auto; margin-top:30px;">Sản Phẩm Gợi Ý</h2>
-<div class="row">
-    @* Giả sử bạn có một danh sách sản phẩm gợi ý trong ViewData hoặc ViewBag *@
-    @foreach (var suggestedProduct in ViewBag.SuggestedProducts ?? new List<QLBanDoAnNhanh.Models.SanPham>())
+<!-- Suggested Products Section -->
+@{
+    var suggestedProducts = ViewBag.SuggestedProducts ?? new List<QLBanDoAnNhanh.Models.SanPham>();
+    if (suggestedProducts.Count > 0)
     {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="card-img-top" alt="Hình ảnh @suggestedProduct.TenSp" />
-                <div class="card-body">
-                    <h5 class="card-title">@suggestedProduct.TenSp</h5>
-                    <p class="card-text">@suggestedProduct.GiaTien.ToString("C") VND</p>
-                    <p class="card-text">Thành phần: @suggestedProduct.ThanhPhan</p>
-                    <p class="card-text">Số lượng bán trong ngày: @suggestedProduct.SlbanTrongNgay</p>
-                    <p class="card-text">Chi tiết: @suggestedProduct.ChitietSp</p>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn btn-primary">Mua Ngay</a>
-                </div>
+        <div class="products-container" style="margin-top: 60px;">
+            <div class="section-header">
+                <h2>Sản Phẩm Gợi Ý</h2>
+                <p>Những sản phẩm bán chạy nhất</p>
+            </div>
+
+            <div class="products-grid">
+                @foreach (var suggestedProduct in suggestedProducts)
+                {
+                    <div class="product-card">
+                        <div class="product-image-wrapper">
+                            <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="product-image" alt="@suggestedProduct.TenSp" />
+                            <div class="product-overlay">
+                                <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">@suggestedProduct.TenSp</h3>
+                            <p class="product-price">@suggestedProduct.GiaTien.ToString("C") VND</p>
+                            <div class="product-description">
+                                <p><strong>Thành phần:</strong> @suggestedProduct.ThanhPhan</p>
+                                <p><strong>Bán:</strong> @suggestedProduct.SlbanTrongNgay</p>
+                            </div>
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-buy">Mua Ngay</a>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     }
-</div>
-<br />
+}
 
-<!-- CSS và JavaScript như cũ -->
-<style>
-    .row {
+@* <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* HERO SECTION */
+    .home-hero-band {
+        width: 100%;
+        background: linear-gradient(135deg, #ff9800 0%, #d67b00 100%);
+        margin-bottom: 48px;
+    }
+
+    .hero-section {
+        position: relative;
+        min-height: 520px;
+        max-width: 1400px;
+        margin: 0 auto;
         display: flex;
+        align-items: center;
         justify-content: center;
-        flex-wrap: wrap;
+        overflow: hidden;
+        background: transparent;
+        padding: 48px 20px 36px;
+    }
+
+    .hero-background {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background:
+            radial-gradient(circle at 18% 85%, rgba(255,255,255,0.12), transparent 40%),
+            radial-gradient(circle at 82% 75%, rgba(255,255,255,0.1), transparent 38%),
+            radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 50%);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .hero-visual {
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .hero-visual-left {
+        left: 8px;
+        padding-bottom: 8px;
+    }
+
+    .hero-visual-right {
+        right: 0;
+        padding-bottom: 0;
+        align-items: flex-end;
+    }
+
+    .hero-food-img {
+        object-fit: cover;
+        border-radius: 22px;
+        box-shadow: 0 22px 45px rgba(0, 0, 0, 0.28);
+        animation: floating 5s ease-in-out infinite;
+        transition: transform 0.35s ease;
+    }
+
+    .hero-food-img:hover {
+        transform: scale(1.04) translateY(-4px);
+    }
+
+    .hero-img-1 {
+        width: 150px;
+        height: 150px;
+    }
+
+    .hero-img-2 {
+        width: 118px;
+        height: 118px;
+        margin-bottom: 28px;
+        animation-delay: 0.4s;
+    }
+
+    .hero-img-3 {
+        width: 132px;
+        height: 132px;
+        animation-delay: 0.8s;
+    }
+
+    .hero-img-4 {
+        width: 200px;
+        height: 160px;
+        border-radius: 24px 24px 0 0;
+        animation-delay: 0.2s;
+    }
+
+    .hero-img-5 {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 12px;
+        animation-delay: 0.6s;
+    }
+
+    .hero-img-6 {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 24px;
+        animation-delay: 1s;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 4;
+        text-align: center;
+        color: white;
+        animation: slideInUp 0.8s ease-out;
+        max-width: 560px;
+        padding: 0 20px;
+    }
+
+    .hero-title {
+        font-size: 28px;
+        font-weight: 400;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        animation: fadeInDown 0.8s ease-out 0.2s backwards;
+    }
+
+    .hero-subtitle {
+        font-size: 96px;
+        font-family: "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
+        font-weight: 400;
+        line-height: 0.95;
+        margin-bottom: 14px;
+        text-shadow: 0 0 24px rgba(255,255,255,0.35), 0 12px 32px rgba(0,0,0,0.2);
+        animation: fadeInDown 0.8s ease-out 0.4s backwards;
+    }
+
+    .hero-description {
+        font-size: 16px;
+        margin-bottom: 32px;
+        opacity: 0.95;
+        line-height: 1.7;
+        animation: fadeInDown 0.8s ease-out 0.6s backwards;
+    }
+
+    .hero-btn {
+        display: inline-block;
+        padding: 14px 42px;
+        background: #fffdf9;
+        color: #7d4307;
+        text-decoration: none;
+        border-radius: 999px;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.8s ease-out 0.8s backwards;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    .hero-btn:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 20px 36px rgba(0, 0, 0, 0.26);
+        background: #fff;
+    }
+
+    @@keyframes floating {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    /* PROMO SECTION */
+    .promo-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
+        padding: 40px 20px;
+        max-width: 1400px;
+        margin: 0 auto 50px;
+    }
+
+    .promo-box {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .promo-box:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .promo-box .icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 15px;
+        animation: pulse 2s infinite;
+    }
+
+    .promo-box h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .promo-box p {
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* PRODUCTS SECTION */
+    .products-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-header h2 {
+        font-size: 36px;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-header h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #f2b633, #ff9800);
+        border-radius: 2px;
+    }
+
+    .section-header p {
+        color: #888;
+        font-size: 16px;
         margin-top: 20px;
     }
 
-    .col-md-4 {
-        flex: 1 0 300px;
-        max-width: 300px;
-        display: flex;
-        justify-content: center;
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 28px;
+        padding: 15px 0;
     }
 
-    .card {
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
+    /* PRODUCT CARD */
+    .product-card {
+        background: white;
+        border-radius: 16px;
         overflow: hidden;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Thêm hiệu ứng chuyển động */
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 10px 25px rgba(17, 24, 39, 0.06);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        will-change: transform, opacity;
+        animation: productIn 0.65s ease-out both;
     }
 
-        .card:hover {
-            transform: scale(1.05); /* Phóng to thẻ khi hover */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ bóng */
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 55px rgba(0, 0, 0, 0.16);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        width: 100%;
+        padding-bottom: 70%;
+        overflow: hidden;
+        background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+    }
+
+    .product-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: linear-gradient(135deg, #ff6b6b, #ff5252);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        z-index: 2;
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(242, 182, 51, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+
+    .product-card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .product-card:focus-within .product-overlay {
+        opacity: 1;
+    }
+
+    .btn-view-detail {
+        padding: 12px 30px;
+        background: white;
+        color: #f2b633;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-view-detail:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-info {
+        padding: 18px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        transition: color 0.3s ease;
+    }
+
+    .product-card:hover .product-name {
+        color: #f2b633;
+    }
+
+    .product-price {
+        font-size: 22px;
+        font-weight: 700;
+        color: #ff4d4f;
+        margin-bottom: 12px;
+    }
+
+    .product-description {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        flex-grow: 1;
+    }
+
+    .product-description p {
+        margin: 4px 0;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+
+    .btn-buy {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #f2b633, #ff9800);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 14px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        display: block;
+        width: 100%;
+        box-shadow: 0 12px 24px rgba(242, 182, 51, 0.22);
+        margin-top: 12px;
+    }
+
+    .btn-buy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(242, 182, 51, 0.3);
+        background: linear-gradient(135deg, #ff9800, #f2b633);
+    }
+
+    .btn-buy:active {
+        transform: translateY(0);
+    }
+
+    /* ANIMATIONS */
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes productIn {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .products-grid > .product-card:nth-child(1) { animation-delay: 0.05s; }
+    .products-grid > .product-card:nth-child(2) { animation-delay: 0.10s; }
+    .products-grid > .product-card:nth-child(3) { animation-delay: 0.15s; }
+    .products-grid > .product-card:nth-child(4) { animation-delay: 0.20s; }
+    .products-grid > .product-card:nth-child(5) { animation-delay: 0.25s; }
+    .products-grid > .product-card:nth-child(6) { animation-delay: 0.30s; }
+    .products-grid > .product-card:nth-child(7) { animation-delay: 0.35s; }
+    .products-grid > .product-card:nth-child(8) { animation-delay: 0.40s; }
+    .products-grid > .product-card:nth-child(9) { animation-delay: 0.45s; }
+    .products-grid > .product-card:nth-child(10) { animation-delay: 0.50s; }
+    .products-grid > .product-card:nth-child(11) { animation-delay: 0.55s; }
+    .products-grid > .product-card:nth-child(12) { animation-delay: 0.60s; }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* RESPONSIVE DESIGN */
+    @@media (max-width: 1024px) {
+        .hero-section {
+            min-height: 460px;
         }
 
-        .card img {
-            width: 100%;
+        .hero-subtitle {
+            font-size: 72px;
+        }
+
+        .hero-img-1 { width: 120px; height: 120px; }
+        .hero-img-2 { width: 96px; height: 96px; }
+        .hero-img-3 { width: 108px; height: 108px; }
+        .hero-img-4 { width: 160px; height: 130px; }
+        .hero-img-5 { width: 110px; height: 110px; }
+        .hero-img-6 { width: 96px; height: 96px; }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .home-hero-band {
+            margin-bottom: 30px;
+        }
+
+        .hero-section {
+            min-height: 400px;
+            padding: 40px 16px 24px;
+        }
+
+        .hero-visual {
+            opacity: 0.45;
+            transform: scale(0.85);
+        }
+
+        .hero-visual-left {
+            left: -10px;
+        }
+
+        .hero-visual-right {
+            right: -10px;
+        }
+
+        .hero-title {
+            font-size: 22px;
+        }
+
+        .hero-subtitle {
+            font-size: 58px;
+            margin-bottom: 12px;
+        }
+
+        .hero-description {
+            font-size: 14px;
+        }
+
+        .hero-btn {
+            padding: 12px 30px;
+            font-size: 14px;
+        }
+
+        .promo-section {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 30px 15px;
+            margin-bottom: 40px;
+        }
+
+        .promo-box {
+            padding: 20px;
+        }
+
+        .promo-box .icon {
+            font-size: 36px;
+        }
+
+        .promo-box h3 {
+            font-size: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 28px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 15px 0;
+        }
+
+        .product-name {
+            font-size: 16px;
+        }
+
+        .product-price {
+            font-size: 18px;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .hero-section {
+            min-height: 360px;
+        }
+
+        .hero-visual {
+            display: none;
+        }
+
+        .hero-title {
+            font-size: 18px;
+        }
+
+        .hero-subtitle {
+            font-size: 48px;
+        }
+
+        .hero-description {
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .promo-section {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 20px 10px;
+            margin-bottom: 30px;
+        }
+
+        .promo-box {
+            padding: 15px;
+        }
+
+        .promo-box h3 {
+            font-size: 14px;
+        }
+
+        .promo-box p {
+            font-size: 12px;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .product-card {
             height: auto;
-            object-fit: contain;
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .product-image-wrapper {
+            padding-bottom: 70%;
+        }
+
+        .product-info {
+            padding: 14px;
+        }
+
+        .product-name {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            font-size: 18px;
             margin-bottom: 10px;
         }
 
-    .card-body {
-        padding: 20px;
-    }
-
-    .card-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .card-text {
-        font-size: 16px;
-        color: #555;
-        margin-bottom: 15px;
-        margin-top: 5px;
-    }
-
-    .btn {
-        background-color: #f2b633;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 14px;
-        text-transform: uppercase;
-        text-decoration: none;
-    }
-
-        .btn:hover {
-            background-color: #e3a112;
-            color: #fff;
+        .product-description {
+            font-size: 12px;
+            margin-bottom: 12px;
         }
 
-    .alert {
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
-        z-index: 1000;
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        padding: 15px;
-        text-align: center;
-        display: none;
+        .btn-buy {
+            padding: 12px 14px;
+            font-size: 13px;
+            border-radius: 12px;
+        }
     }
 
-    .alert-danger {
-        background-color: #f8d7da;
+    /* SMOOTH SCROLLING */
+    html {
+        scroll-behavior: smooth;
     }
 
-    .alert-success {
-        background-color: #d4edda;
-    }
-
-    .show-alert {
+    /* FINAL PREMIUM HERO */
+    .home-hero-band {
         display: block;
+        background: linear-gradient(135deg, #ff9800 0%, #d67b00 100%);
+        margin-bottom: 48px;
+        border-radius: 0 0 34px 34px;
+        overflow: hidden;
+        box-shadow: 0 28px 52px rgba(74, 44, 15, 0.2);
     }
-</style>
 
-<script>
-    window.onload = function () {
-        var alertBox = document.querySelector('.alert');
-        if (alertBox) {
-            alertBox.classList.add('show-alert');
-            // Ẩn thông báo sau 2 giây
-            setTimeout(function () {
-                alertBox.classList.remove('show-alert');
-            }, 2000); // 2000 milliseconds = 2 seconds
+    .hero-section {
+        min-height: 600px;
+        max-width: 1440px;
+        padding: 70px 20px 44px;
+    }
+
+    .hero-background {
+        background:
+            radial-gradient(circle at 16% 88%, rgba(255,255,255,0.16), transparent 38%),
+            radial-gradient(circle at 82% 80%, rgba(255,255,255,0.14), transparent 40%),
+            radial-gradient(circle at 50% 20%, rgba(255,255,255,0.12), transparent 52%);
+        filter: blur(0.3px);
+    }
+
+    .hero-content {
+        max-width: 680px;
+        padding: 28px 30px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 24px 50px rgba(74, 44, 15, 0.18);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .hero-subtitle {
+        font-size: clamp(82px, 10vw, 132px);
+    }
+
+    .hero-btn {
+        min-width: 220px;
+    }
+
+    .hero-food-img {
+        border-radius: 26px;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-img-1 { width: 168px; height: 168px; }
+    .hero-img-2 { width: 132px; height: 132px; }
+    .hero-img-3 { width: 146px; height: 146px; }
+    .hero-img-4 { width: 218px; height: 176px; border-radius: 26px; }
+    .hero-img-5 { width: 152px; height: 152px; }
+    .hero-img-6 { width: 132px; height: 132px; }
+
+    @@media (max-width: 768px) {
+        .hero-content {
+            padding: 20px 18px;
+            border-radius: 22px;
         }
-    };
-</script>
+
+        .hero-btn {
+            min-width: auto;
+        }
+    }
+</style> *@

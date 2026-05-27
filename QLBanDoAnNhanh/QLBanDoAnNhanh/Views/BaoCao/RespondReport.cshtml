@@ -1,0 +1,38 @@
+﻿@model QLBanDoAnNhanh.Models.BaoCaoNguoiDung
+
+@{
+    ViewData["Title"] = "Phản Hồi Báo Cáo";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+<h2>Phản Hồi Báo Cáo</h2>
+
+<div>
+    <h4>Chi Tiết Báo Cáo</h4>
+    <p><strong>Người Dùng:</strong> @Model.NguoiDung?.Username</p>
+    <p><strong>Ngày Tạo:</strong> @Model.NgayTao?.ToString("dd/MM/yyyy")</p>
+    <p><strong>Nội Dung Báo Cáo:</strong> @(Model.PhanHoiBaoCaos?.FirstOrDefault()?.NoiDung ?? "Không có nội dung báo cáo.")</p>
+
+    <h5>Phản Hồi Báo Cáo:</h5>
+    @if (Model.PhanHoiBaoCaos != null && Model.PhanHoiBaoCaos.Any())
+    {
+        foreach (var feedback in Model.PhanHoiBaoCaos)
+        {
+            <p><strong>@feedback.MaNguoiDungNavigation?.Username:</strong> @feedback.NoiDung</p>
+            <p><em>@feedback.NgayPhanHoi?.ToString("dd/MM/yyyy HH:mm")</em></p>
+        }
+    }
+    else
+    {
+        <p>Không có phản hồi nào.</p>
+    }
+</div>
+
+<form asp-action="RespondReport" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="responseMessage">Nội Dung Phản Hồi</label>
+        <textarea id="responseMessage" name="responseMessage" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Gửi Phản Hồi</button>
+</form>

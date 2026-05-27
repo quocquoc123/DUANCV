@@ -31,7 +31,18 @@
         </div>
     </div>
     <br>
-
+<script>
+    window.onload = function () {
+        var alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.classList.add('show-alert');
+            // Ẩn thông báo sau 2 giây
+            setTimeout(function () {
+                alertBox.classList.remove('show-alert');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        }
+    };
+</script>
     <style>
             .product-container {
                 display: flex;
@@ -175,7 +186,7 @@
         }
 
         form button {
-            background-color: #007bff;
+        background-color: #f2b633;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -186,7 +197,7 @@
         }
 
             form button:hover {
-            background-color: #0056b3;
+            background-color: #c28500;
             }
     /* Đảo ngược thứ tự sao */
     .rating {
@@ -277,7 +288,7 @@
 
             <!-- Rating form -->
 
-            <div style="width:375px">
+            <div style="width:350px">
 
                 <!-- Form đánh giá số sao -->
                 <form asp-action="AddAndUpdateRating" asp-controller="SanPhams" method="post">
@@ -358,15 +369,3 @@
             <button type="submit" class="btn btn-primary">Gửi bình luận</button>
         }
     </div>
-<script>
-    window.onload = function () {
-        var alertBox = document.querySelector('.alert');
-        if (alertBox) {
-            alertBox.classList.add('show-alert');
-            // Ẩn thông báo sau 2 giây
-            setTimeout(function () {
-                alertBox.classList.remove('show-alert');
-            }, 2000); // 2000 milliseconds = 2 seconds
-        }
-    };
-</script>

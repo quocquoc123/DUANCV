@@ -4,337 +4,11 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Website bán đồ ăn</title>
-    <link rel="stylesheet" href="~/Scripts/Css/TrangChuStyle.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-layout.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.13/signalr.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: white;
-            padding: 10px 0;
-            border-bottom: 1px solid #e7e7e7;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-around;
-            padding: 0 20px;
-        }
-
-        .contact, .account-lang {
-            display: flex;
-            align-items: center;
-            float: right;
-        }
-
-            .contact p, .account-lang a {
-                text-decoration: none;
-                color: #333;
-            }
-
-        .logo-search {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            width: 100px;
-        }
-
-        .search-cart {
-            display: flex;
-            align-items: center;
-        }
-
-            .search-cart input {
-                padding: 5px;
-                margin-right: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-
-            .search-cart .cart {
-                text-decoration: none;
-                color: #333;
-            }
-
-        nav {
-            background-color: #f2b633;
-            padding: 10px 0;
-        }
-
-            nav ul {
-                list-style: none;
-                display: flex;
-                justify-content: center;
-                margin: 0;
-                padding: 0;
-            }
-
-                nav ul li {
-                    margin: 0 15px;
-                }
-
-                    nav ul li a {
-                        text-decoration: none;
-                        color: white;
-                        font-weight: bold;
-                    }
-
-                    nav ul li a:hover {
-                        text-decoration: none;
-                        color: black;
-                        font-weight: bold;
-                    }
-
-        .featured-images {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-            .featured-images img {
-                width: 100%;
-                margin-right: 10px;
-            }
-
-        .side-images {
-            float: right;
-            display: flex;
-            flex-direction: column;
-        }
-
-            .side-images img {
-                width: 300px;
-                margin-bottom: 10px;
-            }
-
-        .brands, .new-products, .featured-products {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .brands {
-            display: flex;
-            justify-content: space-between;
-        }
-
-            .brands .brand {
-                flex: 1;
-                padding: 0 10px;
-            }
-
-                .brands .brand img {
-                    width: 350px;
-                }
-
-        .product-list {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .product {
-            width: 23%;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-            .product img {
-                width: 100%;
-            }
-
-       /* Footer Styles */
-.footer {
-    background-color: #333;
-    color: #fff;
-    padding: 40px 0;
-}
-
-.footer h5 {
-    font-size: 16px;
-    color: #fff;
-    margin-bottom: 20px;
-}
-
-.footer ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-.footer ul li {
-    margin-bottom: 10px;
-}
-
-.footer ul li a {
-    color: #ddd;
-    text-decoration: none;
-}
-
-.footer ul li a:hover {
-    color: #fff;
-}
-
-.footer .store-logo {
-    width: 40px;
-    margin-right: 10px;
-    border-radius:8px;
-    transform: translateY(-20px);
-}
-
-.footer p {
-    margin: 0;
-    color: #ddd;
-}
-
-.social-icons a {
-    font-size: 20px;
-    color: #ddd;
-    margin: 0 10px;
-}
-
-
-.social-icons a:hover {
-    color: #fff;
-}
-
-.footer .container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.footer .row {
-    display: flex;
-    justify-content: space-between;
-}
-
-.footer-bottom {
-    border-top: 1px solid #444;
-    padding-top: 20px;
-    text-align: center;
-    color: #ddd;
-}
-
-
-
-        /* Điều chỉnh bố cục của form tìm kiếm */
-        .form-inline {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        /* Điều chỉnh cho ô nhập liệu */
-        #searchTerm.form-control {
-            width: 200px;
-            padding: 5px 10px;
-            font-size: 14px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-            /* Hiệu ứng khi focus vào ô nhập liệu */
-            #searchTerm.form-control:focus {
-                border-color: #f2b633;
-                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-                outline: none;
-            }
-
-        /* Điều chỉnh cho nút tìm kiếm */
-        #searchButton.btn-primary {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            background-color: #f2b633;
-            border: none;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-            /* Hiệu ứng khi hover nút tìm kiếm */
-            #searchButton.btn-primary:hover {
-                background-color: #c28500;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            }
-
-        /* Khoảng cách giữa icon và text */
-        #searchButton i {
-            margin-right: 5px;
-        }
-
-
-        .social-icons a {
-            font-size: 20px; /* Kích thước của các biểu tượng */
-            color: #ddd; /* Màu sắc ban đầu */
-            margin: 0 10px; /* Khoảng cách giữa các biểu tượng */
-        }
-
-            .social-icons a:hover {
-                color: #fff; /* Đổi màu khi hover */
-            }
-
-        .cart-count {
-            position: absolute;
-            top: -10px;
-            right: -20px;
-            background-color: red;
-            color: white;
-            font-weight: bold;
-            border-radius: 50%;
-            padding: 2px 4px;
-            font-size: 12px;
-            min-width: 25px;
-            text-align: center;
-        }
-
-        .order-history {
-            display: none; 
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ccc;
-            z-index: 1;
-            margin-left: 30px; 
-            padding: 10px;
-            width: 135px; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .dropdown {
-            position: relative; 
-        }
-
-            .dropdown:hover .order-history {
-                display: block; 
-            }
-
-        
-        .order-history ul {
-            list-style-type: none; 
-            padding: 0; 
-            margin: 0; 
-        }
-
-        .order-history li {
-            padding: 5px 0; 
-        }
-
-            .order-history li a {
-                text-decoration: none; 
-                color: black; 
-            }
-
-                .order-history li a:hover {
-                    text-decoration: underline; 
-                }
-        
-    </style>
 </head>
 @RenderSection("Scripts", required: false)
 <body>
@@ -345,81 +19,89 @@
             @TempData["SuccessMessage"]
         </div>
     }
-    <header style="width:1400px;margin:auto">
-        <div class="top-bar" style="display:flex;">
-            <div style="float:left">
-                <span class="contact" style="font-weight: bold">Zalo 0123244566</span>
-            </div>
-            <div class="account-lang" style="float:left">
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="top-bar">
+                <div class="top-left">
+                    <span class="contact">Zalo 0123244566</span>
+                    <span class="header-badge" aria-label="Giao nhanh trong 30 phút">
+                        <span class="badge-icon">⚡</span> Giao nhanh 30p
+                    </span>
+                </div>
+                <div class="account-lang">
 
-                <a style="padding-left:15px">
+                    <a style="padding-left:15px">
 
-                   @*  @if (Session["Email"] == null)
+                        @*  @if (Session["Email"] == null)
                     { *@
-                       @*  @Html.ActionLink("Tài Khoản", "Index", "LoginUser") *@
+                        @*  @Html.ActionLink("Tài Khoản", "Index", "LoginUser") *@
                     @* } *@
-                   @*  else
+                        @*  else
                     {
                         <a href="@Url.Action("UserDetails", "LoginUser")"><text>Hello</text> @Session["Email"]</a>
                         <span style="padding-left:15px">@Html.ActionLink("Đăng Xuất", "LogOutUser", "LoginUser")</span>
                     } *@
-                </a>
-
-                <div style="position: relative; display: inline-block;">
-                    <a href="@Url.Action("Index", "GioHangs")">
-                        <img src="@Url.Content("~/images/cart.jpg")" id="cart" height="30" width="30" />
-                        <span class="cart-count" style="position: absolute; top: -8px; right: -20px; background-color: red; color: white; border-radius: 50%; padding: 3px;">
-                            @(ViewBag.CartItemCount ?? 0)
-                        </span>
                     </a>
-                   
-                </div>
-                <div class="dropdown">
-                    <a style="margin-left:30px" href="/user/Profile">
-                        <img src="/images/acount.png" alt="Đăng nhập" style="height: 30px; width: 30px;">
-                    </a>
-                    <div class="order-history">
-                        <a href="@Url.Action("OrderHistory", "GioHangs")">Lịch Sử Đơn Hàng</a>
-                        <a href="@Url.Action("DangXuat", "User")">Đăng Xuất</a>
+                    <div style="position: relative; display: inline-block;">
+                        <a href="@Url.Action("Index", "GioHangs")">
+                            <img src="@Url.Content("~/images/cart.jpg")" id="cart" height="30" width="30" />
+                            <span class="cart-count" style="position: absolute; top: -8px; right: -20px; background-color: red; color: white; border-radius: 50%; padding: 3px;">
+                                @(Context.Session.GetInt32("CartItemCount") ?? 0)
+                            </span>
+                        </a>
 
                     </div>
-                </div>
-               
-            </div>
-        </div>
-        <hr />
-        <div class="logo-search">
-            <a href="@Url.Action("TrangChu", "SanPhams")">
-                <img src="~/images/logo.jpg" alt="Foot Store Logo" class="logo">
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="@Url.Action("TrangChu", "SanPhams")">Trang chủ</a></li>
-                    <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "THUCDON" }, null)">Thực đơn</a></li>
-                    <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "NUOCUONG" }, null)">Nước uống</a></li>
-                    <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "BESTSELLER" }, null)">Best seller</a></li>
-                    <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "KHUYENMAI" }, null)">Khuyến mãi</a></li>
-                    <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "DOANCAY" }, null)">Đồ ăn cay</a></li>
-                    <li><a href="@Url.Action("Chat", "Chat")">Chat bot</a></li>
-                </ul>
-            </nav>
-            <div class="col-6 text-right">
-                <form method="GET" action="@Url.Action("Search", "SanPhams")" class="form-inline d-inline-block">
-                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm sản phẩm">
-                    <button class="btn btn-primary" id="searchButton" type="submit">
-                        <i class="fas fa-search"></i> Tìm kiếm
-                    </button>
-                </form>
-            </div>
-        </div>
-        <hr />
+                    <div class="dropdown">
+                        <a style="margin-left:30px" href="/user/Profile">
+                            <img src="/images/acount.png" alt="Đăng nhập" style="height: 30px; width: 30px;">
+                        </a>
+                        <div class="order-history">
+                            <a href="@Url.Action("OrderHistory", "GioHangs")">Lịch Sử Đơn Hàng</a>
+                            <a href="@Url.Action("DangXuat", "User")">Đăng Xuất</a>
 
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="logo-search">
+                <a href="@Url.Action("TrangChu", "SanPhams")" class="brand">
+                    <img src="~/images/logo.jpg" alt="Foot Store Logo" class="logo">
+                    <div class="brand-meta">
+                        <div class="brand-title">Food Fast</div>
+                        <div class="brand-subtitle">Ăn nhanh - Giao gọn</div>
+                    </div>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="@Url.Action("TrangChu", "SanPhams")">Trang chủ</a></li>
+                        <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "THUCDON" }, null)">Thực đơn</a></li>
+                        <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "NUOCUONG" }, null)">Nước uống</a></li>
+                        <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "BESTSELLER" }, null)">Best seller</a></li>
+                        <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "KHUYENMAI" }, null)">Khuyến mãi</a></li>
+                        <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "DOANCAY" }, null)">Đồ ăn cay</a></li>
+                    </ul>
+                </nav>
+                <div class="col-6 text-right">
+                    <form method="GET" action="@Url.Action("Search", "SanPhams")" class="form-inline d-inline-block">
+                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm sản phẩm">
+                        <button class="btn btn-primary" id="searchButton" type="submit">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </header>
 
     <div>
         @RenderBody()
     </div>
-
+    <div id="chatBubble" onclick="toggleChat()">
+        <a asp-controller="BaoCaoUser" asp-action="SubmitFeedback">
+        <img src="~/images/chattt.jpg" alt="Chat Icon" />
+    </a>
+    </div>
     <footer class="footer">
         <div class="container">
             <div class="row">
@@ -493,6 +175,18 @@
     </footer>
 
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateCartCount() {
+            $.get("/GioHang/GetCartItemCount", function (data) {
+                $("#cart-count").text(data);
+            });
+        }
+
+        $(document).ready(function () {
+            updateCartCount();
+        });
+    </script>
 
 </body>
 </html>

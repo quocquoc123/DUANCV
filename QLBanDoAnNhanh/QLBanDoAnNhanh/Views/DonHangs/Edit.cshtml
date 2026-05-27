@@ -47,10 +47,27 @@
     <div class="form-group">
         <label>Trạng Thái</label>
         <select class="form-control" asp-for="TrangThai">
-            <option value="Chưa Giao">Chưa Giao</option>
-            <option value="Chưa Giao">Đang giao</option>
-            <option value="Đã Giao">Đã Giao</option>
-            <option value="Đã Hủy">Đã Hủy</option>
+            @if (Model.TrangThai == "Chưa Giao" && Model.TrangThai != "Đang xử lý" && Model.TrangThai != "Mới")
+            {
+                <option value="Chưa Giao" selected>Chưa Giao</option>
+                <option value="Đang giao">Đang giao</option>
+                <option value="Đã Hủy">Đã Hủy</option>
+            }
+          
+            else if (Model.TrangThai == "Đang giao")
+            {
+                <option value="Đang giao"selected>Đang giao</option>
+                <option value="Đã Giao">Đã Giao</option>
+            }
+            else if (Model.TrangThai == "Đã Giao")
+            {
+                <option value="Đã Giao" selected>Đã Giao</option>
+            }
+            else if (Model.TrangThai == "Đã Hủy")
+            {
+                <option value="Đã Hủy" selected>Đã Hủy</option>
+
+            }
         </select>
     </div>
 

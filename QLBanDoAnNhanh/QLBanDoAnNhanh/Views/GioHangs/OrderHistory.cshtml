@@ -2,57 +2,103 @@
 
 <style>
     body {
-        font-family: Arial, sans-serif; 
-        background-color: #f8f9fa; 
-        margin: 20px; 
+        font-family: 'Poppins', Arial, sans-serif;
+        background-color: #f3f4f6;
+        margin: 0;
+        padding: 20px;
     }
 
     h2 {
-        width:1400px;
-        color: #343a40;
-        margin: auto;
+        color: #2c3e50;
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .table-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .table {
-        width: 1400px; 
-        border-collapse: collapse; 
-        margin:auto; 
+        width: 100%;
+        border-collapse: collapse;
     }
 
-        .table th, .table td {
-            padding: 12px; 
-            text-align: left; 
-            border: 1px solid #dee2e6; 
-        }
-
-        .table th {
-            background-color: #007bff;
-            color: white; 
-        }
-
-        .table tr:nth-child(even) {
-            background-color: #f2f2f2; 
-        }
-
-        .table tr:hover {
-            background-color: #e9ecef; 
-        }
-
-    a {
-        color: #007bff; 
-        text-decoration: none; 
+    .table th, .table td {
+        padding: 16px 12px;
+        text-align: left;
     }
 
-        a:hover {
-            text-decoration: underline;
-        }
-
-    strong {
-        color: #343a40; 
+    .table th {
+        background-color: #3498db;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 0.05em;
     }
 
+    .table td {
+        font-size: 14px;
+        color: #2c3e50;
+        border-bottom: 1px solid #e9ecef;
+    }
 
+    .table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1;
+        transform: scale(1.005);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .table td a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .table td a:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    .table td a.cancel-link {
+        color: #e74c3c;
+        font-weight: 600;
+        transition: color 0.3s, transform 0.2s;
+    }
+
+    .table td a.cancel-link:hover {
+        color: #c0392b;
+        transform: scale(1.1);
+    }
+
+    .table td span {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .empty-message {
+        text-align: center;
+        font-size: 16px;
+        color: #7f8c8d;
+        margin: 20px 0;
+    }
+
+    /* Responsive Design */
+   
 </style>
+
 <br />
 <h2>Lịch Sử Đơn Hàng</h2>
 <br />
@@ -63,6 +109,8 @@
 }
 else
 {
+    <div class="table-container">
+
     <table class="table">
         <thead>
             <tr>
@@ -84,9 +132,12 @@ else
                         <a href="@Url.Action("OrderDetails", "GioHangs", new { maDh = donHang.MaDh })">Xem Chi Tiết</a>
                     </td>
                     <td>
-                        @if (donHang.TrangThai != "Đã hủy") 
-                        {
+                        @if (donHang.TrangThai != "Đã Hủy")
+                        {   
                             @if (donHang.TrangThai == "Đã Giao")
+                            {
+                            }
+                            @if (donHang.TrangThai == "Đang giao")
                             {
                             }
                             else
@@ -105,4 +156,5 @@ else
             }
         </tbody>
     </table>
+    </div>
 }

@@ -2171,3 +2171,42 @@ D:\New folder (3)\New folder (3)\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\ob
 D:\New folder (3)\New folder (3)\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\QLBanDoAnNhanh.pdb
 D:\New folder (3)\New folder (3)\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\QLBanDoAnNhanh.genruntimeconfig.cache
 D:\New folder (3)\New folder (3)\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\ref\QLBanDoAnNhanh.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\libman.json
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\DinkToPdf.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Google.Apis.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Google.Apis.Auth.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Google.Apis.Core.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Google.Apis.Gmail.v1.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.bouncy-castle-adapter.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.commons.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.barcodes.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.forms.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.io.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.kernel.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.layout.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.pdfa.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.sign.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.styledxmlparser.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itext.svg.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\itextsharp.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\MailKit.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Microsoft.DotNet.PlatformAbstractions.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Microsoft.Extensions.Http.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\MimeKit.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\PayPal.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\PayPalCheckoutSdk.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\PayPalHttp-Dotnet.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\Pdf2Text.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\BouncyCastle.Crypto.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\crypto.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\System.Management.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Management.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\OpenSSL.PrivateKeyDecoder.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\OpenSSL.X509Certificate2.Provider.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\CloudrailSI.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\PayPalCoreSDK.dll
+C:\Users\Admin\Desktop\QLBanDoAnNhanh\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\RestSharp.dll

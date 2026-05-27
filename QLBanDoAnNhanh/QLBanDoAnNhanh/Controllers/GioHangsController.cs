@@ -8,12 +8,34 @@
     using QLBanDoAnNhanh.Models;
     using DinkToPdf;
     using DinkToPdf.Contracts;
-
-    namespace QLBanDoAnNhanh.Controllers
+    using PayPalCheckoutSdk.Core;
+    using PayPalCheckoutSdk.Orders;
+    using QLBanDoAnNhanh.Services;
+namespace QLBanDoAnNhanh.Controllers
     {
     public class GioHangsController : Controller
+
     {
+        private readonly PayPalService _payPalService;
+
         private readonly QlbanDoAnNhanh3Context _context;
+
+       
+
+        public GioHangsController(QlbanDoAnNhanh3Context context, PayPalService payPalService)
+        {
+            _context = context;
+
+            _payPalService = payPalService;
+        }
+
+        // Tính tổng số sản phẩm trong giỏ hàng và cập nhật ViewBag
+        private void UpdateCartItemCount(GioHang gioHang)
+        {
+            int count = gioHang?.ChiTietGioHangs?.Sum(ct => ct.SoLuongSp ?? 0) ?? 0;
+            HttpContext.Session.SetInt32("CartItemCount", count); // Lưu vào session
+        }
+
         private GioHang GetGioHangFromSession()
         {
             var gioHang = HttpContext.Session.GetObjectFromJson<GioHang>("GioHang");
@@ -23,14 +45,6 @@
             }
             return gioHang;
         }
-
-        // Tính tổng số sản phẩm trong giỏ hàng và cập nhật ViewBag
-        private void UpdateCartItemCount(GioHang gioHang)
-        {
-            ViewBag.CartItemCount = gioHang.ChiTietGioHangs.Sum(ct => ct.SoLuongSp);
-
-        }
-
         // Lưu giỏ hàng vào session
         private void SaveGioHangToSession(GioHang gioHang)
         {
@@ -103,9 +117,9 @@
         // Hiển thị giỏ hàng
         public IActionResult Index()
         {
-            var gioHang = GetGioHangFromSession();
-            UpdateCartItemCount(gioHang);
-            return View(gioHang); // Trả về View để hiển thị giỏ hàng
+            var gioHang = GetGioHangFromSession() ?? new GioHang();
+            UpdateCartItemCount(gioHang); // Cập nhật số lượng giỏ hàng
+            return View(gioHang);
         }
 
         // Xóa sản phẩm khỏi giỏ hàng
@@ -240,6 +254,11 @@
 
             return RedirectToAction("TrangChu", "SanPhams");
         }
+
+
+
+
+
         // Phương thức lấy trạng thái đơn hàng từ database
         private string GetOrderStatusFromDatabase(QlbanDoAnNhanh3Context context, string username)
         {
@@ -247,7 +266,7 @@
             var hasPreviousOrders = context.DonHangs.Any(d => d.Username == username);
 
             // Nếu có đơn hàng trước đó thì đặt là "Đang xử lý", ngược lại là "Mới"
-            return hasPreviousOrders ? "Đang xử lý" : "Mới";
+            return hasPreviousOrders ? "Chưa Giao" : "Chưa Giao";
         }
         // Phương thức hiển thị chi tiết đơn hàng
 
@@ -297,9 +316,11 @@
         {
             using (var context = new QlbanDoAnNhanh3Context())
             {
-                // Tìm đơn hàng theo mã đơn hàng
-                var donHang = context.DonHangs.FirstOrDefault(dh => dh.MaDh == maDh);
-                
+                // Tìm đơn hàng theo mã đơn hàng và bao gồm ChiTietDonHangs
+                var donHang = context.DonHangs
+                    .Include(dh => dh.ChiTietDonHangs)
+                    .FirstOrDefault(dh => dh.MaDh == maDh);
+
                 if (donHang == null)
                 {
                     TempData["Message"] = "Không tìm thấy đơn hàng để hủy!";
@@ -307,7 +328,7 @@
                 }
 
                 // Cập nhật trạng thái đơn hàng
-                donHang.TrangThai = "Đã hủy"; // Hoặc cập nhật thêm thuộc tính IsCanceled nếu có
+                donHang.TrangThai = "Đã Hủy";
                 context.SaveChanges();
 
                 // Cập nhật lại số lượng sản phẩm trong kho
@@ -320,12 +341,119 @@
                     }
                 }
 
-                context.SaveChanges();
+                context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
+
                 TempData["Message"] = "Đơn hàng đã được hủy thành công.";
                 return RedirectToAction("OrderHistory"); // Quay lại lịch sử đơn hàng
             }
         }
 
-       
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string trangThai)
+        {
+            // Kiểm tra xem người dùng đã đăng nhập hay chưa
+            var username = HttpContext.Session.GetString("userLogin");
+            if (string.IsNullOrEmpty(username))
+            {
+                TempData["Message"] = "Vui lòng đăng nhập trước khi thanh toán!";
+                return RedirectToAction("Login", "User"); // Điều hướng đến trang đăng nhập
+            }
+
+            var gioHang = GetGioHangFromSession(); // Lấy giỏ hàng từ session
+            if (!gioHang.ChiTietGioHangs.Any())
+            {
+                TempData["Message"] = "Giỏ hàng của bạn đang trống!";
+                return RedirectToAction("Index");
+            }
+
+            // Tính toán tổng số tiền và số lượng từ giỏ hàng
+            decimal tongTien = (decimal)gioHang.ChiTietGioHangs.Sum(x => (double)(x.TongTien ?? 0));
+            int soLuong = (int)gioHang.ChiTietGioHangs.Sum(x => x.SoLuongSp);
+            var maDonHang = _context.DonHangs.Max(d => d.MaDh) + 1;
+            // Tạo đơn hàng mới
+            var donHang = new DonHang
+            {
+
+                MaDh = maDonHang,  // Set MaDh manually
+                Username = username,
+                MaKhuyenMai = "1", // Giả sử có mã khuyến mãi mặc định
+                Diachi = DiaChi,
+                TongTien = (double)amount,
+                SoLuong = soLuong,
+                TrangThai = "Chưa Giao",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                MaNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"))
+            };
+
+            // Thêm đơn hàng vào cơ sở dữ liệu
+            _context.DonHangs.Add(donHang);
+            await _context.SaveChangesAsync();
+
+            // Lưu chi tiết đơn hàng
+            foreach (var item in gioHang.ChiTietGioHangs)
+            {
+                var chiTiet = new ChiTietDonHang
+                {
+                    MaDh = donHang.MaDh, // Lấy MaDh từ đối tượng DonHang vừa tạo
+                    MaSp = (int)item.MaSp,
+                    SoLuong = (int)item.SoLuongSp,
+                    TongTien = (double)amount // Sử dụng kiểu decimal cho giá trị tiền
+                };
+
+                _context.ChiTietDonHangs.Add(chiTiet);
+            }
+
+            // Lưu các chi tiết đơn hàng vào cơ sở dữ liệu
+            await _context.SaveChangesAsync();
+
+            try
+            {
+                // Tạo đơn hàng trên PayPal và lấy liên kết phê duyệt
+                var approvalLink = await payPalService.CreateOrderAsync(tongTien, "USD");
+
+                if (!string.IsNullOrEmpty(approvalLink))
+                {
+                    return Redirect(approvalLink); // Chuyển hướng đến PayPal để duyệt thanh toán
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Thanh toán thất bại!";
+                return BadRequest($"Error creating payment: {ex.Message}");
+            }
+           
+            return BadRequest("Unable to create PayPal payment.");
+        }
+
+
+
+
+        public async Task<IActionResult> PaymentFailure()
+        {
+            // Kiểm tra thông tin từ PayPal
+            var token = HttpContext.Request.Query["token"].ToString();
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["Message"] = "Giao dịch đã bị huỷ. Vui lòng thử lại.";
+                return RedirectToAction("TrangChu", "SanPhams");
+            }
+
+            // Thực hiện kiểm tra với PayPal để xác nhận trạng thái
+            var capturedOrder = await _payPalService.CaptureOrderAsync(token);
+
+            if (capturedOrder.Status != "COMPLETED")
+            {
+                TempData["Message"] = "Giao dịch tạm hoãn. Bạn có thể thử lại.";
+            }
+            else
+            {
+                TempData["Message1"] = "Giao dịch đã hoàn tất!";
+            }
+
+            return RedirectToAction("TrangChu", "SanPhams");
+        }
+
     }
 }

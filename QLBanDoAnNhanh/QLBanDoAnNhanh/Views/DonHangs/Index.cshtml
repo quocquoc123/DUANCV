@@ -52,6 +52,7 @@
             <th>Địa Chỉ</th>
             <th>Tổng tiền</th>
             <th>Số lượng</th>
+            <th>Số điện thoại</th>
             <th>Trạng thái</th>
             <th>Ngày tạo</th>
             <th>Ngày cập nhật</th>
@@ -68,6 +69,7 @@
                 <td>@Html.DisplayFor(modelItem => item.Diachi)</td>
                 <td>@string.Format("{0:C}", item.TongTien)</td>
                 <td>@Html.DisplayFor(modelItem => item.SoLuong)</td>
+                <td>0352385133</td>
                 <td>@Html.DisplayFor(modelItem => item.TrangThai)</td>
                 <td>@item.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@item.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
@@ -77,11 +79,18 @@
                 <td>
                     @(item.MaNguoiDungNavigation != null ? item.MaNguoiDungNavigation.MaNguoiDung : "Không có")
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.MaDh" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Details" asp-route-id="@item.MaDh" class="btn btn-sm btn-info">Chi tiết</a>
-                    <a asp-action="Delete" asp-route-id="@item.MaDh" class="btn btn-sm btn-danger">Xóa</a>
-                </td>   
+             <td>
+
+    <a asp-action="Edit" asp-route-id="@item.MaDh" class="btn btn-sm btn-warning">Sửa</a>
+                    
+    <a asp-action="Details" asp-route-id="@item.MaDh" class="btn btn-sm btn-info">Chi tiết</a>
+
+    @if (item.TrangThai != "Đã Giao")
+    {
+        <a asp-action="Delete" asp-route-id="@item.MaDh" class="btn btn-sm btn-danger">Xóa</a>
+    }
+</td>
+
             </tr>
         }
     </tbody>

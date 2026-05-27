@@ -1,8 +1,111 @@
 ﻿@model QLBanDoAnNhanh.Models.NguoiDung
 @{
     ViewData["Title"] = "VerifyRecoveryCode";
+    Layout = null;
 }
+<style>
+    /* Định dạng tổng thể */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
 
+    /* Định dạng cho container chính */
+    .row {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    /* Định dạng cho thẻ card */
+    .card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+    }
+
+    .card-title {
+        font-weight: bold;
+    }
+
+    /* Định dạng cho nội dung card */
+    .card-body {
+        padding: 20px;
+    }
+
+    /* Định dạng cho nhãn */
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    /* Định dạng cho input */
+    .form-control {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+    /* Định dạng cho nút xác nhận */
+    .btn-success {
+        width: 100%;
+        padding: 10px;
+        background-color: #28a745;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+    /* Định dạng cho liên kết quay lại đăng nhập */
+    .btn-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+    /* Định dạng cho thông báo lỗi */
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    /* Định dạng cho thông báo lỗi xác thực */
+    .text-danger {
+        font-size: 14px;
+        color: red;
+        margin-top: 5px;
+    }
+
+</style>
 
 <div class="row justify-content-md-center">
     <div class="col-md-5">
@@ -12,7 +115,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Xác nhận mã khôi phục</div>
+                    @Html.Label("Mã khôi phục")
                 </div>
 
                 <div class="card-body">
@@ -22,7 +125,7 @@
                     }
 
                     <div class="form-group">
-                        @Html.Label("Mã khôi phục")
+                       
                         @Html.TextBox("recoveryCode", null, new { @class = "form-control", @placeholder = "Nhập mã khôi phục", required = "required" })
                         @Html.ValidationMessage("recoveryCode", "", new { @class = "text-danger" })
                     </div>

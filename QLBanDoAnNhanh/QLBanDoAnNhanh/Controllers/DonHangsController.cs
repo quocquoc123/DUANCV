@@ -82,6 +82,7 @@ public class DonHangsController : Controller
             return NotFound();
         }
 
+
         // Kiểm tra nếu Username bị bỏ trống
         if (string.IsNullOrEmpty(donHang.Username))
         {
@@ -234,9 +235,12 @@ public class DonHangsController : Controller
     {
         var doanhThu = _context.ChiTietDonHangs
             .Join(_context.DonHangs, cdh => cdh.MaDh, dh => dh.MaDh, (cdh, dh) => new { cdh, dh })
+            .Where(x => x.dh.TrangThai == "Đã Giao") // Chỉ lấy đơn hàng có trạng thái "Đã Giao"
             .Join(_context.SanPhams, combined => combined.cdh.MaSp, sp => sp.MaSp, (combined, sp) => new { combined.cdh, combined.dh, sp })
             .Join(_context.DanhMucs, combined => combined.sp.MaDm, dm => dm.MaDm, (combined, dm) => new
+
             {
+
                 DanhMuc = dm.TenDm,
                 DoanhThu = combined.cdh.TongTien
             })
@@ -250,6 +254,60 @@ public class DonHangsController : Controller
 
         return View(doanhThu);
     }
+    public IActionResult SoLuongDaBan()
+    {
+        var soLuongBan = _context.ChiTietDonHangs
+            .Join(_context.DonHangs, cdh => cdh.MaDh, dh => dh.MaDh, (cdh, dh) => new { cdh, dh })
+            .Where(x => x.dh.TrangThai == "Đã Giao")
+            .Join(_context.SanPhams, x => x.cdh.MaSp, sp => sp.MaSp, (x, sp) => new { x.cdh, sp })
+            .GroupBy(x => new { x.sp.MaSp, x.sp.TenSp })
+            .Select(g => new
+            {
+                MaSanPham = g.Key.MaSp,
+                TenSanPham = g.Key.TenSp,
+                SoLuongDaBan = g.Sum(x => x.cdh.SoLuong)
+            })
+            .OrderByDescending(x => x.SoLuongDaBan)
+            .ToList();
+
+        // Xác định số lượng bán cao nhất và thấp nhất
+        var maxSoLuongDaBan = soLuongBan.Max(x => x.SoLuongDaBan);
+        var minSoLuongDaBan = soLuongBan.Min(x => x.SoLuongDaBan);
+
+        ViewBag.TenSanPham = soLuongBan.Select(x => x.TenSanPham).ToArray();
+        ViewBag.SoLuongDaBan = soLuongBan.Select(x => x.SoLuongDaBan).ToArray();
+
+        var danhGiaSanPham = soLuongBan.Select(x => new
+        {
+            MaSanPham = x.MaSanPham,
+            TenSanPham = x.TenSanPham,
+            SoLuongDaBan = x.SoLuongDaBan,
+            NhanXet = GetProductComment(x.SoLuongDaBan, maxSoLuongDaBan, minSoLuongDaBan), // Truyền maxSoLuongDaBan và minSoLuongDaBan vào
+            Url = Url.Action("Details", "SanPhams", new { id = x.MaSanPham })
+        }).ToList();
+
+        ViewBag.DanhGiaSanPham = danhGiaSanPham;
+
+        return View();
+    }
+
+    // Hàm nhận xét sản phẩm, với maxSoLuongDaBan và minSoLuongDaBan để xác định sản phẩm bán chạy nhất và ít được mua nhất
+    private string GetProductComment(int soLuongDaBan, int maxSoLuongDaBan, int minSoLuongDaBan)
+    {
+        if (soLuongDaBan == maxSoLuongDaBan)
+            return "Sản phẩm bán chạy nhất!";
+        else if (soLuongDaBan == minSoLuongDaBan)
+            return "Sản phẩm ít được mua.";
+        else if (soLuongDaBan >= 50)
+            return "Sản phẩm khá phổ biến.";
+        else if (soLuongDaBan >= 20)
+            return "Sản phẩm đang được ưa chuộng.";
+        else
+            return "Sản phẩm ít được mua.";
+    }
+
+  
+
     public IActionResult ExportInvoiceToPdf(string maDh)
     {
 
@@ -269,23 +327,25 @@ public class DonHangsController : Controller
             using (var memoryStream = new MemoryStream())
             {
                 // Tạo một tài liệu PDF mới
+                // Đảm bảo rằng font được lưu trong thư mục wwwroot/Roboto
+                string fontPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Roboto", "Roboto-Regular.ttf"); 
                 PdfWriter writer = new PdfWriter(memoryStream);
                 PdfDocument pdf = new PdfDocument(writer);
                 Document document = new Document(pdf);
 
                 // Thêm tiêu đề
-                document.Add(new Paragraph("Hóa Đơn").SetFontSize(20).SetBold().SetTextAlignment(TextAlignment.CENTER));
-                document.Add(new Paragraph($"Mã đơn hàng: {order.MaDh}").SetTextAlignment(TextAlignment.LEFT));
-                document.Add(new Paragraph($"Khách hàng: {order.Username}").SetTextAlignment(TextAlignment.LEFT));
-                document.Add(new Paragraph($"Ngày đặt hàng: {order.CreatedAt}").SetTextAlignment(TextAlignment.LEFT));
+                document.Add(new Paragraph("Hoa Don").SetFontSize(20).SetBold().SetTextAlignment(TextAlignment.CENTER));
+                document.Add(new Paragraph($"Ma Don Hang: {order.MaDh}").SetTextAlignment(TextAlignment.LEFT));
+                document.Add(new Paragraph($"Khach Hang: {order.Username}").SetTextAlignment(TextAlignment.LEFT));
+                document.Add(new Paragraph($"Ngay Dat Hang: {order.CreatedAt}").SetTextAlignment(TextAlignment.LEFT));
                 document.Add(new Paragraph(" ")); // Thêm khoảng trắng
 
                 // Thêm tiêu đề bảng
                 Table table = new Table(UnitValue.CreatePercentArray(4)).UseAllAvailableWidth();
-                table.AddHeaderCell("Sản Phẩm");
-                table.AddHeaderCell("Số Lượng");
-                table.AddHeaderCell("Đơn Giá");
-                table.AddHeaderCell("Tổng Cộng");
+                table.AddHeaderCell("San Pham");
+                table.AddHeaderCell("So Luong");
+                table.AddHeaderCell("Don Gia");
+                table.AddHeaderCell("Tong Cong");
 
                 // Điền dữ liệu vào bảng với thông tin sản phẩm
                 foreach (var detail in order.ChiTietDonHangs)
@@ -297,7 +357,7 @@ public class DonHangsController : Controller
                 }
 
                 // Tổng tiền
-                table.AddCell(new Cell(1, 3).Add(new Paragraph("Tổng Tiền").SetBold()));
+                table.AddCell(new Cell(1, 3).Add(new Paragraph("Tong Tien").SetBold()));
                 table.AddCell(order.TongTien.ToString("C"));
 
                 document.Add(table); // Thêm bảng vào tài liệu

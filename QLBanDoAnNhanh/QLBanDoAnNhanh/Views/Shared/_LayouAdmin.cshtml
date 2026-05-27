@@ -73,7 +73,7 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="SanPhams" asp-action="Index">Sản Phẩm</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="DonHangs" asp-action="Index">Đơn Hàng</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="BinhLuans" asp-action="Index">Bình luận</a>
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="ChatAdmin">Yêu cầu ChatBot</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="BaoCao" asp-action="ManageReports">Phản hồi hỗ trợ</a>
                            
                     </div>
                 </div>
@@ -83,7 +83,13 @@
             <li class="nav-item">
                 <a class="nav-link" href="@Url.Action("DoanhThu", "DonHangs")">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Thống Kê</span>
+                    <span>Thống Kê doanh thu </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("SoLuongDaBan", "DonHangs")">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Thống Kê số lượng bán</span>
                 </a>
             </li>
 
