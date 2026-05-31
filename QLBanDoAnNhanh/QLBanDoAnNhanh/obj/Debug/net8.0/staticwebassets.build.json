@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "CY8McovVxv0hhv+FEWgJ6FFKJ5OyIZW7QYsw4oSssec=",
+  "Hash": "c3trfaW8cxmjGv95VMa8F8L7oCW0nY6rPT8VlS2h9mI=",
   "Source": "QLBanDoAnNhanh",
   "BasePath": "_content/QLBanDoAnNhanh",
   "Mode": "Default",
@@ -35640,6 +35640,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\z5681897645430_2dd02783d3038beb3dd4deaa21865ea7.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\cart-address.js",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "js/cart-address.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\cart-address.js"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\site.js",

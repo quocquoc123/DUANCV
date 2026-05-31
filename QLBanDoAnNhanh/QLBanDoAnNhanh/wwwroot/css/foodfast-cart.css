@@ -408,6 +408,106 @@
   box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.25);
 }
 
+/* ========== ADDRESS SECTION ========== */
+.address-section {
+  margin-bottom: 8px;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.address-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 16px;
+}
+
+.checkout-select-wrap {
+  position: relative;
+}
+
+.checkout-form .checkout-select {
+  width: 100%;
+  height: 50px;
+  padding: 0 40px 0 44px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  background: var(--cart-white);
+  color: var(--cart-brown);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border-color var(--cart-transition), box-shadow var(--cart-transition), opacity var(--cart-transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235A3825' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.checkout-form .checkout-select:focus {
+  outline: none;
+  border-color: var(--cart-gold);
+  box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.25);
+}
+
+.checkout-form .checkout-select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background-color: #f5f0e8;
+}
+
+.select-loading {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(90, 56, 37, 0.15);
+  border-top-color: var(--cart-gold);
+  border-radius: 50%;
+  animation: cartSpin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes cartSpin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.address-preview {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: var(--cart-brown);
+  line-height: 1.5;
+  border-left: 3px solid var(--cart-gold);
+}
+
+.address-preview::before {
+  content: "Địa chỉ giao hàng: ";
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  color: var(--cart-brown-light);
+}
+
+.address-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(198, 40, 40, 0.12);
+  border: 1px solid rgba(198, 40, 40, 0.35);
+  border-radius: 12px;
+  color: #ffcdd2;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
 .checkout-form .btn-checkout {
   width: 100%;
   height: 55px;

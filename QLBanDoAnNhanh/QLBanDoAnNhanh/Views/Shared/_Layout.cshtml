@@ -51,14 +51,14 @@
                         </a>
 
                     </div>
-                    <div class="dropdown">
-                        <a style="margin-left:30px" href="/user/Profile">
-                            <img src="/images/acount.png" alt="Đăng nhập" style="height: 30px; width: 30px;">
+                    <div class="dropdown account-dropdown">
+                        <a href="@Url.Action("Profile", "User")" class="account-trigger account-link" aria-label="Thông tin cá nhân">
+                            <img src="/images/acount.png" alt="Tài khoản" width="30" height="30">
                         </a>
-                        <div class="order-history">
-                            <a href="@Url.Action("OrderHistory", "GioHangs")">Lịch Sử Đơn Hàng</a>
-                            <a href="@Url.Action("DangXuat", "User")">Đăng Xuất</a>
-
+                        <div class="order-history" role="menu">
+                            <a href="@Url.Action("Profile", "User")" role="menuitem">Thông Tin Cá Nhân</a>
+                            <a href="@Url.Action("OrderHistory", "GioHangs")" role="menuitem">Lịch Sử Đơn Hàng</a>
+                            <a href="@Url.Action("DangXuat", "User")" role="menuitem">Đăng Xuất</a>
                         </div>
                     </div>
 

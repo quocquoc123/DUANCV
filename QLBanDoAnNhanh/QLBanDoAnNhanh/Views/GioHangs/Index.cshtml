@@ -84,7 +84,7 @@
                 <div class="cart-sidebar">
                     <div class="checkout-card">
                         <h2 class="checkout-card-title">Thông Tin Thanh Toán</h2>
-                        <form asp-action="Checkout" method="post" class="checkout-form">
+                        <form asp-action="Checkout" method="post" class="checkout-form" id="checkoutForm">
                             <div class="form-group">
                                 <label for="username">Họ tên</label>
                                 <div class="checkout-input-wrap">
@@ -94,19 +94,61 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="DiaChi">Địa chỉ</label>
-                                <div class="checkout-input-wrap">
-                                    <span class="checkout-input-icon">📍</span>
-                                    <input type="text" class="form-control" id="DiaChi" name="DiaChi" required />
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label for="Phone">Số điện thoại</label>
                                 <div class="checkout-input-wrap">
                                     <span class="checkout-input-icon">📞</span>
                                     <input type="text" class="form-control" id="Phone" name="Phone" required />
                                 </div>
+                            </div>
+
+                            <div class="address-section">
+                                <p class="address-section-title">📍 Địa chỉ giao hàng</p>
+
+                                <div class="form-group">
+                                    <label for="province">Tỉnh/Thành phố</label>
+                                    <div class="checkout-select-wrap">
+                                        <span class="checkout-input-icon">📍</span>
+                                        <select id="province" class="checkout-select" aria-label="Tỉnh Thành phố">
+                                            <option value="">Đang tải...</option>
+                                        </select>
+                                        <span class="select-loading" id="provinceLoading" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="district">Quận/Huyện</label>
+                                    <div class="checkout-select-wrap">
+                                        <span class="checkout-input-icon">📍</span>
+                                        <select id="district" class="checkout-select" disabled aria-label="Quận Huyện">
+                                            <option value="">-- Chọn Quận/Huyện --</option>
+                                        </select>
+                                        <span class="select-loading" id="districtLoading" hidden aria-hidden="true"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ward">Phường/Xã</label>
+                                    <div class="checkout-select-wrap">
+                                        <span class="checkout-input-icon">📍</span>
+                                        <select id="ward" class="checkout-select" disabled aria-label="Phường Xã">
+                                            <option value="">-- Chọn Phường/Xã --</option>
+                                        </select>
+                                        <span class="select-loading" id="wardLoading" hidden aria-hidden="true"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="streetAddress">Số nhà và tên đường</label>
+                                    <div class="checkout-input-wrap">
+                                        <span class="checkout-input-icon">🏠</span>
+                                        <input type="text" class="form-control" id="streetAddress" placeholder="VD: 123 Nguyễn Văn Nghi" required />
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="DiaChi" name="DiaChi" value="" />
+
+                                <div class="address-preview" id="addressPreview" hidden></div>
+                                <div class="address-error" id="addressError" role="alert" hidden></div>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-checkout">Thanh toán</button>
@@ -135,3 +177,7 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/cart-address.js" asp-append-version="true"></script>
+}
