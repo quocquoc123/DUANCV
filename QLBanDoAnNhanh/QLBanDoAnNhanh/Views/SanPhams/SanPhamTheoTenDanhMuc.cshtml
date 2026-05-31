@@ -1,92 +1,147 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham> 
+﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
 
 @{
     ViewData["Title"] = "Sản phẩm theo danh mục: " + ViewBag.TenDanhMuc;
+    var tenDanhMuc = ViewBag.TenDanhMuc as string ?? "";
+    var displayNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["THUCDON"] = "Thực Đơn",
+        ["NUOCUONG"] = "Nước Uống",
+        ["BESTSELLER"] = "Best Seller",
+        ["KHUYENMAI"] = "Khuyến Mãi",
+        ["DOANCAY"] = "Đồ Ăn Cay",
+        ["BURGER"] = "Burger",
+        ["GARAN"] = "Gà Rán",
+        ["GÀ RÁN"] = "Gà Rán",
+        ["COMBO"] = "Combo"
+    };
+    var categoryDescriptions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["THUCDON"] = "Burger, cơm, mì ý và các món chính thơm ngon mỗi ngày",
+        ["NUOCUONG"] = "Giải khát cùng trà, nước ngọt và đồ uống mát lạnh",
+        ["BESTSELLER"] = "Những món được khách hàng yêu thích và đặt nhiều nhất",
+        ["KHUYENMAI"] = "Ưu đãi hấp dẫn — thưởng thức ngon với giá tốt",
+        ["DOANCAY"] = "Hương vị cay nồng đậm đà dành cho tín đồ món cay",
+        ["BURGER"] = "Burger béo ngậy, thơm lừng — giao nhanh tận tay",
+        ["GARAN"] = "Gà rán giòn rụm, vàng ươm — ăn là mê",
+        ["COMBO"] = "Combo tiết kiệm — đủ món, no nê cả nhà"
+    };
+    var categoryTitle = displayNames.TryGetValue(tenDanhMuc, out var name) ? name : tenDanhMuc;
+    var categoryDesc = categoryDescriptions.TryGetValue(tenDanhMuc, out var desc)
+        ? desc
+        : $"Khám phá các món ngon trong danh mục {categoryTitle}";
+    var productList = Model?.ToList() ?? new List<QLBanDoAnNhanh.Models.SanPham>();
 }
 
-<h1 style="font-size:25px; width:1200px; margin:auto;">Danh Sách Sản Phẩm Theo Danh Mục: @ViewBag.TenDanhMuc</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-category.css" asp-append-version="true" />
+}
 
-<div class="row">
-    @foreach (var sanPham in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="@Url.Content(sanPham.HinhAnh1)" class="card-img-top" alt="Hình ảnh @sanPham.TenSp" />
-                <div class="card-body">
-                    <h5 class="card-title">@sanPham.TenSp</h5>
-                    <p class="card-text">@sanPham.GiaTien.ToString("C") VND</p>
-                    <p class="card-text">Thành Phần: @sanPham.ThanhPhan</p>
-                    <p class="card-text">Số lượng bán trong ngày: @sanPham.SlbanTrongNgay</p>
-                    <p class="card-text">Chi tiết: @sanPham.ChitietSp</p>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = sanPham.MaSp })" class="btn btn-primary">Mua Ngay</a>
-                </div>
+<div class="category-page">
+    <!-- Hero — cùng cấu trúc Trang Chủ -->
+    <div class="home-hero-band">
+        <div class="hero-section category-hero-section">
+            <div class="hero-background"></div>
+
+            <div class="hero-visual hero-visual-left">
+                <img src="@Url.Content("~/images/Burger-Flava.jpg")" alt="" class="hero-food-img hero-img-1">
+                <img src="@Url.Content("~/images/D-CBO-Bucket-2.jpg")" alt="" class="hero-food-img hero-img-2">
+                <img src="@Url.Content("~/images/P4-OR.jpg")" alt="" class="hero-food-img hero-img-3">
+            </div>
+
+            <div class="hero-content">
+                <nav class="category-breadcrumb" aria-label="Breadcrumb">
+                    <a href="@Url.Action("TrangChu", "SanPhams")">Trang chủ</a>
+                    <span class="separator">/</span>
+                    <span class="current">@categoryTitle</span>
+                </nav>
+                <h1 class="hero-title">Danh mục</h1>
+                <h2 class="hero-subtitle category-hero-name">@categoryTitle</h2>
+                <p class="hero-description">@categoryDesc</p>
+                @if (productList.Count > 0)
+                {
+                    <span class="category-count">@productList.Count sản phẩm</span>
+                }
+                <a href="#category-products" class="hero-btn">Xem Sản Phẩm</a>
+            </div>
+
+            <div class="hero-visual hero-visual-right">
+                <img src="@Url.Content("~/images/MI-Y-GA-VIEN.jpg")" alt="" class="hero-food-img hero-img-4">
+                <img src="@Url.Content("~/images/COM.jpg")" alt="" class="hero-food-img hero-img-5">
+                <img src="@Url.Content("~/images/MON AN NHE.jpg")" alt="" class="hero-food-img hero-img-6">
             </div>
         </div>
-    }
+    </div>
+
+    <!-- Promo — giống Trang Chủ -->
+    <div class="promo-section">
+        <div class="promo-box">
+            <i class="icon">⚡</i>
+            <h3>Giao Hàng Nhanh</h3>
+            <p>Giao trong 30 phút</p>
+        </div>
+        <div class="promo-box">
+            <i class="icon">✓</i>
+            <h3>Chất Lượng Đảm Bảo</h3>
+            <p>100% sản phẩm tươi mới</p>
+        </div>
+        <div class="promo-box">
+            <i class="icon">💳</i>
+            <h3>Thanh Toán Dễ Dàng</h3>
+            <p>Nhiều phương thức thanh toán</p>
+        </div>
+        <div class="promo-box">
+            <i class="icon">👥</i>
+            <h3>Hỗ Trợ 24/7</h3>
+            <p>Luôn sẵn sàng phục vụ</p>
+        </div>
+    </div>
+
+    <!-- Products — giống Trang Chủ -->
+    <div id="category-products" class="products-container">
+        <div class="section-header">
+            <h2>@categoryTitle</h2>
+            <p>@categoryDesc</p>
+        </div>
+
+        @if (productList.Count > 0)
+        {
+            <div class="products-grid">
+                @foreach (var product in productList)
+                {
+                    <div class="product-card">
+                        <div class="product-image-wrapper">
+                            <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
+                            @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
+                            {
+                                <div class="discount-badge">-@product.MaGiamGiaNavigation.GiaTri%</div>
+                            }
+                            <div class="product-overlay">
+                                <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">@product.TenSp</h3>
+                            <p class="product-price">@product.GiaTien.ToString("C") VND</p>
+                            <div class="product-description">
+                                <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
+                                <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>
+                            </div>
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="category-empty">
+                <div class="category-empty-icon">🍽️</div>
+                <h3>Chưa có sản phẩm</h3>
+                <p>Danh mục @categoryTitle hiện chưa có sản phẩm nào.</p>
+                <a href="@Url.Action("TrangChu", "SanPhams")" class="btn-back">Về Trang Chủ</a>
+            </div>
+        }
+    </div>
 </div>
-
-<style>
-    .row {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .col-md-4 {
-        flex: 1 0 300px; /* Minimum width 300px */
-        max-width: 300px; /* Ensures no item is larger than 300px */
-        display: flex;
-        justify-content: center;
-    }
-
-    .card {
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        overflow: hidden;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-        .card img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 10px; /* Thêm khoảng cách dưới ảnh */
-        }
-
-    .card-body {
-        padding: 20px;
-    }
-
-    .card-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .card-text {
-        font-size: 16px;
-        color: #555;
-        margin-bottom: 15px;
-        margin-top: 5px; /* Thêm khoảng cách trên cho văn bản */
-    }
-
-    .btn {
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 14px;
-        text-transform: uppercase;
-        text-decoration: none;
-    }
-
-        .btn:hover {
-            background-color: #0056b3;
-            color: #fff;
-        }
-</style>

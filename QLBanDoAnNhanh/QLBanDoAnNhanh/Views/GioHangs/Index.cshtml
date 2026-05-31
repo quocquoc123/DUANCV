@@ -1,232 +1,137 @@
 ﻿@model QLBanDoAnNhanh.Models.GioHang
 
-<h2 style="text-align:center; margin-bottom: 30px;">Giỏ Hàng</h2>
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+    var tongTien = Model.ChiTietGioHangs.Sum(x => x.TongTien);
+    var tongSoLuong = Model.ChiTietGioHangs.Sum(x => x.SoLuongSp);
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Hình sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ChiTietGioHangs)
+@section Styles {
+    <link rel="stylesheet" href="~/css/foodfast-cart.css" asp-append-version="true" />
+}
+
+<div class="cart-page">
+    <div class="cart-page-inner">
+        <h1 class="cart-title">Giỏ Hàng</h1>
+
+        @if (Model.ChiTietGioHangs != null && Model.ChiTietGioHangs.Any())
         {
-            <tr>
-                <td>@item.MaSpNavigation.TenSp</td>
-                <td>
-                    <img src="@item.MaSpNavigation.HinhAnh1" alt="Hình sản phẩm" />
-                </td>
-                <td>@String.Format("{0:0,0} VND", item.MaSpNavigation.GiaTien)</td>
-                <td>
-                    <form asp-action="UpdateCart" method="post" class="update-form">
-                        <input type="hidden" name="MaSp" value="@item.MaSp" />
-                        <input type="number" name="quantity" value="@item.SoLuongSp" min="1" />
-                        <button type="submit" class="btn btn-info">Cập nhật</button>
-                    </form>
-                </td>
-                <td>@String.Format("{0:0,0} VND", item.TongTien)</td>
-                <td>
-                    <a href="/GioHangs/RemoveFromCart?MaSp=@item.MaSp" class="btn btn-danger">Xóa</a>
-                </td>
-            </tr>
+            <div class="cart-layout">
+                <div class="cart-main">
+                    @foreach (var item in Model.ChiTietGioHangs)
+                    {
+                        <div class="cart-product-card">
+                            <div class="cart-product-image-wrap">
+                                <img class="cart-product-image" src="@Url.Content(item.MaSpNavigation.HinhAnh1)" alt="@item.MaSpNavigation.TenSp" />
+                            </div>
+
+                            <div class="cart-product-info">
+                                <h2 class="cart-product-name">@item.MaSpNavigation.TenSp</h2>
+
+                                <div class="cart-product-badges">
+                                    <span class="cart-badge">🚚 Free Delivery</span>
+                                    <span class="cart-badge">⚡ Fast Prep</span>
+                                </div>
+
+                                <form asp-action="UpdateCart" method="post" class="update-form" id="update-form-@item.MaSp">
+                                    <input type="hidden" name="MaSp" value="@item.MaSp" />
+                                    <span class="cart-qty-label">Số lượng:</span>
+                                    <div class="cart-qty-stepper">
+                                        <button type="button" class="cart-qty-btn" aria-label="Giảm số lượng" onclick="var f=document.getElementById('update-form-@item.MaSp');var q=f.querySelector('input[name=quantity]');var v=parseInt(q.value)||1;if(v>1){q.value=v-1;f.submit();}">−</button>
+                                        <input type="number" name="quantity" value="@item.SoLuongSp" min="1" />
+                                        <button type="button" class="cart-qty-btn" aria-label="Tăng số lượng" onclick="var f=document.getElementById('update-form-@item.MaSp');var q=f.querySelector('input[name=quantity]');q.stepUp();f.submit();">+</button>
+                                    </div>
+                                    <button type="submit" class="btn-update-hidden">Cập nhật</button>
+                                </form>
+                            </div>
+
+                            <div class="cart-product-price-col">
+                                <div>
+                                    <div class="cart-product-price">@String.Format("{0:0,0} VND", item.TongTien)</div>
+                                    <div class="cart-product-unit-price">@String.Format("{0:0,0} VND", item.MaSpNavigation.GiaTien) / sp</div>
+                                </div>
+                                <a href="/GioHangs/RemoveFromCart?MaSp=@item.MaSp" class="cart-delete-link">🗑 Xóa</a>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="cart-summary-card">
+                        <div class="cart-summary-rows">
+                            <div class="cart-summary-row">
+                                <span class="label">Tạm tính</span>
+                                <span class="value">@String.Format("{0:0,0} VND", tongTien)</span>
+                            </div>
+                            <div class="cart-summary-row">
+                                <span class="label">Phí vận chuyển</span>
+                                <span class="value">Miễn phí</span>
+                            </div>
+                            <div class="cart-summary-row">
+                                <span class="label">Giảm giá</span>
+                                <span class="value">0 VND</span>
+                            </div>
+                            <div class="cart-summary-row quantity-row">
+                                <span class="label">Tổng số lượng</span>
+                                <span class="value">@tongSoLuong</span>
+                            </div>
+                            <div class="cart-summary-row total">
+                                <span class="label">Tổng thanh toán</span>
+                                <span class="value">@String.Format("{0:0,0} VND", tongTien)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-sidebar">
+                    <div class="checkout-card">
+                        <h2 class="checkout-card-title">Thông Tin Thanh Toán</h2>
+                        <form asp-action="Checkout" method="post" class="checkout-form">
+                            <div class="form-group">
+                                <label for="username">Họ tên</label>
+                                <div class="checkout-input-wrap">
+                                    <span class="checkout-input-icon">👤</span>
+                                    <input type="text" class="form-control" id="username" name="username" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DiaChi">Địa chỉ</label>
+                                <div class="checkout-input-wrap">
+                                    <span class="checkout-input-icon">📍</span>
+                                    <input type="text" class="form-control" id="DiaChi" name="DiaChi" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Phone">Số điện thoại</label>
+                                <div class="checkout-input-wrap">
+                                    <span class="checkout-input-icon">📞</span>
+                                    <input type="text" class="form-control" id="Phone" name="Phone" required />
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-checkout">Thanh toán</button>
+                            <button asp-action="CreatePayment" asp-controller="GioHangs" type="submit" class="btn btn-primary btn-paypal">
+                                <span class="paypal-icon"><span class="pp-blue">Pay</span><span class="pp-light">Pal</span></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <p>Giỏ hàng của bạn đang trống.</p>
+                <a href="/SanPhams/TrangChu" class="btn-continue">Tiếp tục mua sắm</a>
+            </div>
         }
 
-        <!-- Dòng Tổng tiền -->
-        <tr class="summary-row">
-            <td colspan="4" style="text-align: left; font-weight: bold;">Tổng tiền:</td>
-            <td colspan="2">@String.Format("{0:0,0} VND", Model.ChiTietGioHangs.Sum(x => x.TongTien))</td>
-        </tr>
-
-        <!-- Dòng Tổng số lượng -->
-        <tr class="summary-row">
-            <td colspan="4" style="text-align: left; font-weight: bold;">Tổng số lượng:</td>
-            <td colspan="2">@Model.ChiTietGioHangs.Sum(x => x.SoLuongSp)</td>
-        </tr>
-
-        <!-- Form Checkout bên trong bảng -->
-        <tr class="form-row">
-            <td colspan="6">
-                <form asp-action="Checkout" method="post" class="checkout-form">
-                    <div class="form-group">
-                        <label for="username">Họ tên</label>
-                        <input type="text" class="form-control" id="username" name="username" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="DiaChi">Địa chỉ</label>
-                        <input type="text" class="form-control" id="DiaChi" name="DiaChi" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Phone">Số điện thoại</label>
-                        <input type="text" class="form-control" id="Phone" name="Phone" required />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Thanh toán</button>
-                    <button asp-action="CreatePayment" asp-controller="GioHangs" type="submit" class="btn btn-primary">Thanh toán Paypal</button>
-
-                </form>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-<div style="text-align:center; margin-top: 20px; margin-bottom:40px;">
-    <a href="/SanPhams/TrangChu" class="btn btn-success">Tiếp tục mua sắm</a>
+        @if (Model.ChiTietGioHangs != null && Model.ChiTietGioHangs.Any())
+        {
+            <div class="cart-continue">
+                <a href="/SanPhams/TrangChu" class="btn-continue">Tiếp tục mua sắm</a>
+            </div>
+        }
+    </div>
 </div>
-
-
-
-<style>
-    /* Căn chỉnh bảng */
-    /* Căn chỉnh bảng */
-    .table {
-        width: 80%;
-        margin: 20px auto;
-        border-collapse: collapse;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-        /* Tiêu đề bảng */
-        .table thead {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .table th, .table td {
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-        }
-
-    /* Hàng tóm tắt (Tổng tiền, Tổng số lượng) */
-    .summary-row {
-        background-color: #f1f1f1;
-        font-weight: bold;
-        font-size: 18px;
-    }
-
-        .summary-row td {
-            padding: 12px;
-            text-align: right;
-        }
-
-    /* Hình ảnh sản phẩm */
-    .table img {
-        width: 80px;
-        height: auto;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Nút và input trong form cập nhật */
-    .update-form input[type="number"] {
-        width: 60px;
-        padding: 5px;
-        margin-right: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        text-align: center;
-    }
-
-    .btn {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 4px;
-        font-weight: bold;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    /* Các màu sắc cho nút */
-    .btn-info {
-        background-color: #17a2b8;
-    }
-
-        .btn-info:hover {
-            background-color: #138496;
-         
-        }
-
-    .btn-danger {
-        background-color: #dc3545;
-    }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-           
-        }
-
-    .btn-success {
-        background-color: #28a745;
-    }
-
-        .btn-success:hover {
-            background-color: #218838;
-       
-        }
-
-    .btn-primary {
-        background-color: #007bff;
-    }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-           
-        }
-
-    /* CSS cho form checkout bên trong bảng */
-    .form-row {
-        background-color: #f9f9f9;
-    }
-
-    .checkout-form {
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-    }
-
-        .checkout-form .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .checkout-form label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .checkout-form input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .checkout-form button {
-            width: 100%;
-            padding: 12px 0;
-            font-size: 16px;
-            background-color: #f2b633;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-            .checkout-form button:hover {
-                background-color: #c28500;
-               
-            }
-
-</style>
