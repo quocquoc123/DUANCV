@@ -1,160 +1,97 @@
 ﻿@model IEnumerable<QLBanDoAnNhanh.Models.DonHang>
 
-<style>
-    body {
-        font-family: 'Poppins', Arial, sans-serif;
-        background-color: #f3f4f6;
-        margin: 0;
-        padding: 20px;
+@{
+    ViewData["Title"] = "Lịch Sử Đơn Hàng";
+    var orderList = Model?.ToList() ?? new List<QLBanDoAnNhanh.Models.DonHang>();
+
+    string GetStatusClass(string trangThai)
+    {
+        var s = trangThai?.Trim() ?? "";
+        if (s == "Đã Giao") return "status-delivered";
+        if (s.Equals("Đang giao", StringComparison.OrdinalIgnoreCase) || s == "Đang Giao") return "status-shipping";
+        if (s == "Đã Hủy") return "status-cancelled";
+        return "status-pending";
     }
-
-    h2 {
-        color: #2c3e50;
-        text-align: center;
-        font-size: 28px;
-        margin-bottom: 20px;
-        font-weight: 600;
-    }
-
-    .table-container {
-        width: 90%;
-        max-width: 1200px;
-        margin: 0 auto;
-        background-color: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table th, .table td {
-        padding: 16px 12px;
-        text-align: left;
-    }
-
-    .table th {
-        background-color: #3498db;
-        color: #fff;
-        text-transform: uppercase;
-        font-size: 14px;
-        letter-spacing: 0.05em;
-    }
-
-    .table td {
-        font-size: 14px;
-        color: #2c3e50;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .table tr:hover {
-        background-color: #f1f1f1;
-        transform: scale(1.005);
-        transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .table td a {
-        color: #3498db;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.3s ease;
-    }
-
-    .table td a:hover {
-        color: #2980b9;
-        text-decoration: underline;
-    }
-
-    .table td a.cancel-link {
-        color: #e74c3c;
-        font-weight: 600;
-        transition: color 0.3s, transform 0.2s;
-    }
-
-    .table td a.cancel-link:hover {
-        color: #c0392b;
-        transform: scale(1.1);
-    }
-
-    .table td span {
-        font-weight: bold;
-        font-size: 14px;
-    }
-
-    .empty-message {
-        text-align: center;
-        font-size: 16px;
-        color: #7f8c8d;
-        margin: 20px 0;
-    }
-
-    /* Responsive Design */
-   
-</style>
-
-<br />
-<h2>Lịch Sử Đơn Hàng</h2>
-<br />
-
-@if (!Model.Any())
-{
-    <p>Bạn chưa có đơn hàng nào.</p>
 }
-else
-{
-    <div class="table-container">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Mã Đơn Hàng</th>
-                <th>Tổng Tiền</th>
-                <th>Trạng Thái</th>
-                <th>Chi Tiết</th>
-                <th>Hủy Đơn</th> 
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var donHang in Model)
-            {
-                <tr>
-                    <td>@donHang.MaDh</td>
-                    <td>@donHang.TongTien.ToString("C")</td>
-                    <td>@donHang.TrangThai</td>
-                    <td>
-                        <a href="@Url.Action("OrderDetails", "GioHangs", new { maDh = donHang.MaDh })">Xem Chi Tiết</a>
-                    </td>
-                    <td>
-                        @if (donHang.TrangThai != "Đã Hủy")
-                        {   
-                            @if (donHang.TrangThai == "Đã Giao")
-                            {
-                            }
-                            @if (donHang.TrangThai == "Đang giao")
-                            {
-                            }
-                            else
-                            {
-                                <a href="@Url.Action("CancelOrder", "GioHangs", new { maDh = donHang.MaDh })" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">Hủy Đơn</a>
+@section Styles {
+    <link rel="stylesheet" href="~/css/foodfast-order-history.css" asp-append-version="true" />
+}
 
+<div class="order-history-page">
+    <div class="order-history-inner">
+        <header class="order-history-header">
+            <h1><span class="title-icon" aria-hidden="true">📦</span> Lịch Sử Đơn Hàng</h1>
+        </header>
+
+        @if (!orderList.Any())
+        {
+            <div class="order-empty">
+                <div class="order-empty-icon">📦</div>
+                <h3>Bạn chưa có đơn hàng nào</h3>
+                <p>Hãy khám phá các món ăn hấp dẫn và đặt đơn đầu tiên của bạn.</p>
+                <a href="@Url.Action("TrangChu", "SanPhams")" class="btn-order-now">Đặt Món Ngay</a>
+            </div>
+        }
+        else
+        {
+            <div class="order-grid">
+                @foreach (var donHang in orderList)
+                {
+                    var firstItem = donHang.ChiTietDonHangs?.FirstOrDefault();
+                    var productImage = firstItem?.MaSpNavigation?.HinhAnh1;
+                    var rebuyUrl = firstItem != null
+                        ? Url.Action("ChiTietSanPham", "SanPhams", new { id = firstItem.MaSp })
+                        : Url.Action("TrangChu", "SanPhams");
+
+                    <article class="order-card">
+                        <div class="order-card-top">
+                            <div class="order-card-image-wrap">
+                                @if (!string.IsNullOrEmpty(productImage))
+                                {
+                                    <img src="@Url.Content(productImage)" alt="Sản phẩm đơn hàng" class="order-card-image" />
+                                }
+                                else
+                                {
+                                    <div class="order-card-image-placeholder">🍔</div>
+                                }
+                            </div>
+                            <div class="order-card-info">
+                                <div class="order-id">
+                                    <span class="order-id-label">Mã đơn hàng</span>
+                                    @donHang.MaDh
+                                </div>
+                                <div class="order-date">
+                                    @(donHang.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")
+                                </div>
+                                <div class="order-total">@donHang.TongTien.ToString("N0") VND</div>
+                            </div>
+                        </div>
+
+                        <div class="order-card-meta">
+                            <span class="status-badge @GetStatusClass(donHang.TrangThai)">@donHang.TrangThai</span>
+                        </div>
+
+                        <div class="order-actions">
+                            <a href="@Url.Action("OrderDetails", "GioHangs", new { maDh = donHang.MaDh })" class="order-btn order-btn-detail">Xem Chi Tiết</a>
+                            <a href="@rebuyUrl" class="order-btn order-btn-rebuy">Mua Lại</a>
+                            @if (donHang.TrangThai != "Đã Hủy")
+                            {
+                                @if (donHang.TrangThai == "Đã Giao")
+                                {
+                                }
+                                @if (donHang.TrangThai == "Đang giao")
+                                {
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("CancelOrder", "GioHangs", new { maDh = donHang.MaDh })" class="order-btn order-btn-cancel" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">Hủy Đơn</a>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <span style="color: #dc3545;font-weight: bold;">Đã hủy</span>
-                        }
-                    </td>
-                </tr>
-                
-            }
-        </tbody>
-    </table>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
     </div>
-}
+</div>

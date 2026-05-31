@@ -1,132 +1,196 @@
 ﻿@model QLBanDoAnNhanh.Models.DonHang
 
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+    var nguoiDung = Model.MaNguoiDungNavigation;
+    var firstItem = Model.ChiTietDonHangs?.FirstOrDefault();
+    var rebuyUrl = firstItem != null
+        ? Url.Action("ChiTietSanPham", "SanPhams", new { id = firstItem.MaSp })
+        : Url.Action("TrangChu", "SanPhams");
+    var tamTinh = Model.ChiTietDonHangs?.Sum(x => x.TongTien) ?? Model.TongTien;
+    var thanhToan = Model.ThanhToans?.FirstOrDefault();
 
-<style>
-    body {
-        font-family: 'Poppins', Arial, sans-serif;
-        background-color: #f3f4f6;
-        margin: 0;
-        padding: 20px;
+    string GetStatusClass(string trangThai)
+    {
+        var s = trangThai?.Trim() ?? "";
+        if (s == "Đã Giao") return "status-delivered";
+        if (s.Equals("Đang giao", StringComparison.OrdinalIgnoreCase) || s == "Đang Giao") return "status-shipping";
+        if (s == "Đã Hủy") return "status-cancelled";
+        return "status-pending";
     }
 
-    h2 {
-        color: #2c3e50;
-        text-align: center;
-        font-size: 28px;
-        margin-bottom: 20px;
-        font-weight: 600;
+    string phuongThucThanhToan = thanhToan?.PhuongThucThanhToan;
+    if (string.IsNullOrWhiteSpace(phuongThucThanhToan))
+    {
+        phuongThucThanhToan = "—";
     }
+}
 
-    .table-container {
-        width: 90%;
-        max-width: 1200px;
-        margin: 0 auto;
-        background-color: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/foodfast-order-history.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-order-detail.css" asp-append-version="true" />
+}
 
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+<div class="order-detail-page">
+    <div class="order-detail-inner">
+        <nav class="order-detail-breadcrumb" aria-label="Breadcrumb">
+            <a href="@Url.Action("TrangChu", "SanPhams")">Trang Chủ</a>
+            <span class="separator">/</span>
+            <a href="@Url.Action("OrderHistory", "GioHangs")">Lịch Sử Đơn Hàng</a>
+            <span class="separator">/</span>
+            <span class="current">Chi Tiết Đơn Hàng</span>
+        </nav>
 
-        .table th, .table td {
-            padding: 16px 12px;
-            text-align: left;
-        }
+        <header class="order-detail-header">
+            <h1>Chi Tiết Đơn Hàng</h1>
+        </header>
 
-        .table th {
-            background-color: #3498db;
-            color: #fff;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 0.05em;
-        }
+        <div class="order-detail-layout">
+            <div class="order-detail-main">
+                <section class="detail-card">
+                    <h2 class="detail-card-title">📋 Thông Tin Đơn Hàng</h2>
+                    <div class="detail-info-grid">
+                        <div class="detail-info-row">
+                            <span class="label">Mã đơn hàng</span>
+                            <span class="value">@Model.MaDh</span>
+                        </div>
+                        <div class="detail-info-row">
+                            <span class="label">Ngày đặt hàng</span>
+                            <span class="value">@(Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")</span>
+                        </div>
+                        <div class="detail-info-row">
+                            <span class="label">Trạng thái</span>
+                            <span class="value">
+                                <span class="status-badge @GetStatusClass(Model.TrangThai)">@Model.TrangThai</span>
+                            </span>
+                        </div>
+                        <div class="detail-info-row">
+                            <span class="label">Phương thức thanh toán</span>
+                            <span class="value">@phuongThucThanhToan</span>
+                        </div>
+                        <div class="detail-info-row">
+                            <span class="label">Tổng tiền</span>
+                            <span class="value highlight">@Model.TongTien.ToString("N0") VND</span>
+                        </div>
+                    </div>
+                </section>
 
-        .table td {
-            font-size: 14px;
-            color: #2c3e50;
-            border-bottom: 1px solid #e9ecef;
-        }
+                <section class="detail-card">
+                    <h2 class="detail-card-title">👤 Thông Tin Người Đặt</h2>
+                    <div class="customer-info-list">
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">👤</div>
+                            <div class="customer-info-text">
+                                <div class="ci-label">Họ và tên</div>
+                                <div class="ci-value">@(nguoiDung?.HoTen ?? Model.Username ?? "—")</div>
+                            </div>
+                        </div>
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">📞</div>
+                            <div class="customer-info-text">
+                                <div class="ci-label">Số điện thoại</div>
+                                <div class="ci-value">@(nguoiDung?.Sdt ?? "—")</div>
+                            </div>
+                        </div>
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">✉️</div>
+                            <div class="customer-info-text">
+                                <div class="ci-label">Email</div>
+                                <div class="ci-value">@(nguoiDung?.Email ?? "—")</div>
+                            </div>
+                        </div>
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">📍</div>
+                            <div class="customer-info-text">
+                                <div class="ci-label">Địa chỉ nhận hàng</div>
+                                <div class="ci-value">@(string.IsNullOrWhiteSpace(Model.Diachi) ? "—" : Model.Diachi)</div>
+                            </div>
+                        </div>
+                        <div class="customer-info-item">
+                            <div class="customer-info-icon">📅</div>
+                            <div class="customer-info-text">
+                                <div class="ci-label">Ngày đặt đơn</div>
+                                <div class="ci-value">@(Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-        .table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+                <section class="detail-card product-list-card">
+                    <h2 class="detail-card-title">🛒 Sản Phẩm Trong Đơn</h2>
+                    <div class="product-detail-list">
+                        @foreach (var chiTiet in Model.ChiTietDonHangs)
+                        {
+                            var sp = chiTiet.MaSpNavigation;
+                            <div class="product-detail-item">
+                                <div class="product-detail-img-wrap">
+                                    @if (!string.IsNullOrEmpty(sp?.HinhAnh1))
+                                    {
+                                        <img src="@Url.Content(sp.HinhAnh1)" alt="@sp.TenSp" class="product-detail-img" />
+                                    }
+                                    else
+                                    {
+                                        <div class="order-card-image-placeholder" style="width:100%;height:100%;font-size:1.5rem;">🍔</div>
+                                    }
+                                </div>
+                                <div class="product-detail-body">
+                                    <div class="product-detail-name">@sp?.TenSp</div>
+                                    <div class="product-detail-meta">
+                                        <span>Giá: @sp?.GiaTien.ToString("N0") VND</span>
+                                        <span>SL: @chiTiet.SoLuong</span>
+                                    </div>
+                                </div>
+                                <div class="product-detail-line-total">@chiTiet.TongTien.ToString("N0") VND</div>
+                            </div>
+                        }
+                    </div>
+                </section>
+            </div>
 
-        .table tr:hover {
-            background-color: #f1f1f1;
-            transform: scale(1.005);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
+            <aside class="order-detail-sidebar">
+                <section class="detail-card">
+                    <h2 class="detail-card-title">💳 Tổng Kết Thanh Toán</h2>
+                    <div class="summary-rows">
+                        <div class="summary-row">
+                            <span class="sr-label">Tạm tính</span>
+                            <span class="sr-value">@tamTinh.ToString("N0") VND</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="sr-label">Phí giao hàng</span>
+                            <span class="sr-value">Miễn phí</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="sr-label">Giảm giá</span>
+                            <span class="sr-value">0 VND</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span class="sr-label">Tổng thanh toán</span>
+                            <span class="sr-value">@Model.TongTien.ToString("N0") VND</span>
+                        </div>
+                    </div>
+                </section>
 
-        .table td a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-            .table td a:hover {
-                color: #2980b9;
-                text-decoration: underline;
-            }
-
-            .table td a.cancel-link {
-                color: #e74c3c;
-                font-weight: 600;
-                transition: color 0.3s, transform 0.2s;
-            }
-
-                .table td a.cancel-link:hover {
-                    color: #c0392b;
-                    transform: scale(1.1);
-                }
-
-        .table td span {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-    .empty-message {
-        text-align: center;
-        font-size: 16px;
-        color: #7f8c8d;
-        margin: 20px 0;
-    }
-
-    /* Responsive Design */
-
-</style>
-<br />
-
-<h2>Chi Tiết Đơn Hàng @Model.MaDh</h2>
-<br />
-<p style="width: 1200px;margin: auto;"><strong>Tổng Tiền:</strong> @Model.TongTien.ToString("C")</p>
-<br />
-<p style="width: 1200px;margin: auto;"><strong>Trạng Thái:</strong> @Model.TrangThai</p>
-<br />
-<div class="table-container">
-<table class="table">
-    <thead>
-        <tr>
-            <th>Sản Phẩm</th>
-            <th>Số Lượng</th>
-            <th>Giá</th>
-            <th>Tổng Tiền</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var chiTiet in Model.ChiTietDonHangs)
-        {
-            <tr>
-                <td>@chiTiet.MaSpNavigation.TenSp</td>
-                <td>@chiTiet.SoLuong</td>
-                <td>@chiTiet.MaSpNavigation.GiaTien.ToString("C")</td>
-                <td>@chiTiet.TongTien.ToString("C")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                <section class="detail-card">
+                    <h2 class="detail-card-title">⚡ Thao Tác</h2>
+                    <div class="detail-actions">
+                        <a href="@rebuyUrl" class="order-btn order-btn-rebuy">Mua Lại</a>
+                        @if (Model.TrangThai != "Đã Hủy")
+                        {
+                            @if (Model.TrangThai == "Đã Giao")
+                            {
+                            }
+                            @if (Model.TrangThai == "Đang giao")
+                            {
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("CancelOrder", "GioHangs", new { maDh = Model.MaDh })" class="order-btn order-btn-cancel" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">Hủy Đơn</a>
+                            }
+                        }
+                        <a href="@Url.Action("OrderHistory", "GioHangs")" class="order-btn order-btn-back">Quay Lại</a>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
 </div>

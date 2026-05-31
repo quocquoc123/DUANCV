@@ -7377,6 +7377,14 @@
       "PackagePath": "staticwebassets\\css\\foodfast-layout.css"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-order-detail.css",
+      "PackagePath": "staticwebassets\\css\\foodfast-order-detail.css"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-order-history.css",
+      "PackagePath": "staticwebassets\\css\\foodfast-order-history.css"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-product-detail.css",
       "PackagePath": "staticwebassets\\css\\foodfast-product-detail.css"
     },

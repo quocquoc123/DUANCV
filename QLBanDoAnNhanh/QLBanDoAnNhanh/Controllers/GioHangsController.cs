@@ -173,7 +173,7 @@ namespace QLBanDoAnNhanh.Controllers
             // Điều hướng về trang giỏ hàng
             return RedirectToAction("Index");
         }
-        public IActionResult Checkout(string DiaChi)
+        public IActionResult Checkout(string DiaChi, string Phone)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -204,6 +204,17 @@ namespace QLBanDoAnNhanh.Controllers
                 }
 
                 string trangThai = GetOrderStatusFromDatabase(context, username);
+                var maNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"));
+
+                if (!string.IsNullOrWhiteSpace(Phone))
+                {
+                    var nguoiDung = context.NguoiDungs.Find(maNguoiDung);
+                    if (nguoiDung != null)
+                    {
+                        nguoiDung.Sdt = Phone.Trim();
+                    }
+                }
+
                 // Tạo đối tượng DonHang
                 var donHang = new DonHang
                 {
@@ -216,7 +227,7 @@ namespace QLBanDoAnNhanh.Controllers
                     TrangThai = trangThai,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    MaNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"))
+                    MaNguoiDung = maNguoiDung
                 };
 
                 // Thêm đơn hàng vào cơ sở dữ liệu
@@ -300,6 +311,8 @@ namespace QLBanDoAnNhanh.Controllers
                 var donHang = context.DonHangs
                                     .Include(dh => dh.ChiTietDonHangs)
                                     .ThenInclude(ct => ct.MaSpNavigation)
+                                    .Include(dh => dh.MaNguoiDungNavigation)
+                                    .Include(dh => dh.ThanhToans)
                                     .FirstOrDefault(dh => dh.MaDh == maDh);
 
                 if (donHang == null)
@@ -350,7 +363,7 @@ namespace QLBanDoAnNhanh.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string trangThai)
+        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string Phone, string trangThai)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -371,6 +384,17 @@ namespace QLBanDoAnNhanh.Controllers
             decimal tongTien = (decimal)gioHang.ChiTietGioHangs.Sum(x => (double)(x.TongTien ?? 0));
             int soLuong = (int)gioHang.ChiTietGioHangs.Sum(x => x.SoLuongSp);
             var maDonHang = _context.DonHangs.Max(d => d.MaDh) + 1;
+            var maNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"));
+
+            if (!string.IsNullOrWhiteSpace(Phone))
+            {
+                var nguoiDung = await _context.NguoiDungs.FindAsync(maNguoiDung);
+                if (nguoiDung != null)
+                {
+                    nguoiDung.Sdt = Phone.Trim();
+                }
+            }
+
             // Tạo đơn hàng mới
             var donHang = new DonHang
             {
@@ -384,7 +408,7 @@ namespace QLBanDoAnNhanh.Controllers
                 TrangThai = "Chưa Giao",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                MaNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"))
+                MaNguoiDung = maNguoiDung
             };
 
             // Thêm đơn hàng vào cơ sở dữ liệu
