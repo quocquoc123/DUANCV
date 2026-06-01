@@ -7377,6 +7377,10 @@
       "PackagePath": "staticwebassets\\css\\foodfast-layout.css"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-login.css",
+      "PackagePath": "staticwebassets\\css\\foodfast-login.css"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-order-detail.css",
       "PackagePath": "staticwebassets\\css\\foodfast-order-detail.css"
     },
@@ -7387,6 +7391,10 @@
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-product-detail.css",
       "PackagePath": "staticwebassets\\css\\foodfast-product-detail.css"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-register.css",
+      "PackagePath": "staticwebassets\\css\\foodfast-register.css"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-search.css",
@@ -7567,6 +7575,10 @@
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-catalog.js",
       "PackagePath": "staticwebassets\\js\\foodfast-catalog.js"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-register.js",
+      "PackagePath": "staticwebassets\\js\\foodfast-register.js"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-search.js",

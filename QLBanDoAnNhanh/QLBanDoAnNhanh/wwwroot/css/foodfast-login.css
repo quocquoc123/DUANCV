@@ -1,0 +1,363 @@
+/* Food Fast — Login Screen UI */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body.login-page {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Background ── */
+.login-screen {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+  background: #f8f4ee;
+  background: linear-gradient(180deg, #f6d4a4 0%, #f8f4ee 42%, #f8f4ee 100%);
+}
+
+.login-screen-blur {
+  position: absolute;
+  top: 10%;
+  width: min(320px, 40vw);
+  height: min(420px, 55vh);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-screen-blur--left {
+  left: -8%;
+  background: rgba(248, 177, 51, 0.35);
+}
+
+.login-screen-blur--right {
+  right: -8%;
+  background: rgba(245, 158, 11, 0.28);
+}
+
+/* ── Decorative food icons ── */
+.ff-food-icon {
+  position: absolute;
+  font-size: clamp(48px, 8vw, 72px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+  animation: ffFoodFloat 3s ease-in-out infinite;
+  filter: grayscale(0.2);
+}
+
+.ff-food-icon--burger {
+  top: 12%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.ff-food-icon--chicken {
+  top: 18%;
+  right: 10%;
+  animation-delay: 0.6s;
+}
+
+.ff-food-icon--pizza {
+  bottom: 14%;
+  left: 12%;
+  animation-delay: 1.2s;
+}
+
+.ff-food-icon--fries {
+  bottom: 20%;
+  right: 8%;
+  animation-delay: 0.3s;
+  font-size: clamp(40px, 6vw, 60px);
+}
+
+@keyframes ffFoodFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ── Login Card ── */
+.login-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px;
+  padding: 40px 36px 36px;
+  background: #fffdf9;
+  border-radius: 24px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(28px);
+  animation: ffLoginCardEnter 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes ffLoginCardEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Logo ── */
+.login-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  animation: ffLogoScale 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both;
+}
+
+@keyframes ffLogoScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Title ── */
+.login-card-title {
+  margin: 0 0 28px;
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: #2e2e2e;
+  letter-spacing: -0.02em;
+}
+
+/* ── Alert ── */
+.login-alert {
+  display: block;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #dc3545;
+}
+
+/* ── Form fields ── */
+.login-form-group {
+  margin-bottom: 18px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 14px;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-input-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.login-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 44px;
+  font-size: 15px;
+  color: #2e2e2e;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.login-input::placeholder {
+  color: #aaa;
+}
+
+.login-input:focus {
+  border-color: #f6a623;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(246, 166, 35, 0.18);
+}
+
+/* ── Animated login button ── */
+.animated-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f8b133 0%, #f59e0b 100%);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.animated-login-button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 28px rgba(245, 158, 11, 0.45);
+  transform: translateY(-1px);
+}
+
+.animated-login-button:active {
+  transform: scale(0.98) translateY(0);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+}
+
+/* ── Forgot password ── */
+.login-forgot {
+  display: block;
+  margin: 20px 0 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-forgot:hover {
+  color: #f59e0b;
+  text-decoration: none;
+}
+
+/* ── Register section ── */
+.login-register-text {
+  display: block;
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.animated-register-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(135deg, #f8b133 0%, #f59e0b 100%);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.animated-register-button:hover {
+  color: #fff;
+  text-decoration: none;
+  filter: brightness(1.05);
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.4);
+  transform: translateY(-1px);
+}
+
+.animated-register-button:active {
+  transform: scale(0.98);
+}
+
+/* ── Responsive ── */
+@media (min-width: 1024px) {
+  .login-card {
+    max-width: 460px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .login-card {
+    max-width: 70%;
+  }
+}
+
+@media (max-width: 767px) {
+  .login-screen {
+    padding: 20px;
+  }
+
+  .login-card {
+    max-width: 90%;
+    padding: 32px 24px 28px;
+  }
+
+  .login-card-title {
+    font-size: 30px;
+  }
+
+  .ff-food-icon {
+    opacity: 0.08;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .login-logo,
+  .ff-food-icon {
+    animation: none;
+  }
+
+  .login-card {
+    opacity: 1;
+    transform: none;
+  }
+}

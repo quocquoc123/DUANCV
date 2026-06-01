@@ -1,55 +1,77 @@
 ﻿@model QLBanDoAnNhanh.Models.NguoiDung
 @{
     ViewBag.Title = "Login";
-    // Layout = "~/Views/Shared/_Layout.cshtml";
     Layout = null;
 }
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" />
-<div class="row justify-content-md-center">
-    <div class="col-md-5">
-        @using (Html.BeginForm("Login", "User", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng nhập — Food Fast</title>
+    <link rel="stylesheet" href="~/css/foodfast-login.css" asp-append-version="true" />
+</head>
+<body class="login-page">
 
-            <div class="card">
+    <div class="login-screen">
+        <div class="login-screen-blur login-screen-blur--left" aria-hidden="true"></div>
+        <div class="login-screen-blur login-screen-blur--right" aria-hidden="true"></div>
 
-                <div class="card-header">
-                    <div class="card-title">Đăng nhập</div>
-                </div>
+        <span class="ff-food-icon ff-food-icon--burger" aria-hidden="true">🍔</span>
+        <span class="ff-food-icon ff-food-icon--chicken" aria-hidden="true">🍗</span>
+        <span class="ff-food-icon ff-food-icon--pizza" aria-hidden="true">🍕</span>
+        <span class="ff-food-icon ff-food-icon--fries" aria-hidden="true">🍟</span>
+
+        @* LoginCard — giữ nguyên form POST & tên field *@
+        <div class="login-card">
+            <div class="login-logo-wrap">
+                <img src="@Url.Content("~/images/logo.jpg")" alt="Food Fast" class="login-logo" />
+            </div>
+
+            <h1 class="login-card-title">Đăng nhập</h1>
+
+            @using (Html.BeginForm("Login", "User", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
 
                 @if (ViewBag.error != null)
                 {
-                    <span class="badge text-left badge-warning">Sai tên đăng nhập hoặc mật khẩu</span>
+                    <span class="login-alert">Sai tên đăng nhập hoặc mật khẩu</span>
                 }
 
-                <div class="card-body">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Username)
-                        @Html.TextBoxFor(m => m.Username, "", new { @class = "form-control", @placeholder = "Tên đăng nhập" })
-                        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "badge badge-danger" })
+                <div class="login-form-group">
+                    @Html.LabelFor(m => m.Username, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                        </span>
+                        @Html.TextBoxFor(m => m.Username, "", new { @class = "login-input", @placeholder = "Tên đăng nhập" })
                     </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Matkhau)
-                        @Html.PasswordFor(m => m.Matkhau, new { @class = "form-control", @placeholder = "Mật khẩu" })
-                        @Html.ValidationMessageFor(m => m.Matkhau, "", new { @class = "badge badge-danger" })
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success">Đăng nhập</button>
-                    </div>
-
-                    <p>
-                        @Html.ActionLink("Quên mật khẩu?", "ForgotPassword", "User")
-                    </p>
-
-                    <label class="col-12 text-center">Chưa có tài khoản? </label>
-                    <div class="form-group">
-                        <a role="button" href="/user/register" class="btn btn-info">Đăng ký</a>
-                    </div>
-
+                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "login-field-error" })
                 </div>
-            </div>
-        }
+
+                <div class="login-form-group">
+                    @Html.LabelFor(m => m.Matkhau, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3.1-9H8.9V6a3.1 3.1 0 0 1 6.2 0v2z"/></svg>
+                        </span>
+                        @Html.PasswordFor(m => m.Matkhau, new { @class = "login-input", @placeholder = "Mật khẩu" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Matkhau, "", new { @class = "login-field-error" })
+                </div>
+
+                <div class="login-form-group">
+                    <button type="submit" class="animated-login-button">Đăng nhập</button>
+                </div>
+
+                @Html.ActionLink("Quên mật khẩu?", "ForgotPassword", "User", null, new { @class = "login-forgot" })
+
+                <span class="login-register-text">Chưa có tài khoản?</span>
+                <a role="button" href="/user/register" class="animated-register-button">Đăng ký</a>
+            }
+        </div>
     </div>
-</div>
+
+</body>
+</html>

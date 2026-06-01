@@ -1,69 +1,118 @@
 ﻿@model QLBanDoAnNhanh.Models.NguoiDung
 @{
     ViewBag.Title = "Login";
-    // Layout = "~/Views/Shared/_Layout.cshtml";
     Layout = null;
 }
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" />
-<div class="row justify-content-md-center">
-    <div class="col-md-4">
-        @using (Html.BeginForm("Register", "User", FormMethod.Post))
-        {
-            //@Html.ValidationSummary()
-            @Html.AntiForgeryToken()
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng ký — Food Fast</title>
+    <link rel="stylesheet" href="~/css/foodfast-login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-register.css" asp-append-version="true" />
+</head>
+<body class="register-page login-page">
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">Đăng ký tài khoản</div>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.HoTen)
-                        @Html.TextBoxFor(m => m.HoTen, "", new { @class = "form-control", @placeholder = "Họ và tên" })
-                        @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "badge badge-danger" })
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Username)
-                        @Html.TextBoxFor(m => m.Username, "", new { @class = "form-control", @placeholder = "Tên đăng nhập" })
-                        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "badge badge-danger" })
-                        @if (ViewBag.error != null)
-                        {
-                            <span class="badge badge-danger">@ViewBag.error</span>
-                        }
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Email)
-                        @Html.TextBoxFor(m => m.Email, "", new { @class = "form-control", @placeholder = "Email" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "badge badge-danger" })
+    <div class="login-screen">
+        <div class="login-screen-blur login-screen-blur--left" aria-hidden="true"></div>
+        <div class="login-screen-blur login-screen-blur--right" aria-hidden="true"></div>
 
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Sdt)
-                        @Html.TextBoxFor(m => m.Sdt, "", new { @class = "form-control", @placeholder = "Số điện thoại" })
-                        @Html.ValidationMessageFor(m => m.Sdt, "", new { @class = "badge badge-danger" })
+        <span class="ff-food-icon ff-food-icon--burger" aria-hidden="true">🍔</span>
+        <span class="ff-food-icon ff-food-icon--pizza" aria-hidden="true">🍕</span>
+        <span class="ff-food-icon ff-food-icon--chicken" aria-hidden="true">🍗</span>
+        <span class="ff-food-icon ff-food-icon--drink" aria-hidden="true">🥤</span>
 
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Matkhau)
-                        @Html.PasswordFor(m => m.Matkhau, new { @class = "form-control", @placeholder = "Mật khẩu" })
-                        @Html.ValidationMessageFor(m => m.Matkhau, "", new { @class = "badge badge-danger" })
-                    </div>
-                    <div class="form-group">
-
-                        <input class="d-none" value="1" name="roleID" />
-
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success">Đăng ký</button>
-                    </div>
-                    <label class="col-12 text-center">Đã có tài khoản? </label>
-                    <div class="form-group">
-                        <a role="button" href="/user/login" class="btn btn-info">Đăng nhập</a>
-                    </div>
-                </div>
+        @* RegisterCard — giữ nguyên form POST & field names *@
+        <div class="login-card register-card">
+            <div class="login-logo-wrap">
+                <img src="@Url.Content("~/images/logo.jpg")" alt="Food Fast" class="login-logo" />
             </div>
 
-        }
+            <h1 class="register-card-title">Đăng ký tài khoản</h1>
+            <p class="register-card-subtitle">Tạo tài khoản để đặt món nhanh hơn</p>
+
+            @using (Html.BeginForm("Register", "User", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 50ms">
+                    @Html.LabelFor(m => m.HoTen, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                        </span>
+                        @Html.TextBoxFor(m => m.HoTen, "", new { @class = "login-input", @placeholder = "Họ và tên" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "login-field-error" })
+                </div>
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 100ms">
+                    @Html.LabelFor(m => m.Username, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-3.87-.78-5.25-2.05C8.13 16.39 10 15.5 12 15.5s3.87.89 5.25 2.45C15.87 19.22 14.03 20 12 20z"/></svg>
+                        </span>
+                        @Html.TextBoxFor(m => m.Username, "", new { @class = "login-input", @placeholder = "Tên đăng nhập" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "login-field-error" })
+                    @if (ViewBag.error != null)
+                    {
+                        <span class="login-field-error">@ViewBag.error</span>
+                    }
+                </div>
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 150ms">
+                    @Html.LabelFor(m => m.Email, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        </span>
+                        @Html.TextBoxFor(m => m.Email, "", new { @class = "login-input", @placeholder = "Email" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "login-field-error" })
+                </div>
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 200ms">
+                    @Html.LabelFor(m => m.Sdt, new { @class = "login-label" })
+                    <div class="login-input-wrap">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.56.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.56 1 1 0 0 1-.25 1.01l-2.2 2.22z"/></svg>
+                        </span>
+                        @Html.TextBoxFor(m => m.Sdt, "", new { @class = "login-input", @placeholder = "Số điện thoại" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Sdt, "", new { @class = "login-field-error" })
+                </div>
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 250ms">
+                    @Html.LabelFor(m => m.Matkhau, new { @class = "login-label" })
+                    <div class="login-input-wrap login-input-wrap--password">
+                        <span class="login-input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3.1-9H8.9V6a3.1 3.1 0 0 1 6.2 0v2z"/></svg>
+                        </span>
+                        @Html.PasswordFor(m => m.Matkhau, new { @class = "login-input", @placeholder = "Mật khẩu", id = "Matkhau" })
+                        <button type="button" class="login-password-toggle" data-toggle-password aria-controls="Matkhau" aria-label="Hiện mật khẩu">
+                            <svg class="icon-eye" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+                            <svg class="icon-eye-off" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7c2.8 0 5.2 1.7 6.3 4.2l1.5-1.1C18.3 7.6 15.3 5.5 12 5.5 8.7 5.5 5.7 7.6 4.2 10.1L5.7 11.2C6.8 8.7 9.2 7 12 7zm0 10c-2.8 0-5.2-1.7-6.3-4.2L4.2 14.9C5.7 17.4 8.7 19.5 12 19.5c3.3 0 6.3-2.1 7.8-4.6l-1.5-1.1C17.2 15.3 14.8 17 12 17zm0-5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Matkhau, "", new { @class = "login-field-error" })
+                </div>
+
+                <input class="register-hidden-field" value="1" name="roleID" type="hidden" />
+
+                <div class="login-form-group animated-input-field" style="--ff-delay: 300ms">
+                    <button type="submit" class="animated-login-button animated-register-button">Đăng ký</button>
+                </div>
+
+                <p class="register-login-prompt">
+                    Đã có tài khoản?
+                    <a href="/user/login" class="register-login-link">Đăng nhập</a>
+                </p>
+            }
+        </div>
     </div>
-</div>
+
+    <script src="~/js/foodfast-register.js" asp-append-version="true"></script>
+</body>
+</html>

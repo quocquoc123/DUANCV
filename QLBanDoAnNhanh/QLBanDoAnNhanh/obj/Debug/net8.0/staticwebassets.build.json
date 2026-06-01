@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "LwOtiWDeHSHzfB/6l9frR/bSPlDJOEi4jUo+ASmICc4=",
+  "Hash": "Yn8jlHCFrOOouqzV8H15XLffNyeut6ddbQmzufkDYS8=",
   "Source": "QLBanDoAnNhanh",
   "BasePath": "_content/QLBanDoAnNhanh",
   "Mode": "Default",
@@ -34825,6 +34825,25 @@
       "OriginalItemSpec": "wwwroot\\css\\foodfast-layout.css"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-login.css",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "css/foodfast-login.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\foodfast-login.css"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-order-detail.css",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -34880,6 +34899,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\foodfast-product-detail.css"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-register.css",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "css/foodfast-register.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\foodfast-register.css"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\foodfast-search.css",
@@ -35735,6 +35773,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\foodfast-catalog.js"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-register.js",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "js/foodfast-register.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\foodfast-register.js"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-search.js",
