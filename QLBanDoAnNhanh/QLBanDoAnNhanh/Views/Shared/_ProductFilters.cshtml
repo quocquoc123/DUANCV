@@ -1,0 +1,110 @@
+@{
+    var searchTerm = ViewBag.SearchTerm as string ?? "";
+}
+
+<div class="ff-catalog-toolbar">
+    <div class="ff-catalog-results" hidden aria-live="polite"></div>
+
+    <button type="button" class="ff-filter-mobile-btn" data-ff-open-filters aria-expanded="false">
+        <span aria-hidden="true">☰</span> Bộ lọc
+    </button>
+
+    <div class="ff-filter-bar ff-filter-bar--desktop">
+        <div class="ff-filter-group">
+            <span class="ff-filter-label">Sắp xếp</span>
+            <select class="ff-filter-select" data-ff-sort aria-label="Sắp xếp sản phẩm">
+                <option value="default">Mặc định</option>
+                <option value="price-asc">Giá: Thấp → Cao</option>
+                <option value="price-desc">Giá: Cao → Thấp</option>
+                <option value="name-asc">Tên: A → Z</option>
+                <option value="name-desc">Tên: Z → A</option>
+                <option value="newest">Mới nhất</option>
+                <option value="bestseller">Bán chạy</option>
+                <option value="discount">Khuyến mãi cao nhất</option>
+            </select>
+        </div>
+
+        <div class="ff-filter-group">
+            <span class="ff-filter-label">Giá</span>
+            <button type="button" class="ff-filter-chip" data-ff-price="under-50">Dưới 50k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="50-100">50k – 100k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="100-200">100k – 200k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="over-200">Trên 200k</button>
+        </div>
+
+        <div class="ff-filter-group">
+            <span class="ff-filter-label">Danh mục</span>
+            <button type="button" class="ff-filter-chip" data-ff-category="BURGER">Burger</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="GARAN">Gà Rán</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="COMBO">Combo</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="NUOCUONG">Nước Uống</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="BESTSELLER">Best Seller</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="KHUYENMAI">Khuyến Mãi</button>
+        </div>
+
+        <button type="button" class="ff-filter-clear ff-filter-clear--desktop" data-ff-clear-filters>Xóa bộ lọc</button>
+    </div>
+</div>
+
+<div id="ff-filter-drawer-backdrop" class="ff-filter-drawer-backdrop" aria-hidden="true"></div>
+<div id="ff-filter-drawer" class="ff-filter-drawer" role="dialog" aria-modal="true" aria-labelledby="ff-filter-drawer-title">
+    <div class="ff-filter-drawer-header">
+        <h3 id="ff-filter-drawer-title">Bộ lọc sản phẩm</h3>
+        <button type="button" class="ff-filter-drawer-close" data-ff-close-filters aria-label="Đóng">×</button>
+    </div>
+
+    <div class="ff-filter-drawer-section">
+        <span class="ff-filter-label">Sắp xếp</span>
+        <select class="ff-filter-select" data-ff-sort aria-label="Sắp xếp sản phẩm" style="width:100%;">
+            <option value="default">Mặc định</option>
+            <option value="price-asc">Giá: Thấp → Cao</option>
+            <option value="price-desc">Giá: Cao → Thấp</option>
+            <option value="name-asc">Tên: A → Z</option>
+            <option value="name-desc">Tên: Z → A</option>
+            <option value="newest">Mới nhất</option>
+            <option value="bestseller">Bán chạy</option>
+            <option value="discount">Khuyến mãi cao nhất</option>
+        </select>
+    </div>
+
+    <div class="ff-filter-drawer-section">
+        <span class="ff-filter-label">Khoảng giá (VNĐ)</span>
+        <div class="ff-filter-group" style="gap:10px;">
+            <input type="range" class="ff-filter-range" data-ff-price-min min="0" max="500000" step="10000" value="0" aria-label="Giá tối thiểu" style="flex:1;">
+            <input type="range" class="ff-filter-range" data-ff-price-max min="0" max="500000" step="10000" value="500000" aria-label="Giá tối đa" style="flex:1;">
+        </div>
+        <p style="font-size:12px;color:#7b5b3e;margin-top:8px;">Kéo thanh để chọn khoảng giá</p>
+    </div>
+
+    <div class="ff-filter-drawer-section">
+        <span class="ff-filter-label">Mức giá</span>
+        <div class="ff-filter-group">
+            <button type="button" class="ff-filter-chip" data-ff-price="under-50">Dưới 50k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="50-100">50k – 100k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="100-200">100k – 200k</button>
+            <button type="button" class="ff-filter-chip" data-ff-price="over-200">Trên 200k</button>
+        </div>
+    </div>
+
+    <div class="ff-filter-drawer-section">
+        <span class="ff-filter-label">Danh mục</span>
+        <div class="ff-filter-group">
+            <button type="button" class="ff-filter-chip" data-ff-category="BURGER">Burger</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="GARAN">Gà Rán</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="COMBO">Combo</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="NUOCUONG">Nước Uống</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="BESTSELLER">Best Seller</button>
+            <button type="button" class="ff-filter-chip" data-ff-category="KHUYENMAI">Khuyến Mãi</button>
+        </div>
+    </div>
+
+    <button type="button" class="ff-filter-clear" data-ff-clear-filters style="width:100%;margin-top:8px;">Xóa bộ lọc</button>
+</div>
+
+<div class="ff-catalog-empty" aria-live="polite">
+    <div class="ff-catalog-empty-icon">🔍</div>
+    <h3>Không tìm thấy sản phẩm phù hợp</h3>
+    <p>Thử từ khóa khác hoặc điều chỉnh bộ lọc.</p>
+    <p>Gợi ý: xóa bộ lọc hiện tại để xem thêm sản phẩm.</p>
+    <button type="button" class="ff-filter-clear" data-ff-clear-filters">Xóa bộ lọc</button>
+</div>

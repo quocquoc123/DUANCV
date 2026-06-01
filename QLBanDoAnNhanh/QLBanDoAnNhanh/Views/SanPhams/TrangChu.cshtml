@@ -1,12 +1,28 @@
 ﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Trang Chủ";
+    var productList = Model?.ToList() ?? new List<QLBanDoAnNhanh.Models.SanPham>();
+    var searchKeyword = ViewBag.SearchTerm as string ?? "";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
 }
+
+<script type="application/json" id="ff-products-data">
+@Html.Raw(JsonSerializer.Serialize(productList.Select(p => new {
+    tenSp = p.TenSp,
+    thanhPhan = p.ThanhPhan ?? "",
+    chitietSp = p.ChitietSp ?? "",
+    tenDm = p.MaDmNavigation?.TenDm ?? "",
+    giaTien = p.GiaTien,
+    hinhAnh1 = Url.Content(p.HinhAnh1 ?? ""),
+    detailUrl = Url.Action("ChiTietSanPham", "SanPhams", new { id = p.MaSp })
+})))
+</script>
 
 <!-- Alert Messages -->
 @if (TempData["ErrorMessage"] != null)
@@ -83,16 +99,27 @@
 </div>
 
 <!-- Products Section -->
-<div id="products-section" class="products-container">
+<div id="products-section" class="products-container" data-ff-catalog data-ff-search-term="@searchKeyword">
     <div class="section-header">
-        <h2>Danh Sách Sản Phẩm Nổi Bật</h2>
-        <p>Những món ăn được yêu thích nhất của chúng tôi</p>
+        <h2>@(string.IsNullOrEmpty(searchKeyword) ? "Danh Sách Sản Phẩm Nổi Bật" : "Kết Quả Tìm Kiếm")</h2>
+        <p>@(string.IsNullOrEmpty(searchKeyword) ? "Những món ăn được yêu thích nhất của chúng tôi" : $"Kết quả cho từ khóa \"{searchKeyword}\"")</p>
     </div>
 
+    @await Html.PartialAsync("_ProductFilters")
+
     <div class="products-grid">
-        @foreach (var product in Model)
+        @foreach (var product in productList)
         {
-            <div class="product-card">
+            var discountPct = product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now
+                ? product.MaGiamGiaNavigation.GiaTri : 0;
+            var categoryCode = product.MaDmNavigation?.TenDm ?? "";
+            <div class="product-card"
+                 data-ma-sp="@product.MaSp"
+                 data-price="@product.GiaTien"
+                 data-name="@product.TenSp"
+                 data-sales="@(product.SlbanTrongNgay ?? 0)"
+                 data-discount="@discountPct"
+                 data-category="@categoryCode">
                 <div class="product-image-wrapper">
                     <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
                     @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
@@ -153,6 +180,8 @@
         </div>
     }
 }
+
+<script src="~/js/foodfast-catalog.js" asp-append-version="true"></script>
 
 @* <style>
     * {

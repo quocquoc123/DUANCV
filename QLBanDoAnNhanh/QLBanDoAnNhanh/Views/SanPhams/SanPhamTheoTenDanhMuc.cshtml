@@ -36,6 +36,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-category.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
 }
 
 <div class="category-page">
@@ -51,11 +52,6 @@
             </div>
 
             <div class="hero-content">
-                <nav class="category-breadcrumb" aria-label="Breadcrumb">
-                    <a href="@Url.Action("TrangChu", "SanPhams")">Trang chủ</a>
-                    <span class="separator">/</span>
-                    <span class="current">@categoryTitle</span>
-                </nav>
                 <h1 class="hero-title">Danh mục</h1>
                 <h2 class="hero-subtitle category-hero-name">@categoryTitle</h2>
                 <p class="hero-description">@categoryDesc</p>
@@ -99,7 +95,7 @@
     </div>
 
     <!-- Products — giống Trang Chủ -->
-    <div id="category-products" class="products-container">
+    <div id="category-products" class="products-container" data-ff-catalog data-ff-search-term="">
         <div class="section-header">
             <h2>@categoryTitle</h2>
             <p>@categoryDesc</p>
@@ -107,10 +103,21 @@
 
         @if (productList.Count > 0)
         {
+            @await Html.PartialAsync("_ProductFilters")
+
             <div class="products-grid">
                 @foreach (var product in productList)
                 {
-                    <div class="product-card">
+                    var discountPct = product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now
+                        ? product.MaGiamGiaNavigation.GiaTri : 0;
+                    var categoryCode = product.MaDmNavigation?.TenDm ?? tenDanhMuc;
+                    <div class="product-card"
+                         data-ma-sp="@product.MaSp"
+                         data-price="@product.GiaTien"
+                         data-name="@product.TenSp"
+                         data-sales="@(product.SlbanTrongNgay ?? 0)"
+                         data-discount="@discountPct"
+                         data-category="@categoryCode">
                         <div class="product-image-wrapper">
                             <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
                             @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
@@ -145,3 +152,5 @@
         }
     </div>
 </div>
+
+<script src="~/js/foodfast-catalog.js" asp-append-version="true"></script>

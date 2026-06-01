@@ -319,6 +319,11 @@ nav ul li a:hover::before {
 }
 
 /* SEARCH */
+.ff-search-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .form-inline {
   display: flex;
   align-items: center;

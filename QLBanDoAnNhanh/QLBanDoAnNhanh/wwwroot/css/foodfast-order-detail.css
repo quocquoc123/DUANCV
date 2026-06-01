@@ -14,38 +14,9 @@
   overflow-x: hidden;
 }
 
-/* Breadcrumb */
-.order-detail-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-}
-
-.order-detail-breadcrumb a {
-  color: #7d4307;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.25s ease;
-}
-
-.order-detail-breadcrumb a:hover {
-  color: #ff9800;
-}
-
-.order-detail-breadcrumb .separator {
-  color: rgba(74, 44, 15, 0.35);
-}
-
-.order-detail-breadcrumb .current {
-  color: #4a2d0f;
-  font-weight: 600;
-}
-
 .order-detail-header {
   margin-bottom: 32px;
+  text-align: center;
 }
 
 .order-detail-header h1 {

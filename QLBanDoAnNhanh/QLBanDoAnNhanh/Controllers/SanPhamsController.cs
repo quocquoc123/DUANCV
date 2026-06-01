@@ -395,6 +395,8 @@ namespace QLBanDoAnNhanh.Controllers
             var searchTermLower = searchTerm.ToLower();
 
             var searchResults = db.SanPhams
+                .Include(p => p.MaDmNavigation)
+                .Include(p => p.MaGiamGiaNavigation)
                 .Where(p => p.TenSp.ToLower().Contains(searchTermLower))
                 .ToList();
             ViewBag.SearchTerm = searchTerm;
@@ -430,7 +432,10 @@ namespace QLBanDoAnNhanh.Controllers
 
         public IActionResult TrangChu()
         {
-            var products = _context.SanPhams.ToList();
+            var products = _context.SanPhams
+                .Include(p => p.MaDmNavigation)
+                .Include(p => p.MaGiamGiaNavigation)
+                .ToList();
 
             // Lấy sản phẩm gợi ý dựa trên số lượng đã được mua
             var suggestedProducts = GetMostPurchasedProducts(4); // Lấy 2 sản phẩm bán chạy nhất
@@ -470,6 +475,8 @@ namespace QLBanDoAnNhanh.Controllers
         public IActionResult SanPhamTheoTenDanhMuc(string TenHang)
         {
             var sanPhams = _context.SanPhams
+                .Include(sp => sp.MaDmNavigation)
+                .Include(sp => sp.MaGiamGiaNavigation)
                 .Where(sp => sp.MaDmNavigation.TenDm == TenHang)
                 .ToList();
 

@@ -6,6 +6,7 @@
     <title>Website bán đồ ăn</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.13/signalr.min.js"></script>
@@ -82,12 +83,16 @@
                         <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "DOANCAY" }, null)">Đồ ăn cay</a></li>
                     </ul>
                 </nav>
-                <div class="col-6 text-right">
-                    <form method="GET" action="@Url.Action("Search", "SanPhams")" class="form-inline d-inline-block">
-                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm sản phẩm">
-                        <button class="btn btn-primary" id="searchButton" type="submit">
-                            <i class="fas fa-search"></i> Tìm kiếm
-                        </button>
+                <div class="col-6 text-right ff-search-wrap">
+                    <form method="GET" action="@Url.Action("Search", "SanPhams")" class="form-inline d-inline-block ff-search-form" role="search"
+                          data-ff-search-url="@Url.Action("Search", "SanPhams")">
+                        <div class="ff-search-field">
+                            <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Tìm kiếm sản phẩm" autocomplete="off" aria-autocomplete="list" aria-controls="ff-search-suggestions">
+                            <button class="btn btn-primary" id="searchButton" type="submit" aria-label="Tìm kiếm">
+                                <i class="fas fa-search"></i> Tìm kiếm
+                            </button>
+                            <div id="ff-search-suggestions" class="ff-search-suggestions" hidden role="listbox" aria-label="Gợi ý sản phẩm"></div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -176,6 +181,7 @@
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/foodfast-search.js" asp-append-version="true"></script>
     <script>
         function updateCartCount() {
             $.get("/GioHang/GetCartItemCount", function (data) {

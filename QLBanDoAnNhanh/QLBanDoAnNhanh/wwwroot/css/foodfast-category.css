@@ -26,37 +26,6 @@
   margin-bottom: 12px;
 }
 
-/* Breadcrumb trong hero */
-.category-page .category-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 0.88rem;
-  margin-bottom: 14px;
-}
-
-.category-page .category-breadcrumb a {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.category-page .category-breadcrumb a:hover {
-  color: #fff;
-}
-
-.category-page .category-breadcrumb .separator {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.category-page .category-breadcrumb .current {
-  color: #fff;
-  font-weight: 600;
-}
-
 /* Badge số lượng sản phẩm */
 .category-page .category-count {
   display: inline-block;
