@@ -20,6 +20,7 @@
 
     <!-- Custom styles for this template-->
     <link href="~/admin/css/sb-admin-2.min.css" rel="stylesheet">
+    @RenderSection("Styles", required: false)
 
 </head>
 
@@ -32,7 +33,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Dashboard" asp-action="Index">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -44,9 +45,9 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Quản lý Đồ Ăn</span>
+                    <span>Dashboard</span>
                 </a>
             </li>
 
@@ -71,6 +72,7 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="DanhMucs" asp-action="Index">Danh Mục</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="KhuyenMais" asp-action="Index">Khuyến Mãi</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="SanPhams" asp-action="Index">Sản Phẩm</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="ProductDiscounts" asp-action="Index">Giảm Giá Sản Phẩm</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="DonHangs" asp-action="Index">Đơn Hàng</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="BinhLuans" asp-action="Index">Bình luận</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="BaoCao" asp-action="ManageReports">Phản hồi hỗ trợ</a>
@@ -259,6 +261,7 @@
         <!-- Page level custom scripts -->
         <script src="~/admin/js/demo/chart-area-demo.js"></script>
         <script src="~/admin/js/demo/chart-pie-demo.js"></script>
+        @RenderSection("Scripts", required: false)
 
 </body>
 

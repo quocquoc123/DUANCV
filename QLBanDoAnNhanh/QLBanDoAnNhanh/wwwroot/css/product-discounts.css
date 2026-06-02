@@ -1,0 +1,137 @@
+.discount-admin-page {
+  color: #2d2d2d;
+}
+
+.discount-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.discount-admin-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #2d1b12;
+}
+
+.discount-admin-eyebrow {
+  margin: 0 0 4px;
+  color: #ef4444;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+.discount-stat-card,
+.discount-table-card {
+  background: #fff;
+  border: 1px solid rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(31, 41, 55, 0.08);
+}
+
+.discount-stat-card {
+  min-height: 132px;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.discount-stat-card span,
+.discount-stat-card small {
+  display: block;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.discount-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.35rem;
+  line-height: 1.25;
+  color: #dc2626;
+}
+
+.discount-stat-card i {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4d4f, #ff9800);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.discount-table-card {
+  padding: 18px;
+}
+
+.discount-product-thumb {
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.discount-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #dc2626;
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.22);
+}
+
+.discount-price,
+.discount-preview-price {
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.discount-preview-price {
+  min-height: 38px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: #fff1f2;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  font-size: 1.05rem;
+}
+
+.discount-actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.discount-modal .modal-header {
+  background: linear-gradient(135deg, #dc2626, #ff9800);
+  color: #fff;
+}
+
+.discount-modal .modal-header .close {
+  color: #fff;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .discount-admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .discount-table-card {
+    padding: 12px;
+  }
+}

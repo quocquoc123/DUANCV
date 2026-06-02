@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Yn8jlHCFrOOouqzV8H15XLffNyeut6ddbQmzufkDYS8=",
+  "Hash": "rMnPQ18Cs/UfNoMtB2DCIylfuXPUVJ6LWpbbTh8cUpQ=",
   "Source": "QLBanDoAnNhanh",
   "BasePath": "_content/QLBanDoAnNhanh",
   "Mode": "Default",
@@ -34939,6 +34939,25 @@
       "OriginalItemSpec": "wwwroot\\css\\foodfast-search.css"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\product-discounts.css",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "css/product-discounts.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\product-discounts.css"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\site.css",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -34956,6 +34975,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\voucher.css",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "css/voucher.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\voucher.css"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\favicon.ico",
@@ -35813,6 +35851,25 @@
       "OriginalItemSpec": "wwwroot\\js\\foodfast-search.js"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\product-discounts.js",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "js/product-discounts.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\product-discounts.js"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\site.js",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -35830,6 +35887,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\voucher.js",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "js/voucher.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\voucher.js"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\lib\\aspnet\\signalr\\dist\\browser\\signalr.js",

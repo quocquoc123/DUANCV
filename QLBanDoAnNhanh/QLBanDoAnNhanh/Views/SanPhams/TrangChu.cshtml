@@ -5,6 +5,7 @@
     ViewData["Title"] = "Trang Chủ";
     var productList = Model?.ToList() ?? new List<QLBanDoAnNhanh.Models.SanPham>();
     var searchKeyword = ViewBag.SearchTerm as string ?? "";
+    var discountProducts = ViewBag.DiscountProducts as IReadOnlyList<QLBanDoAnNhanh.Models.SanPham> ?? new List<QLBanDoAnNhanh.Models.SanPham>();
 }
 
 @section Styles {
@@ -19,6 +20,8 @@
     chitietSp = p.ChitietSp ?? "",
     tenDm = p.MaDmNavigation?.TenDm ?? "",
     giaTien = p.GiaTien,
+    discountPercent = p.MaGiamGiaNavigation != null && p.MaGiamGiaNavigation.GiaTri > 0 && p.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now && p.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now ? p.MaGiamGiaNavigation.GiaTri : 0,
+    discountPrice = p.MaGiamGiaNavigation != null && p.MaGiamGiaNavigation.GiaTri > 0 && p.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now && p.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now ? (decimal?)(Math.Round((decimal)p.GiaTien - ((decimal)p.GiaTien * p.MaGiamGiaNavigation.GiaTri / 100), 0)) : null,
     hinhAnh1 = Url.Content(p.HinhAnh1 ?? ""),
     detailUrl = Url.Action("ChiTietSanPham", "SanPhams", new { id = p.MaSp })
 })))
@@ -98,6 +101,45 @@
     </div>
 </div>
 
+@if (discountProducts.Count > 0)
+{
+    <div class="products-container discount-featured-section">
+        <div class="section-header">
+            <h2>Sản Phẩm Giảm Giá Nổi Bật</h2>
+            <p>Ưu đãi đang áp dụng trong thời gian giới hạn</p>
+        </div>
+
+        <div class="products-grid">
+            @foreach (var product in discountProducts)
+            {
+                var discountPercent = product.MaGiamGiaNavigation?.GiaTri ?? 0;
+                var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
+                <div class="product-card product-card-discount">
+                    <div class="product-image-wrapper">
+                        <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
+                        <div class="discount-badge shopee-style">-@discountPercent.ToString("0.##")%</div>
+                        <div class="product-overlay">
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">@product.TenSp</h3>
+                        <div class="product-price-block">
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                            <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                        </div>
+                        <div class="product-description">
+                            <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
+                            <p><strong>Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
 <!-- Products Section -->
 <div id="products-section" class="products-container" data-ff-catalog data-ff-search-term="@searchKeyword">
     <div class="section-header">
@@ -110,8 +152,12 @@
     <div class="products-grid">
         @foreach (var product in productList)
         {
-            var discountPct = product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now
-                ? product.MaGiamGiaNavigation.GiaTri : 0;
+            var isDiscountActive = product.MaGiamGiaNavigation != null
+                && product.MaGiamGiaNavigation.GiaTri > 0
+                && product.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now
+                && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now;
+            var discountPct = isDiscountActive ? product.MaGiamGiaNavigation.GiaTri : 0;
+            var discountPrice = isDiscountActive ? Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPct / 100), 0) : (decimal)product.GiaTien;
             var categoryCode = product.MaDmNavigation?.TenDm ?? "";
             <div class="product-card"
                  data-ma-sp="@product.MaSp"
@@ -122,9 +168,9 @@
                  data-category="@categoryCode">
                 <div class="product-image-wrapper">
                     <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
-                    @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
+                    @if (isDiscountActive)
                     {
-                        <div class="discount-badge">-@product.MaGiamGiaNavigation.GiaTri%</div>
+                        <div class="discount-badge shopee-style">-@discountPct.ToString("0.##")%</div>
                     }
                     <div class="product-overlay">
                         <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
@@ -132,7 +178,17 @@
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">@product.TenSp</h3>
-                    <p class="product-price">@product.GiaTien.ToString("C") VND</p>
+                    @if (isDiscountActive)
+                    {
+                        <div class="product-price-block">
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                            <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="product-price">@String.Format("{0:0,0} đ", product.GiaTien)</p>
+                    }
                     <div class="product-description">
                         <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
                         <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>

@@ -4,6 +4,10 @@
     ViewData["Title"] = "Chi Tiết Sản Phẩm";
     var binhLuans = ViewBag.BinhLuans as List<QLBanDoAnNhanh.Models.BinhLuan>;
     var diemTrungBinh = (double)(ViewBag.DiemTrungBinh ?? 0);
+    var isDiscountActive = (bool)(ViewBag.IsDiscountActive ?? false);
+    var effectivePrice = (decimal)(ViewBag.EffectivePrice ?? (decimal)Model.GiaTien);
+    var discountPercent = Model.MaGiamGiaNavigation?.GiaTri ?? 0;
+    var savedAmount = Math.Max(0, (decimal)Model.GiaTien - effectivePrice);
 }
 
 @section Styles {
@@ -22,7 +26,17 @@
             </div>
             <div class="product-image-meta">
                 <h2 class="product-card-title">@Model.TenSp</h2>
-                <p class="product-card-price">@String.Format("{0:0,0} VND", Model.GiaTien)</p>
+                @if (isDiscountActive)
+                {
+                    <div class="detail-price-stack">
+                        <span class="detail-original-price">@String.Format("{0:0,0} đ", Model.GiaTien)</span>
+                        <span class="product-card-price">@effectivePrice.ToString("N0") đ</span>
+                    </div>
+                }
+                else
+                {
+                    <p class="product-card-price">@String.Format("{0:0,0} đ", Model.GiaTien)</p>
+                }
             </div>
         </div>
 
@@ -34,7 +48,19 @@
                 </div>
                 <div class="product-info-row">
                     <span class="label">Giá:</span>
-                    <span class="value price">@String.Format("{0:0,0} VND", Model.GiaTien)</span>
+                    <span class="value price">
+                        @if (isDiscountActive)
+                        {
+                            <span class="detail-discount-badge">-@discountPercent.ToString("0.##")%</span>
+                            <span class="detail-original-price">@String.Format("{0:0,0} đ", Model.GiaTien)</span>
+                            <span class="detail-sale-price">@effectivePrice.ToString("N0") đ</span>
+                            <span class="detail-saving">Bạn tiết kiệm @savedAmount.ToString("N0") đ</span>
+                        }
+                        else
+                        {
+                            @String.Format("{0:0,0} đ", Model.GiaTien)
+                        }
+                    </span>
                 </div>
                 <div class="product-info-row">
                     <span class="label">Thành Phần:</span>

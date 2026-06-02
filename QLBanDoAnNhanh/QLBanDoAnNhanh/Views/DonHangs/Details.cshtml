@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+    var thanhToan = Model.ThanhToans?.FirstOrDefault();
+    var phuongThucThanhToan = string.IsNullOrWhiteSpace(thanhToan?.PhuongThucThanhToan)
+        ? "Chưa có thông tin"
+        : thanhToan.PhuongThucThanhToan;
 }
 <h2>Chi Tiết Đơn Hàng</h2>
 
@@ -11,6 +15,7 @@
         <p><strong>Mã Đơn Hàng:</strong> @Model.MaDh</p>
         <p><strong>Người Đặt:</strong> @Model.Username</p>
         <p><strong>Địa Chỉ:</strong> @Model.Diachi</p>
+        <p><strong>Phương Thức Thanh Toán:</strong> @phuongThucThanhToan</p>
         <p><strong>Tổng Tiền:</strong> @Model.TongTien.ToString("N0") VND</p>
         <p><strong>Số Lượng Sản Phẩm:</strong> @Model.SoLuong</p>
         <p><strong>Trạng Thái:</strong> @Model.TrangThai</p>

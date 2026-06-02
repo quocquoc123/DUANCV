@@ -8,6 +8,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-cart.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/voucher.css" asp-append-version="true" />
 }
 
 <div class="cart-page">
@@ -55,11 +56,56 @@
                         </div>
                     }
 
+                    <!-- Voucher Section -->
+                    <div class="cart-voucher-card">
+                        <h3 class="voucher-card-title">🎟️ Mã Giảm Giá</h3>
+                        
+                        <!-- Alert Container for Voucher -->
+                        <div id="voucherAlertContainer" class="mb-3"></div>
+
+                        <!-- Voucher Input Section -->
+                        <div class="voucher-input-section mb-4">
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    id="voucherCodeInput" 
+                                    class="form-control" 
+                                    placeholder="Nhập mã giảm giá"
+                                    aria-label="Mã giảm giá" />
+                                <button 
+                                    class="btn btn-primary" 
+                                    id="applyVoucherBtn" 
+                                    type="button">
+                                    <i class="fas fa-check"></i> Áp dụng
+                                </button>
+                            </div>
+                            <small class="form-text text-muted d-block mt-2">
+                                VD: FOOD10, FOOD20, VIP30
+                            </small>
+                        </div>
+
+                        <!-- Applied Voucher Display -->
+                        <div id="voucherSection" class="voucher-display mb-3 d-none">
+                            <div class="voucher-badge">
+                                <span class="voucher-code">Mã: <strong id="voucherCodeDisplay">--</strong></span>
+                                <span class="voucher-percent">-<strong id="voucherPercentDisplay">0</strong>%</span>
+                                <button 
+                                    type="button" 
+                                    id="removeVoucherBtn" 
+                                    class="btn-remove-voucher"
+                                    title="Xóa mã giảm giá">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <hr class="my-3" />
+                    </div>
+
                     <div class="cart-summary-card">
                         <div class="cart-summary-rows">
                             <div class="cart-summary-row">
                                 <span class="label">Tạm tính</span>
-                                <span class="value">@String.Format("{0:0,0} VND", tongTien)</span>
+                                <span class="value" id="cartTotalAmount">@String.Format("{0:0,0} VND", tongTien)</span>
                             </div>
                             <div class="cart-summary-row">
                                 <span class="label">Phí vận chuyển</span>
@@ -67,7 +113,7 @@
                             </div>
                             <div class="cart-summary-row">
                                 <span class="label">Giảm giá</span>
-                                <span class="value">0 VND</span>
+                                <span class="value" id="discountAmount">0 VND</span>
                             </div>
                             <div class="cart-summary-row quantity-row">
                                 <span class="label">Tổng số lượng</span>
@@ -75,7 +121,7 @@
                             </div>
                             <div class="cart-summary-row total">
                                 <span class="label">Tổng thanh toán</span>
-                                <span class="value">@String.Format("{0:0,0} VND", tongTien)</span>
+                                <span class="value" id="totalAfterDiscount">@String.Format("{0:0,0} VND", tongTien)</span>
                             </div>
                         </div>
                     </div>
@@ -155,6 +201,7 @@
                             <button asp-action="CreatePayment" asp-controller="GioHangs" type="submit" class="btn btn-primary btn-paypal">
                                 <span class="paypal-icon"><span class="pp-blue">Pay</span><span class="pp-light">Pal</span></span>
                             </button>
+                            <input type="hidden" id="hiddenVoucherCode" name="voucherCode" value="" />
                         </form>
                     </div>
                 </div>
@@ -180,4 +227,5 @@
 
 @section Scripts {
     <script src="~/js/cart-address.js" asp-append-version="true"></script>
+    <script src="~/js/voucher.js" asp-append-version="true"></script>
 }

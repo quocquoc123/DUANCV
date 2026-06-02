@@ -1,0 +1,64 @@
+@model QLBanDoAnNhanh.ViewModels.ProductDiscountDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    <a class="btn btn-danger" asp-controller="ProductDiscounts" asp-action="Index">
+        <i class="fas fa-tags mr-2"></i>Quản lý giảm giá sản phẩm
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Tổng sản phẩm giảm giá</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalDiscountProducts</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tags fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Sản phẩm giảm giá nhiều nhất</div>
+                        <div class="h6 mb-1 font-weight-bold text-gray-800">@Model.HighestDiscountProductName</div>
+                        <div class="small text-gray-600">-@Model.HighestDiscountPercent.ToString("0.##")%</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-fire fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-12 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng số tiền đã giảm</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalDiscountAmount.ToString("N0") đ</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,62 +1,126 @@
 ﻿@model QLBanDoAnNhanh.Models.KhuyenMai
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Sửa Khuyến Mãi";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Sửa Mã Khuyến Mãi</h1>
+            <hr />
 
-<h4>KhuyenMai</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MaKhuyenMai" />
-            <div class="form-group">
-                <label asp-for="GiaTri" class="control-label"></label>
-                <input asp-for="GiaTri" class="form-control" />
-                <span asp-validation-for="GiaTri" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ThoiGianBatDau" class="control-label"></label>
-                <input asp-for="ThoiGianBatDau" class="form-control" />
-                <span asp-validation-for="ThoiGianBatDau" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ThoiGianKetThuc" class="control-label"></label>
-                <input asp-for="ThoiGianKetThuc" class="form-control" />
-                <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TrangThai" /> @Html.DisplayNameFor(model => model.TrangThai)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="NgayTao" class="control-label"></label>
-                <input asp-for="NgayTao" class="form-control" />
-                <span asp-validation-for="NgayTao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DieuKienApDung" class="control-label"></label>
-                <input asp-for="DieuKienApDung" class="form-control" />
-                <span asp-validation-for="DieuKienApDung" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SoLuong" class="control-label"></label>
-                <input asp-for="SoLuong" class="form-control" />
-                <span asp-validation-for="SoLuong" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="MaKhuyenMai" />
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Mã Khuyến Mãi</label>
+                    <input type="text" class="form-control" value="@Model.MaKhuyenMai" disabled />
+                    <small class="form-text text-muted">Mã không thể thay đổi</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="GiaTri" class="form-label">Giá Trị Giảm (%)</label>
+                    <input asp-for="GiaTri" type="number" min="0" max="100" class="form-control" required />
+                    <span asp-validation-for="GiaTri" class="text-danger"></span>
+                    <small class="form-text text-muted">Nhập phần trăm giảm giá từ 0-100</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SoLuong" class="form-label">Số Lượng Mã</label>
+                    <input asp-for="SoLuong" type="number" min="1" class="form-control" required />
+                    <span asp-validation-for="SoLuong" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DieuKienApDung" class="form-label">Điều Kiện Áp Dụng (Số tiền tối thiểu - VND)</label>
+                    <input asp-for="DieuKienApDung" type="number" min="0" class="form-control" />
+                    <span asp-validation-for="DieuKienApDung" class="text-danger"></span>
+                    <small class="form-text text-muted">Để trống nếu không có điều kiện</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="ThoiGianBatDau" class="form-label">Thời Gian Bắt Đầu</label>
+                            <input asp-for="ThoiGianBatDau" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="ThoiGianBatDau" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="ThoiGianKetThuc" class="form-label">Thời Gian Kết Thúc</label>
+                            <input asp-for="ThoiGianKetThuc" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Thông Tin Khác</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" asp-for="TrangThai" />
+                                <label class="form-check-label" asp-for="TrangThai">
+                                    Kích hoạt khuyến mãi
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Ngày Tạo: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-warning me-2">
+                        <i class="fas fa-save"></i> Cập Nhật Khuyến Mãi
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay Lại
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
 
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+        color: #333;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .alert-danger {
+        border-left: 4px solid #dc3545;
+    }
+</style>

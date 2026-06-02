@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +11,6 @@ using iText.Layout.Properties;
 
 public class DonHangsController : Controller
 {
-    private QlbanDoAnNhanh3Context db = new QlbanDoAnNhanh3Context();
-
     private readonly QlbanDoAnNhanh3Context _context; // Thay đổi theo DbContext của bạn
 
     public DonHangsController(QlbanDoAnNhanh3Context context)
@@ -23,7 +21,7 @@ public class DonHangsController : Controller
     // GET: DonHangs
     public async Task<IActionResult> Index(string trangThai = null)
     {
-        var query = _context.DonHangs.AsQueryable();
+        var query = _context.DonHangs.AsNoTracking().AsQueryable();
 
         // Lọc theo trạng thái nếu có
         if (!string.IsNullOrEmpty(trangThai))
@@ -46,6 +44,8 @@ public class DonHangsController : Controller
         }
 
         var donHang = await _context.DonHangs
+            .AsNoTracking()
+            .Include(dh => dh.ThanhToans)
             .FirstOrDefaultAsync(m => m.MaDh == id);
         if (donHang == null)
         {
@@ -225,7 +225,8 @@ public class DonHangsController : Controller
 
         var searchTermLower = searchTerm.ToLower();
 
-        var searchResults = db.DonHangs
+        var searchResults = _context.DonHangs
+            .AsNoTracking()
             .Where(p => p.TrangThai.ToLower().Contains(searchTermLower))
             .ToList();
         ViewBag.SearchTerm = searchTerm;
@@ -234,6 +235,7 @@ public class DonHangsController : Controller
     public IActionResult DoanhThu() 
     {
         var doanhThu = _context.ChiTietDonHangs
+            .AsNoTracking()
             .Join(_context.DonHangs, cdh => cdh.MaDh, dh => dh.MaDh, (cdh, dh) => new { cdh, dh })
             .Where(x => x.dh.TrangThai == "Đã Giao") // Chỉ lấy đơn hàng có trạng thái "Đã Giao"
             .Join(_context.SanPhams, combined => combined.cdh.MaSp, sp => sp.MaSp, (combined, sp) => new { combined.cdh, combined.dh, sp })
@@ -257,6 +259,7 @@ public class DonHangsController : Controller
     public IActionResult SoLuongDaBan()
     {
         var soLuongBan = _context.ChiTietDonHangs
+            .AsNoTracking()
             .Join(_context.DonHangs, cdh => cdh.MaDh, dh => dh.MaDh, (cdh, dh) => new { cdh, dh })
             .Where(x => x.dh.TrangThai == "Đã Giao")
             .Join(_context.SanPhams, x => x.cdh.MaSp, sp => sp.MaSp, (x, sp) => new { x.cdh, sp })
@@ -312,9 +315,9 @@ public class DonHangsController : Controller
     {
 
         // Lấy thông tin đơn hàng và chi tiết đơn hàng
-        using (var context = new QlbanDoAnNhanh3Context())
         {
-            var order = context.DonHangs
+            var order = _context.DonHangs
+                .AsNoTracking()
                 .Include(o => o.ChiTietDonHangs)
                 .ThenInclude(od => od.MaSpNavigation)
                 .FirstOrDefault(o => o.MaDh == maDh);
@@ -371,5 +374,3 @@ public class DonHangsController : Controller
         }
     }
 }
-
-

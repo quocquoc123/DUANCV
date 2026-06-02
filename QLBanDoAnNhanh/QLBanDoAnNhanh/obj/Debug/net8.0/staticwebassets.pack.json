@@ -7401,8 +7401,16 @@
       "PackagePath": "staticwebassets\\css\\foodfast-search.css"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\product-discounts.css",
+      "PackagePath": "staticwebassets\\css\\product-discounts.css"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\voucher.css",
+      "PackagePath": "staticwebassets\\css\\voucher.css"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\favicon.ico",
@@ -7585,8 +7593,16 @@
       "PackagePath": "staticwebassets\\js\\foodfast-search.js"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\product-discounts.js",
+      "PackagePath": "staticwebassets\\js\\product-discounts.js"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\voucher.js",
+      "PackagePath": "staticwebassets\\js\\voucher.js"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\lib\\aspnet\\signalr\\dist\\browser\\signalr.js",

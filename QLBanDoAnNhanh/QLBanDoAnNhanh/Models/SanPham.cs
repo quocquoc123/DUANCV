@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLBanDoAnNhanh.Models;
 
@@ -26,6 +27,21 @@ public partial class SanPham
     public string HinhAnh1 { get; set; }
 
     public string HinhAnh2 { get; set; }
+
+    [NotMapped]
+    public decimal? DiscountPercent { get; set; }
+
+    [NotMapped]
+    public decimal? DiscountPrice { get; set; }
+
+    [NotMapped]
+    public DateTime? DiscountStartDate { get; set; }
+
+    [NotMapped]
+    public DateTime? DiscountEndDate { get; set; }
+
+    [NotMapped]
+    public bool IsDiscount { get; set; }
 
     public virtual ICollection<BinhLuan> BinhLuans { get; set; } = new List<BinhLuan>();
 

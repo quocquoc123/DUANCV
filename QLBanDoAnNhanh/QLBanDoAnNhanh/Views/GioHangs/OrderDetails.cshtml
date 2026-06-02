@@ -8,7 +8,10 @@
         ? Url.Action("ChiTietSanPham", "SanPhams", new { id = firstItem.MaSp })
         : Url.Action("TrangChu", "SanPhams");
     var tamTinh = Model.ChiTietDonHangs?.Sum(x => x.TongTien) ?? Model.TongTien;
+    var giamGiaVoucher = Math.Max(0, tamTinh - Model.TongTien);
     var thanhToan = Model.ThanhToans?.FirstOrDefault();
+    var maVoucher = string.IsNullOrWhiteSpace(Model.MaKhuyenMai) ? "—" : Model.MaKhuyenMai;
+    var phanTramVoucher = Model.MaKhuyenMaiNavigation?.GiaTri;
 
     string GetStatusClass(string trangThai)
     {
@@ -152,8 +155,22 @@
                             <span class="sr-value">Miễn phí</span>
                         </div>
                         <div class="summary-row">
-                            <span class="sr-label">Giảm giá</span>
-                            <span class="sr-value">0 VND</span>
+                            <span class="sr-label">Phương thức thanh toán</span>
+                            <span class="sr-value">@phuongThucThanhToan</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="sr-label">Mã voucher</span>
+                            <span class="sr-value">
+                                @maVoucher
+                                @if (phanTramVoucher.HasValue)
+                                {
+                                    <span>(-@phanTramVoucher.Value%)</span>
+                                }
+                            </span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="sr-label">Giảm giá voucher</span>
+                            <span class="sr-value">-@giamGiaVoucher.ToString("N0") VND</span>
                         </div>
                         <div class="summary-row total">
                             <span class="sr-label">Tổng thanh toán</span>

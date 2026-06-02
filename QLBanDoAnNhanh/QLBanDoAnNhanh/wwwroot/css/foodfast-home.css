@@ -271,6 +271,36 @@
   box-shadow: 0 4px 14px rgba(255, 77, 79, 0.4);
 }
 
+.discount-badge.shopee-style {
+  top: 0;
+  right: 0;
+  min-width: 58px;
+  padding: 8px 10px 10px;
+  border-radius: 0 0 0 10px;
+  background: #ef2b2d;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.discount-badge.shopee-style::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  margin: auto;
+  width: 0;
+  height: 0;
+  border-left: 29px solid transparent;
+  border-right: 29px solid transparent;
+  border-top: 7px solid #ef2b2d;
+}
+
+.discount-featured-section {
+  padding-top: 28px;
+}
+
 .product-overlay {
   position: absolute;
   inset: 0;
@@ -326,6 +356,26 @@
   font-weight: 800;
   color: #ff4d4f;
   margin-bottom: 12px;
+}
+
+.product-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.product-price-original {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: line-through;
+}
+
+.product-price-sale {
+  color: #dc2626;
+  font-size: 23px;
+  font-weight: 900;
 }
 
 .product-description {

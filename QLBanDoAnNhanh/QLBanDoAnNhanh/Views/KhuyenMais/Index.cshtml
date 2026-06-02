@@ -1,181 +1,204 @@
 ﻿@model IEnumerable<QLBanDoAnNhanh.Models.KhuyenMai>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Quản Lý Khuyến Mãi";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
 
-<h1>Quản lý khuyến mãi</h1>
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-tags"></i> Quản Lý Khuyến Mãi</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Tạo Khuyến Mãi Mới
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Tạo khuyến mãi</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaTri)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ThoiGianBatDau)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ThoiGianKetThuc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TrangThai)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NgayTao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DieuKienApDung)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoLuong)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaTri)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ThoiGianBatDau)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ThoiGianKetThuc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TrangThai)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NgayTao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DieuKienApDung)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SoLuong)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MaKhuyenMai">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaKhuyenMai">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaKhuyenMai">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<style>
-    /* CSS tổng thể */
-
-
-    /* Tiêu đề */
-    h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 12%;">Mã Khuyến Mãi</th>
+                        <th style="width: 8%;">Giảm Giá (%)</th>
+                        <th style="width: 12%;">Thời Gian Bắt Đầu</th>
+                        <th style="width: 12%;">Thời Gian Kết Thúc</th>
+                        <th style="width: 10%;">Số Lượng</th>
+                        <th style="width: 8%;">Điều Kiện</th>
+                        <th style="width: 8%;">Trạng Thái</th>
+                        <th style="width: 8%;">Ngày Tạo</th>
+                        <th style="width: 14%; text-align: center;">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@Html.DisplayFor(modelItem => item.MaKhuyenMai)</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">@Html.DisplayFor(modelItem => item.GiaTri)%</span>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ThoiGianBatDau)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ThoiGianKetThuc)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SoLuong)
+                            </td>
+                            <td>
+                                @if (item.DieuKienApDung.HasValue)
+                                {
+                                    <span>@string.Format("{0:N0}", item.DieuKienApDung) VND</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.TrangThai)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Kích Hoạt
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-times-circle"></i> Tắt
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NgayTao)
+                            </td>
+                            <td style="text-align: center;">
+                                <a asp-action="Edit" asp-route-id="@item.MaKhuyenMai" class="btn btn-sm btn-warning" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.MaKhuyenMai" class="btn btn-sm btn-info" title="Chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.MaKhuyenMai" class="btn btn-sm btn-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            Chưa có khuyến mãi nào. <a asp-action="Create" class="alert-link">Tạo khuyến mãi mới</a>
+        </div>
+    }
+</div>
 
-    /* Form lọc */
-    form {
-        background-color: #fff;
+<style>
+    .container-fluid {
+        background-color: #f8f9fa;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    label {
-        font-weight: bold;
-        margin-bottom: 10px;
+    h1 {
+        color: #333;
+        font-weight: 700;
+        margin-bottom: 0;
     }
 
-    .form-select {
-        width: 100%;
-        max-width: 300px;
-        margin-bottom: 10px;
-    }
-
-    button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-        cursor: pointer;
-    }
-
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-    /* Bảng danh sách đơn hàng */
     .table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-        .table thead tr {
-            background-color: #007bff;
-            color: white;
-            text-align: left;
-        }
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
 
-        .table th,
-        .table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .table tbody tr:hover {
-            background-color: #e9ecef;
-        }
-
-    /* Các nút hành động */
-    .btn {
-        padding: 5px 10px;
-        border-radius: 5px;
-        margin-right: 5px;
-        text-decoration: none;
+    .table th {
+        background-color: #343a40 !important;
         color: white;
-        transition: background-color 0.3s;
+        font-weight: 600;
+        border: none;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 12px 15px;
+    }
+
+    .badge {
+        padding: 6px 10px;
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        padding: 6px 10px;
+        margin: 0 2px;
     }
 
     .btn-warning {
         background-color: #ffc107;
+        border: none;
+        color: #333;
     }
 
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
+    .btn-warning:hover {
+        background-color: #e0a800;
+        color: white;
+    }
 
     .btn-info {
         background-color: #17a2b8;
+        border: none;
     }
 
-        .btn-info:hover {
-            background-color: #138496;
-        }
+    .btn-info:hover {
+        background-color: #138496;
+    }
 
     .btn-danger {
         background-color: #dc3545;
+        border: none;
     }
 
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
 
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .text-end {
+        margin-bottom: 20px;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 15px;
+        border-radius: 8px;
+    }
 </style>

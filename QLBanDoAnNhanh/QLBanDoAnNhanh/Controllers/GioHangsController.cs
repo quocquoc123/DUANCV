@@ -17,16 +17,18 @@ namespace QLBanDoAnNhanh.Controllers
 
     {
         private readonly PayPalService _payPalService;
-
+        private readonly VoucherService _voucherService;
         private readonly QlbanDoAnNhanh3Context _context;
+        private readonly IProductDiscountService _discountService;
 
        
 
-        public GioHangsController(QlbanDoAnNhanh3Context context, PayPalService payPalService)
+        public GioHangsController(QlbanDoAnNhanh3Context context, PayPalService payPalService, VoucherService voucherService, IProductDiscountService discountService)
         {
             _context = context;
-
             _payPalService = payPalService;
+            _voucherService = voucherService;
+            _discountService = discountService;
         }
 
         // Tính tổng số sản phẩm trong giỏ hàng và cập nhật ViewBag
@@ -63,7 +65,9 @@ namespace QLBanDoAnNhanh.Controllers
             // Tìm sản phẩm theo mã sản phẩm
             using (var context = new QlbanDoAnNhanh3Context())
             {
-                var sanPham = context.SanPhams.FirstOrDefault(sp => sp.MaSp == MaSp);
+                var sanPham = context.SanPhams
+                    .Include(sp => sp.MaGiamGiaNavigation)
+                    .FirstOrDefault(sp => sp.MaSp == MaSp);
                 if (sanPham == null)
                 {
                     return NotFound(); // Nếu không tìm thấy sản phẩm, trả về lỗi 404
@@ -83,14 +87,14 @@ namespace QLBanDoAnNhanh.Controllers
                 // Nếu sản phẩm chưa có trong giỏ, thêm sản phẩm mới vào giỏ
                 if (chiTietGioHang == null)
                 {
-                    chiTietGioHang = NewMethod(MaSp, quantity, sanPham);
+                    chiTietGioHang = NewMethod(MaSp, quantity, sanPham, _discountService.GetEffectivePrice(sanPham));
                     gioHang.ChiTietGioHangs.Add(chiTietGioHang);
                 }
                 else
                 {
                     // Nếu sản phẩm đã có trong giỏ, cập nhật số lượng và tổng tiền
                     chiTietGioHang.SoLuongSp += quantity;
-                    chiTietGioHang.TongTien = (int)(chiTietGioHang.SoLuongSp * sanPham.GiaTien);
+                    chiTietGioHang.TongTien = (int)(chiTietGioHang.SoLuongSp * _discountService.GetEffectivePrice(sanPham));
                 }
 
                 // Lưu lại giỏ hàng vào session
@@ -102,7 +106,7 @@ namespace QLBanDoAnNhanh.Controllers
             return RedirectToAction("Index");
         }
 
-        private static ChiTietGioHang NewMethod(int MaSp, int quantity, SanPham sanPham)
+        private static ChiTietGioHang NewMethod(int MaSp, int quantity, SanPham sanPham, decimal effectivePrice)
         {
             return new ChiTietGioHang
             {
@@ -110,7 +114,7 @@ namespace QLBanDoAnNhanh.Controllers
                 MaSpNavigation = sanPham,
                 SoLuongSp = quantity,
            
-                TongTien = (int)(quantity * sanPham.GiaTien)
+                TongTien = (int)(quantity * effectivePrice)
             };
         }
 
@@ -153,7 +157,7 @@ namespace QLBanDoAnNhanh.Controllers
             if (chiTietGioHang != null)
             {
                 chiTietGioHang.SoLuongSp = quantity;
-                chiTietGioHang.TongTien = (int)(quantity * chiTietGioHang.MaSpNavigation.GiaTien);
+                chiTietGioHang.TongTien = (int)(quantity * _discountService.GetEffectivePrice(chiTietGioHang.MaSpNavigation));
             }
 
             // Cập nhật lại session
@@ -173,7 +177,7 @@ namespace QLBanDoAnNhanh.Controllers
             // Điều hướng về trang giỏ hàng
             return RedirectToAction("Index");
         }
-        public IActionResult Checkout(string DiaChi, string Phone)
+        public IActionResult Checkout(string DiaChi, string Phone, string voucherCode = null)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -215,14 +219,41 @@ namespace QLBanDoAnNhanh.Controllers
                     }
                 }
 
+                // Tính tổng tiền
+                double tongTien = gioHang.ChiTietGioHangs.Sum(x => (double)(x.TongTien ?? 0));
+                double tongTienGoc = tongTien;
+                string maKhuyenMaiSuDung = null;
+
+                // Kiểm tra và áp dụng voucher nếu có
+                if (!string.IsNullOrWhiteSpace(voucherCode))
+                {
+                    var khuyenMai = context.KhuyenMais.FirstOrDefault(km => km.MaKhuyenMai == voucherCode);
+                    if (khuyenMai != null && khuyenMai.TrangThai && khuyenMai.SoLuong > 0)
+                    {
+                        // Kiểm tra thời gian và điều kiện
+                        var now = DateTime.Now;
+                        if (now >= khuyenMai.ThoiGianBatDau && 
+                            now <= khuyenMai.ThoiGianKetThuc &&
+                            tongTien >= (khuyenMai.DieuKienApDung ?? 0))
+                        {
+                            maKhuyenMaiSuDung = voucherCode;
+                            // Tính tiền giảm và trừ vào tổng tiền
+                            double tienGiam = tongTien * (khuyenMai.GiaTri / 100.0);
+                            tongTien = tongTien - tienGiam;
+                            // Giảm số lượng voucher
+                            khuyenMai.SoLuong -= 1;
+                        }
+                    }
+                }
+
                 // Tạo đối tượng DonHang
                 var donHang = new DonHang
                 {
                     MaDh = maDonHang,
                     Username = username,
-                    MaKhuyenMai = "1", // Giả sử có mã khuyến mãi mặc định
+                    MaKhuyenMai = maKhuyenMaiSuDung,
                     Diachi = DiaChi,
-                    TongTien = gioHang.ChiTietGioHangs.Sum(x => (double)(x.TongTien ?? 0)),
+                    TongTien = tongTien,
                     SoLuong = (int)gioHang.ChiTietGioHangs.Sum(x => x.SoLuongSp),
                     TrangThai = trangThai,
                     CreatedAt = DateTime.Now,
@@ -232,6 +263,14 @@ namespace QLBanDoAnNhanh.Controllers
 
                 // Thêm đơn hàng vào cơ sở dữ liệu
                 context.DonHangs.Add(donHang);
+                context.ThanhToans.Add(new ThanhToan
+                {
+                    MaDh = maDonHang,
+                    PhuongThucThanhToan = "Thanh toán khi nhận hàng",
+                    NgayThanhToan = DateTime.Now,
+                    TongTien = tongTien,
+                    TrangThaiThanhToan = true
+                });
 
                 // Lưu từng sản phẩm trong giỏ hàng vào chi tiết đơn hàng
                 foreach (var item in gioHang.ChiTietGioHangs)
@@ -312,6 +351,7 @@ namespace QLBanDoAnNhanh.Controllers
                                     .Include(dh => dh.ChiTietDonHangs)
                                     .ThenInclude(ct => ct.MaSpNavigation)
                                     .Include(dh => dh.MaNguoiDungNavigation)
+                                    .Include(dh => dh.MaKhuyenMaiNavigation)
                                     .Include(dh => dh.ThanhToans)
                                     .FirstOrDefault(dh => dh.MaDh == maDh);
 
@@ -363,7 +403,7 @@ namespace QLBanDoAnNhanh.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string Phone, string trangThai)
+        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string Phone, string trangThai, string voucherCode = null)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -382,9 +422,33 @@ namespace QLBanDoAnNhanh.Controllers
 
             // Tính toán tổng số tiền và số lượng từ giỏ hàng
             decimal tongTien = (decimal)gioHang.ChiTietGioHangs.Sum(x => (double)(x.TongTien ?? 0));
+            decimal tongTienThanhToan = tongTien;
             int soLuong = (int)gioHang.ChiTietGioHangs.Sum(x => x.SoLuongSp);
             var maDonHang = _context.DonHangs.Max(d => d.MaDh) + 1;
             var maNguoiDung = int.Parse(HttpContext.Session.GetString("UserID"));
+            string maKhuyenMaiSuDung = null;
+
+            // Kiểm tra và áp dụng voucher nếu có
+            if (!string.IsNullOrWhiteSpace(voucherCode))
+            {
+                var khuyenMai = _context.KhuyenMais.FirstOrDefault(km => km.MaKhuyenMai == voucherCode);
+                if (khuyenMai != null && khuyenMai.TrangThai && khuyenMai.SoLuong > 0)
+                {
+                    // Kiểm tra thời gian và điều kiện
+                    var now = DateTime.Now;
+                    if (now >= khuyenMai.ThoiGianBatDau && 
+                        now <= khuyenMai.ThoiGianKetThuc &&
+                        (decimal)tongTien >= (decimal)(khuyenMai.DieuKienApDung ?? 0))
+                    {
+                        maKhuyenMaiSuDung = voucherCode;
+                        // Tính tiền giảm và trừ vào tổng tiền
+                        decimal tienGiam = tongTien * (khuyenMai.GiaTri / 100m);
+                        tongTienThanhToan = tongTien - tienGiam;
+                        // Giảm số lượng voucher
+                        khuyenMai.SoLuong -= 1;
+                    }
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(Phone))
             {
@@ -401,9 +465,9 @@ namespace QLBanDoAnNhanh.Controllers
 
                 MaDh = maDonHang,  // Set MaDh manually
                 Username = username,
-                MaKhuyenMai = "1", // Giả sử có mã khuyến mãi mặc định
+                MaKhuyenMai = maKhuyenMaiSuDung,
                 Diachi = DiaChi,
-                TongTien = (double)amount,
+                TongTien = (double)tongTienThanhToan,
                 SoLuong = soLuong,
                 TrangThai = "Chưa Giao",
                 CreatedAt = DateTime.Now,
@@ -413,6 +477,14 @@ namespace QLBanDoAnNhanh.Controllers
 
             // Thêm đơn hàng vào cơ sở dữ liệu
             _context.DonHangs.Add(donHang);
+            _context.ThanhToans.Add(new ThanhToan
+            {
+                MaDh = donHang.MaDh,
+                PhuongThucThanhToan = "PayPal",
+                NgayThanhToan = DateTime.Now,
+                TongTien = (double)tongTienThanhToan,
+                TrangThaiThanhToan = false
+            });
             await _context.SaveChangesAsync();
 
             // Lưu chi tiết đơn hàng
@@ -423,7 +495,7 @@ namespace QLBanDoAnNhanh.Controllers
                     MaDh = donHang.MaDh, // Lấy MaDh từ đối tượng DonHang vừa tạo
                     MaSp = (int)item.MaSp,
                     SoLuong = (int)item.SoLuongSp,
-                    TongTien = (double)amount // Sử dụng kiểu decimal cho giá trị tiền
+                    TongTien = (double)item.TongTien
                 };
 
                 _context.ChiTietDonHangs.Add(chiTiet);
@@ -434,8 +506,8 @@ namespace QLBanDoAnNhanh.Controllers
 
             try
             {
-                // Tạo đơn hàng trên PayPal và lấy liên kết phê duyệt
-                var approvalLink = await payPalService.CreateOrderAsync(tongTien, "USD");
+                // Tạo đơn hàng trên PayPal với số tiền đã trừ discount
+                var approvalLink = await payPalService.CreateOrderAsync(tongTienThanhToan, "USD");
 
                 if (!string.IsNullOrEmpty(approvalLink))
                 {

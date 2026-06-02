@@ -7,6 +7,7 @@ using QLBanDoAnNhanh.Common;
 using DinkToPdf.Contracts;
 using DinkToPdf;
 using QLBanDoAnNhanh.Services;
+using QLBanDoAnNhanh.Repositories;
 
 
 
@@ -23,6 +24,9 @@ builder.Services.AddDbContext<QlbanDoAnNhanh3Context>(options =>
 
 
 builder.Services.AddScoped<PayPalService>();
+builder.Services.AddScoped<VoucherService>();
+builder.Services.AddScoped<IProductDiscountRepository, ProductDiscountRepository>();
+builder.Services.AddScoped<IProductDiscountService, ProductDiscountService>();
 builder.Services.AddHttpClient();
 // Thêm dịch vụ SignalR cho chat
 builder.Services.AddSignalR();

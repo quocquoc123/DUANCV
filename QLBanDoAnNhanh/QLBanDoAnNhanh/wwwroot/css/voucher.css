@@ -1,0 +1,241 @@
+/**
+ * Styles cho Voucher (Mã Giảm Giá)
+ */
+
+/* Voucher Input Section */
+.voucher-input-section {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.voucher-input-section .input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.voucher-input-section .form-control {
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.voucher-input-section .form-control:focus {
+    border-color: #f2b633;
+    box-shadow: 0 0 0 0.2rem rgba(242, 182, 51, 0.25);
+}
+
+.voucher-input-section .btn {
+    padding: 10px 16px;
+    background-color: #f2b633;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.voucher-input-section .btn:hover:not(:disabled) {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(242, 182, 51, 0.4);
+}
+
+.voucher-input-section .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.voucher-input-section .btn i {
+    margin-right: 6px;
+}
+
+.voucher-input-section .form-text {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Voucher Display Badge */
+.voucher-display {
+    animation: slideInDown 0.3s ease-out;
+}
+
+.voucher-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #f2b633 0%, #ff9800 100%);
+    border-radius: 8px;
+    border: 1px solid #f2b633;
+    box-shadow: 0 4px 12px rgba(242, 182, 51, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.voucher-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.2), transparent 50%);
+    pointer-events: none;
+}
+
+.voucher-code {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    flex: 1;
+    z-index: 1;
+}
+
+.voucher-code strong {
+    color: #ffffff;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.voucher-percent {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.voucher-percent strong {
+    color: #ffffff;
+}
+
+.btn-remove-voucher {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1;
+    padding: 0;
+    font-size: 14px;
+}
+
+.btn-remove-voucher:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Alert Styles */
+#voucherAlertContainer .alert {
+    padding: 12px 14px;
+    margin: 0 0 15px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-size: 14px;
+    animation: slideInDown 0.3s ease-out;
+}
+
+#voucherAlertContainer .alert-success {
+    background-color: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+#voucherAlertContainer .alert-danger {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+#voucherAlertContainer .alert-info {
+    background-color: #d1ecf1;
+    border-color: #17a2b8;
+    color: #0c5460;
+}
+
+#voucherAlertContainer .btn-close {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    background-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .voucher-input-section .input-group {
+        flex-direction: column;
+    }
+
+    .voucher-input-section .btn {
+        width: 100%;
+    }
+
+    .voucher-badge {
+        flex-wrap: wrap;
+    }
+
+    .voucher-code {
+        flex-basis: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+/* Animations */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cart Voucher Card */
+.cart-voucher-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.voucher-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Utility Classes */
+.d-none {
+    display: none !important;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.2em;
+}

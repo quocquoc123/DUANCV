@@ -1,0 +1,224 @@
+@model QLBanDoAnNhanh.ViewModels.ProductDiscountIndexViewModel
+
+@{
+    ViewData["Title"] = "Quản lý giảm giá sản phẩm";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/admin/vendor/datatables/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/css/product-discounts.css" asp-append-version="true" />
+}
+
+<div class="discount-admin-page">
+    <div class="discount-admin-header">
+        <div>
+            <p class="discount-admin-eyebrow">Admin</p>
+            <h1>Quản lý giảm giá sản phẩm</h1>
+        </div>
+        <a class="btn btn-outline-danger" asp-controller="SanPhams" asp-action="Index">
+            <i class="fas fa-box-open mr-2"></i>Sản phẩm
+        </a>
+    </div>
+
+    @if (TempData["DiscountSuccess"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["DiscountSuccess"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["DiscountError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["DiscountError"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="row discount-stats">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="discount-stat-card">
+                <div>
+                    <span>Tổng sản phẩm giảm giá</span>
+                    <strong>@Model.Dashboard.TotalDiscountProducts</strong>
+                </div>
+                <i class="fas fa-tags"></i>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="discount-stat-card">
+                <div>
+                    <span>Sản phẩm giảm nhiều nhất</span>
+                    <strong>@Model.Dashboard.HighestDiscountProductName</strong>
+                    @if (Model.Dashboard.HighestDiscountPercent > 0)
+                    {
+                        <small>-@Model.Dashboard.HighestDiscountPercent.ToString("0.##")%</small>
+                    }
+                </div>
+                <i class="fas fa-fire"></i>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="discount-stat-card">
+                <div>
+                    <span>Tổng số tiền đã giảm</span>
+                    <strong>@Model.Dashboard.TotalDiscountAmount.ToString("N0") đ</strong>
+                </div>
+                <i class="fas fa-coins"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="discount-table-card">
+        <div class="table-responsive">
+            <table id="productDiscountTable" class="table table-hover align-middle w-100">
+                <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá gốc</th>
+                        <th>Phần trăm giảm giá</th>
+                        <th>Giá sau giảm</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Products)
+                    {
+                        <tr>
+                            <td>
+                                <img class="discount-product-thumb" src="@Url.Content(item.HinhAnh ?? "~/images/logo1.png")" alt="@item.TenSp" />
+                            </td>
+                            <td>
+                                <strong>@item.TenSp</strong>
+                            </td>
+                            <td>@item.GiaGoc.ToString("N0") đ</td>
+                            <td>
+                                @if (item.DiscountPercent > 0)
+                                {
+                                    <span class="discount-pill">-@item.DiscountPercent.ToString("0.##")%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">0%</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <strong class="discount-price">@item.GiaSauGiam.ToString("N0") đ</strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">@item.GiaGoc.ToString("N0") đ</span>
+                                }
+                            </td>
+                            <td>@(item.DiscountStartDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td>@(item.DiscountEndDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td><span class="@item.StatusCssClass">@item.StatusText</span></td>
+                            <td>
+                                <div class="discount-actions">
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger js-open-discount-modal"
+                                            data-toggle="modal"
+                                            data-target="#discountModal"
+                                            data-product-id="@item.MaSp"
+                                            data-product-name="@item.TenSp"
+                                            data-original-price="@item.GiaGoc"
+                                            data-discount-percent="@item.DiscountPercent"
+                                            data-start-date="@(item.DiscountStartDate?.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                                            data-end-date="@(item.DiscountEndDate?.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.AddDays(7).ToString("yyyy-MM-ddTHH:mm"))">
+                                        <i class="fas fa-percent"></i>
+                                    </button>
+                                    <form asp-action="Cancel" asp-controller="ProductDiscounts" method="post" class="d-inline js-cancel-discount-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.MaSp" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" @(item.DiscountPercent <= 0 ? "disabled" : "")>
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content discount-modal">
+            <form asp-action="Apply" asp-controller="ProductDiscounts" method="post" id="discountForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discountModalLabel">Thiết lập giảm giá</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Form.MaSp" id="discountProductId" name="MaSp" />
+
+                    <div class="form-group">
+                        <label for="discountProductName">Tên sản phẩm</label>
+                        <input type="text" class="form-control" id="discountProductName" name="TenSp" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discountOriginalPrice">Giá gốc</label>
+                        <input type="text" class="form-control" id="discountOriginalPrice" readonly />
+                        <input type="hidden" id="discountOriginalPriceValue" name="GiaGoc" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="discountPercent">Phần trăm giảm giá (%)</label>
+                            <input type="number" class="form-control" id="discountPercent" name="DiscountPercent" min="1" max="100" step="0.01" required />
+                            <small class="form-text text-muted">Từ 1 đến 100.</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Giá sau giảm</label>
+                            <div class="discount-preview-price" id="discountPreviewPrice">0 đ</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="discountStartDate">Ngày bắt đầu</label>
+                            <input type="datetime-local" class="form-control" id="discountStartDate" name="DiscountStartDate" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="discountEndDate">Ngày kết thúc</label>
+                            <input type="datetime-local" class="form-control" id="discountEndDate" name="DiscountEndDate" required />
+                        </div>
+                    </div>
+
+                    <div class="alert alert-danger d-none mb-0" id="discountClientError"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-save mr-2"></i>Lưu giảm giá
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/product-discounts.js" asp-append-version="true"></script>
+}
