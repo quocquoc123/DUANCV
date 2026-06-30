@@ -123,6 +123,23 @@ namespace QLBanDoAnNhanh.Controllers
         {
             var gioHang = GetGioHangFromSession() ?? new GioHang();
             UpdateCartItemCount(gioHang); // Cập nhật số lượng giỏ hàng
+
+            // Prefill thông tin checkout từ hồ sơ + đơn gần nhất (UI convenience)
+            var username = HttpContext.Session.GetString("userLogin");
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                var nguoiDung = _context.NguoiDungs.AsNoTracking().FirstOrDefault(nd => nd.Username == username);
+                var lastOrder = _context.DonHangs
+                    .AsNoTracking()
+                    .Where(dh => dh.Username == username && !string.IsNullOrWhiteSpace(dh.Diachi))
+                    .OrderByDescending(dh => dh.CreatedAt)
+                    .FirstOrDefault();
+
+                ViewBag.PrefillUsername = nguoiDung?.HoTen ?? username;
+                ViewBag.PrefillPhone = nguoiDung?.Sdt ?? "";
+                ViewBag.PrefillAddress = lastOrder?.Diachi ?? "";
+            }
+
             return View(gioHang);
         }
 
@@ -299,6 +316,16 @@ namespace QLBanDoAnNhanh.Controllers
             }
 
             // Xóa giỏ hàng sau khi thanh toán thành công
+            var firstPurchasedItem = gioHang.ChiTietGioHangs.FirstOrDefault();
+            if (firstPurchasedItem?.MaSpNavigation != null)
+            {
+                // UI trigger data for review overlay (one-time per order on homepage)
+                TempData["ReviewOrderId"] = maDonHang;
+                TempData["ReviewProductId"] = firstPurchasedItem.MaSpNavigation.MaSp;
+                TempData["ReviewProductName"] = firstPurchasedItem.MaSpNavigation.TenSp;
+                TempData["ReviewProductImage"] = firstPurchasedItem.MaSpNavigation.HinhAnh1 ?? "";
+            }
+
             ClearCart();
             TempData["Message"] = "Thanh toán thành công! Cảm ơn bạn đã mua hàng.";
 

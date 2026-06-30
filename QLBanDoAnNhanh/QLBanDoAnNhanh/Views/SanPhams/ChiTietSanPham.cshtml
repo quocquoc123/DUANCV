@@ -8,6 +8,12 @@
     var effectivePrice = (decimal)(ViewBag.EffectivePrice ?? (decimal)Model.GiaTien);
     var discountPercent = Model.MaGiamGiaNavigation?.GiaTri ?? 0;
     var savedAmount = Math.Max(0, (decimal)Model.GiaTien - effectivePrice);
+    var canComment = (bool)(ViewBag.CanComment ?? false);
+    var hasPurchasedProduct = (bool)(ViewBag.HasPurchasedProduct ?? false);
+    var hasCommentedProduct = (bool)(ViewBag.HasCommentedProduct ?? false);
+    var ratingCounts = ViewBag.RatingCounts as int[] ?? new int[6];
+    var userRatings = ViewBag.UserRatings as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var totalRatings = ratingCounts.Skip(1).Take(5).Sum();
 }
 
 @section Styles {
@@ -103,22 +109,57 @@
         </div>
     }
 
-    <div class="MoTaDanhGia">
-        <div class="rating-section-card">
-            <div class="rating-section-inner">
-                <div class="rating-summary">
-                    <div>
-                        <div class="rating-score">@diemTrungBinh.ToString("0.0")</div>
-                        <div class="rating-score-label">Điểm trung bình</div>
-                    </div>
-                    <div class="rating-stars-display" aria-label="Điểm @diemTrungBinh.ToString("0.0") / 5">
+    <div class="MoTaDanhGia ff-reviews" data-ff-ready="false">
+        <div class="ff-rating-summary-card">
+            <div class="ff-rating-summary-grid">
+                <div class="ff-rating-left">
+                    <div class="ff-rating-score">@diemTrungBinh.ToString("0.0")</div>
+                    <div class="ff-rating-stars" aria-label="Average rating @diemTrungBinh.ToString("0.0") out of 5">
                         @for (int s = 1; s <= 5; s++)
                         {
-                            <span class="star-icon @(s <= Math.Round(diemTrungBinh) ? "filled" : "")">&#9733;</span>
+                            <span class="ff-star @(s <= Math.Round(diemTrungBinh) ? "is-filled" : "")">&#9733;</span>
+                        }
+                    </div>
+                    <div class="ff-rating-caption">Average Rating</div>
+                    <div class="ff-rating-subcaption">
+                        @if (totalRatings > 0)
+                        {
+                            <text>@totalRatings lượt đánh giá</text>
+                        }
+                        else
+                        {
+                            <text>Chưa có đánh giá</text>
                         }
                     </div>
                 </div>
 
+                <div class="ff-rating-right" aria-label="Rating distribution">
+                    @for (int star = 5; star >= 1; star--)
+                    {
+                        var count = ratingCounts.Length > star ? ratingCounts[star] : 0;
+                        var pct = totalRatings > 0 ? (int)Math.Round((count * 100.0) / totalRatings) : 0;
+                        <div class="ff-rating-bar">
+                            <div class="ff-rating-bar__label">
+                                <span class="ff-rating-bar__star">@star</span>
+                                <span class="ff-rating-bar__icon">&#9733;</span>
+                            </div>
+                            <div class="ff-rating-bar__track" role="progressbar" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100">
+                                <div class="ff-rating-bar__fill" style="--ff-fill:@pct%"></div>
+                            </div>
+                            <div class="ff-rating-bar__value">@count</div>
+                        </div>
+                    }
+
+                    @if (totalRatings == 0)
+                    {
+                        <div class="ff-empty-inline">
+                            Chưa có dữ liệu thống kê sao.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="ff-rating-actions">
                 <div class="rating-form-wrap">
                     <form asp-action="AddAndUpdateRating" asp-controller="SanPhams" method="post">
                         <input type="hidden" name="maSP" value="@Model.MaSp" />
@@ -145,21 +186,48 @@
                     </form>
                 </div>
             </div>
+
+            <div class="ff-skeleton" aria-hidden="true">
+                <div class="ff-skeleton-line w-60"></div>
+                <div class="ff-skeleton-line w-40"></div>
+                <div class="ff-skeleton-line w-80"></div>
+            </div>
         </div>
 
-        <div class="comments-section-card">
-            <h3>Bình luận</h3>
+        <div class="ff-review-list-card">
+            <div class="ff-review-list-header">
+                <h3>Bình luận</h3>
+                <span class="ff-review-count">@(binhLuans?.Count ?? 0) review</span>
+            </div>
             @if (binhLuans != null && binhLuans.Count > 0)
             {
                 <div id="binhLuanContainer">
                     @for (int i = 0; i < binhLuans.Count && i < 5; i++)
                     {
+                        var displayName = string.IsNullOrWhiteSpace(binhLuans[i].MaNguoiDungNavigation?.HoTen)
+                            ? binhLuans[i].MaNguoiDungNavigation?.Username
+                            : binhLuans[i].MaNguoiDungNavigation?.HoTen;
+                        var avatarName = string.IsNullOrWhiteSpace(displayName) ? "U" : displayName.Trim().Substring(0, 1).ToUpper();
+                        var showRating = userRatings.TryGetValue(binhLuans[i].MaNguoiDung, out var r) ? r : 0;
                         <div class="binhLuanItem">
-                            <div class="comment-avatar">@binhLuans[i].MaNguoiDung</div>
-                            <div class="comment-body">
-                                <strong class="username" style="color: red;">@binhLuans[i].MaNguoiDung</strong>
-                                <p>@binhLuans[i].NoiDung</p>
-                                <small>@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                            <div class="ff-review-card">
+                                <div class="ff-review-avatar">@avatarName</div>
+                                <div class="ff-review-main">
+                                    <div class="ff-review-top">
+                                        <div class="ff-review-user">
+                                            <strong class="ff-review-name">@(displayName ?? "Người dùng")</strong>
+                                            <small class="ff-review-time">@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                        </div>
+                                        @if (showRating > 0)
+                                        {
+                                            <div class="ff-review-rating" aria-label="@showRating stars">
+                                                <span class="ff-review-rating__score">@showRating</span>
+                                                <span class="ff-review-rating__star">&#9733;</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="ff-review-content">@binhLuans[i].NoiDung</div>
+                                </div>
                             </div>
                         </div>
                     }
@@ -167,12 +235,30 @@
                     <div id="hiddenComments" style="display: none;">
                         @for (int i = 5; i < binhLuans.Count; i++)
                         {
+                            var displayName = string.IsNullOrWhiteSpace(binhLuans[i].MaNguoiDungNavigation?.HoTen)
+                                ? binhLuans[i].MaNguoiDungNavigation?.Username
+                                : binhLuans[i].MaNguoiDungNavigation?.HoTen;
+                            var avatarName = string.IsNullOrWhiteSpace(displayName) ? "U" : displayName.Trim().Substring(0, 1).ToUpper();
+                            var showRating = userRatings.TryGetValue(binhLuans[i].MaNguoiDung, out var r) ? r : 0;
                             <div class="binhLuanItem">
-                                <div class="comment-avatar">@binhLuans[i].MaNguoiDung</div>
-                                <div class="comment-body">
-                                    <strong class="username" style="color: red;">@binhLuans[i].MaNguoiDung</strong>
-                                    <p>@binhLuans[i].NoiDung</p>
-                                    <small>@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                <div class="ff-review-card">
+                                    <div class="ff-review-avatar">@avatarName</div>
+                                    <div class="ff-review-main">
+                                        <div class="ff-review-top">
+                                            <div class="ff-review-user">
+                                                <strong class="ff-review-name">@(displayName ?? "Người dùng")</strong>
+                                                <small class="ff-review-time">@binhLuans[i].NgayBinhLuan.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                            </div>
+                                            @if (showRating > 0)
+                                            {
+                                                <div class="ff-review-rating" aria-label="@showRating stars">
+                                                    <span class="ff-review-rating__score">@showRating</span>
+                                                    <span class="ff-review-rating__star">&#9733;</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ff-review-content">@binhLuans[i].NoiDung</div>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -186,20 +272,38 @@
             }
             else
             {
-                <p class="comments-empty">Chưa có bình luận nào.</p>
+                <div class="ff-empty-review">
+                    <div class="ff-empty-review__title">Chưa có bình luận nào</div>
+                    <div class="ff-empty-review__subtitle">Hãy là người đầu tiên chia sẻ trải nghiệm của bạn.</div>
+                </div>
             }
         </div>
 
         <div class="comment-form-card">
             <h4>Gửi Bình Luận</h4>
-            @using (Html.BeginForm("AddComment", "SanPhams", FormMethod.Post))
+            @if (Context.Session.GetString("userLogin") == null)
             {
-                @Html.Hidden("maSP", Model.MaSp)
-                <div class="form-group">
-                    <label for="NoiDung">Nội dung</label>
-                    <textarea name="noiDung" id="NoiDung" class="form-control" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                <p class="comments-empty">Vui lòng đăng nhập để bình luận.</p>
+            }
+            else if (!hasPurchasedProduct)
+            {
+                <p class="comments-empty">Bạn cần mua sản phẩm này trước khi bình luận.</p>
+            }
+            else if (hasCommentedProduct)
+            {
+                <p class="comments-empty">Bạn đã bình luận sản phẩm này rồi.</p>
+            }
+            else if (canComment)
+            {
+                @using (Html.BeginForm("AddComment", "SanPhams", FormMethod.Post))
+                {
+                    @Html.Hidden("maSP", Model.MaSp)
+                    <div class="form-group">
+                        <label for="NoiDung">Nội dung</label>
+                        <textarea name="noiDung" id="NoiDung" class="form-control" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                }
             }
         </div>
     </div>
@@ -220,4 +324,11 @@
         document.getElementById("hiddenComments").style.display = "block";
         document.getElementById("xemThemButton").style.display = "none";
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var wrap = document.querySelector('.ff-reviews');
+        if (wrap) {
+            wrap.setAttribute('data-ff-ready', 'true');
+        }
+    });
 </script>

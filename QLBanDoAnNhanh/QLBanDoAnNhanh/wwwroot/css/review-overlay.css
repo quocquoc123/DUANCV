@@ -1,0 +1,231 @@
+.review-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-overlay.is-closing {
+  pointer-events: none;
+}
+
+.review-overlay.is-closing .review-overlay-backdrop {
+  animation: reviewFadeOut 0.24s ease forwards;
+}
+
+.review-overlay.is-closing .review-overlay-sheet {
+  animation: reviewScaleOut 0.24s ease forwards;
+}
+
+.review-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.46);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: reviewFadeIn 0.3s ease;
+}
+
+.review-overlay-sheet {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 520px);
+  max-height: min(86vh, 760px);
+  overflow: auto;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.22);
+  padding: 24px 22px 20px;
+  animation: reviewScaleIn 0.32s ease;
+}
+
+.review-overlay-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: #f5f5f5;
+  color: #555;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.review-overlay-close:hover {
+  transform: scale(1.06);
+  background: #ececec;
+}
+
+.review-overlay-title {
+  margin: 2px 0 16px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #2f2f2f;
+}
+
+.review-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.review-product-image {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.review-product-name {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: #252525;
+}
+
+.review-product-subtitle {
+  margin: 0;
+  color: #7b7b7b;
+  font-size: 0.92rem;
+}
+
+.review-star-selector {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 14px;
+}
+
+.review-star {
+  border: none;
+  background: transparent;
+  color: #d7d7d7;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.review-star:hover {
+  transform: scale(1.08);
+}
+
+.review-star.is-active {
+  color: #fbbf24;
+}
+
+.review-star.is-selected {
+  transform: scale(1.12);
+}
+
+.review-comment-wrap {
+  margin-bottom: 14px;
+}
+
+.review-comment-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #4b4b4b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.review-comment-field {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.review-comment-field:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.16);
+}
+
+.review-submit-btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 13px 16px;
+  background: linear-gradient(135deg, #ff9800, #d67b00);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.review-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(214, 123, 0, 0.32);
+}
+
+.review-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.review-success {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1e7e34;
+  font-weight: 700;
+  animation: reviewFadeIn 0.25s ease;
+}
+
+.review-success-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #1e7e34;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes reviewFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes reviewScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes reviewFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes reviewScaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.96); }
+}
+
+@media (max-width: 768px) {
+  .review-overlay {
+    align-items: flex-end;
+  }
+
+  .review-overlay-sheet {
+    width: 100%;
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 80vh;
+  }
+}

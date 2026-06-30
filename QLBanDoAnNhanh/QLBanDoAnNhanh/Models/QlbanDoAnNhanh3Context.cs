@@ -415,6 +415,14 @@ public partial class QlbanDoAnNhanh3Context : DbContext
             entity.Property(e => e.PhuongThucThanhToan)
                 .IsRequired()
                 .HasMaxLength(50);
+            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+            entity.Property(e => e.PaymentStatus).HasMaxLength(20);
+            entity.Property(e => e.TransactionId).HasMaxLength(100);
+            entity.Property(e => e.PaidAt).HasColumnType("datetime");
+            entity.Property(e => e.QrCodeUrl).HasMaxLength(500);
+            entity.Property(e => e.PaymentExpiresAt).HasColumnType("datetime");
+            entity.Property(e => e.MomoRequestId).HasMaxLength(100);
+            entity.Property(e => e.MomoPayUrl).HasMaxLength(1000);
 
             entity.HasOne(d => d.MaDhNavigation).WithMany(p => p.ThanhToans)
                 .HasForeignKey(d => d.MaDh)

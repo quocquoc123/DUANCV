@@ -18,10 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<QlbanDoAnNhanh3Context>(options =>
 {
-    options.UseSqlServer(builder.Configuration["QLBanDoAnNhanh"]);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("QLBanDoAnNhanh"));
 });
 
-
+builder.Services.Configure<MomoSettings>(builder.Configuration.GetSection("MoMo"));
+builder.Services.AddHttpClient<MomoService>();
 
 builder.Services.AddScoped<PayPalService>();
 builder.Services.AddScoped<VoucherService>();

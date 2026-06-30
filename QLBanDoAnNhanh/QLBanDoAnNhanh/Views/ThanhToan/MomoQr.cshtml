@@ -1,0 +1,85 @@
+@model QLBanDoAnNhanh.Models.DonHang
+@{
+    ViewData["Title"] = "Thanh toán MoMo QR";
+    var qrPayload = ViewBag.QrPayload as string ?? "";
+    var momoPayUrl = ViewBag.MomoPayUrl as string ?? "";
+    var expiresAt = ViewBag.ExpiresAt as string ?? "";
+    var amount = (double)(ViewBag.Amount ?? Model.TongTien);
+    var orderInfo = ViewBag.OrderInfo as string ?? Model.MaDh;
+    var isSandbox = ViewBag.IsSandbox as bool? ?? true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/momo-payment.css" asp-append-version="true" />
+}
+
+<div class="momo-page">
+    <div class="momo-card">
+        <div class="momo-header">
+            <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" class="momo-logo" />
+            <h1>Quét mã QR để thanh toán</h1>
+            <p class="momo-subtitle">Mở ứng dụng <strong>MoMo Test</strong> và quét mã bên dưới</p>
+        </div>
+
+        @if (isSandbox)
+        {
+            <div class="momo-sandbox-guide">
+                <strong>🧪 Môi trường TEST (Sandbox)</strong>
+                <ul>
+                    <li>Cài app <strong>MoMo Test</strong> (không dùng app MoMo thường)</li>
+                    <li>Đăng nhập tài khoản test MoMo — tiền là <strong>tiền ảo</strong>, không trừ tiền thật</li>
+                    <li>OTP test thường là: <strong>000000</strong></li>
+                    <li>Quét QR trong vòng 15 phút; hết giờ cần đặt hàng lại</li>
+                </ul>
+            </div>
+        }
+
+        <div class="momo-qr-wrap">
+            <canvas id="momoQrCanvas" class="momo-qr-canvas" width="240" height="240"></canvas>
+        </div>
+
+        <div class="momo-amount">@amount.ToString("N0") <span>VNĐ</span></div>
+
+        @if (!string.IsNullOrWhiteSpace(momoPayUrl))
+        {
+            <a href="@momoPayUrl" class="momo-btn-primary momo-btn-open-app" target="_blank" rel="noopener">
+                Mở thanh toán trên MoMo Test
+            </a>
+            <p class="momo-payurl-hint">Nếu quét QR không được, bấm nút trên để mở trực tiếp trong app MoMo Test.</p>
+        }
+
+        <div class="momo-info-list">
+            <div class="momo-info-row">
+                <span class="label">Mã đơn</span>
+                <strong class="value">@orderInfo</strong>
+            </div>
+            <div class="momo-info-row">
+                <span class="label">Nội dung</span>
+                <strong class="value">@orderInfo</strong>
+            </div>
+            @if (isSandbox)
+            {
+                <div class="momo-info-row">
+                    <span class="label">Tiền về đâu?</span>
+                    <strong class="value momo-info-note">Ví test MoMo → Merchant test (MOMOBKUN…). Không vào tài khoản ngân hàng thật.</strong>
+                </div>
+            }
+        </div>
+
+        <div class="momo-countdown-wrap">
+            <span class="momo-countdown-label">Thời gian thanh toán còn lại</span>
+            <div class="momo-countdown" id="momoCountdown" data-expires="@expiresAt" data-order="@Model.MaDh">14:59</div>
+        </div>
+
+        <div class="momo-status" id="momoPaymentStatus">Đang chờ thanh toán...</div>
+
+        <a href="@Url.Action("Index", "GioHangs")" class="momo-back-link">← Quay lại giỏ hàng</a>
+    </div>
+</div>
+
+<input type="hidden" id="momoQrPayload" value="@qrPayload" />
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="~/js/momo-payment.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+    var maDh = ViewBag.MaDh as string ?? "";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/momo-payment.css" asp-append-version="true" />
+}
+
+<div class="momo-page">
+    <div class="momo-card momo-card--success">
+        <div class="momo-success-icon">✓</div>
+        <h1>Thanh toán thành công</h1>
+        <p class="momo-subtitle">Cảm ơn bạn đã đặt hàng tại Food Fast</p>
+        @if (!string.IsNullOrWhiteSpace(maDh))
+        {
+            <p class="momo-order-ref">Mã đơn: <strong>@maDh</strong></p>
+        }
+        <a href="@Url.Action("OrderHistory", "GioHangs")" class="momo-btn-primary">Xem đơn hàng</a>
+        <a href="@Url.Action("TrangChu", "SanPhams")" class="momo-back-link">Tiếp tục mua sắm</a>
+    </div>
+</div>

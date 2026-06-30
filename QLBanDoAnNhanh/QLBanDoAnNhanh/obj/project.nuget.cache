@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jIU2PYeKZ0M=",
+  "dgSpecHash": "kj82iWIkAn4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
@@ -308,6 +308,16 @@
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512"
   ],
   "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'MailKit' 4.8.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
+      "libraryId": "MailKit",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
     {
       "code": "NU1701",
       "level": "Warning",

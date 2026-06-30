@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var selectedProvinceName = '';
     var selectedDistrictName = '';
     var selectedWardName = '';
+    var initialAddress = (checkoutForm.getAttribute('data-initial-address') || '').trim();
 
     function showError(message) {
         if (!addressError) return;
@@ -80,6 +81,68 @@ document.addEventListener('DOMContentLoaded', function () {
         if (diaChiHidden && full) {
             diaChiHidden.value = full;
         }
+    }
+
+    function findOptionByText(selectEl, targetText) {
+        var target = (targetText || '').trim().toLowerCase();
+        if (!target) return null;
+        for (var i = 0; i < selectEl.options.length; i++) {
+            var txt = (selectEl.options[i].text || '').trim().toLowerCase();
+            if (txt === target) return selectEl.options[i];
+        }
+        return null;
+    }
+
+    function splitAddressParts(fullAddress) {
+        if (!fullAddress) return null;
+        var parts = fullAddress.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+        if (parts.length < 4) return null;
+        return {
+            street: parts.slice(0, parts.length - 3).join(', '),
+            ward: parts[parts.length - 3],
+            district: parts[parts.length - 2],
+            province: parts[parts.length - 1]
+        };
+    }
+
+    async function applyInitialAddress() {
+        var parsed = splitAddressParts(initialAddress);
+        if (!parsed) return;
+
+        // Điền sẵn đường/số nhà
+        if (streetInput && !streetInput.value.trim()) {
+            streetInput.value = parsed.street;
+        }
+
+        // Chọn tỉnh/thành
+        var provinceOpt = findOptionByText(provinceSelect, parsed.province);
+        if (!provinceOpt) return;
+        provinceSelect.value = provinceOpt.value;
+        selectedProvinceName = provinceOpt.text;
+
+        await loadDistricts(provinceOpt.value);
+
+        // Chọn quận/huyện
+        var districtOpt = findOptionByText(districtSelect, parsed.district);
+        if (!districtOpt) {
+            updatePreview();
+            return;
+        }
+        districtSelect.value = districtOpt.value;
+        selectedDistrictName = districtOpt.text;
+
+        await loadWards(districtOpt.value);
+
+        // Chọn phường/xã
+        var wardOpt = findOptionByText(wardSelect, parsed.ward);
+        if (!wardOpt) {
+            updatePreview();
+            return;
+        }
+        wardSelect.value = wardOpt.value;
+        selectedWardName = wardOpt.text;
+
+        updatePreview();
     }
 
     async function fetchJson(url) {
@@ -189,5 +252,5 @@ document.addEventListener('DOMContentLoaded', function () {
         showError('');
     });
 
-    loadProvinces();
+    loadProvinces().then(applyInitialAddress);
 });

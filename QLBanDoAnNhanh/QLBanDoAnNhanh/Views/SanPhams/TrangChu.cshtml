@@ -6,11 +6,16 @@
     var productList = Model?.ToList() ?? new List<QLBanDoAnNhanh.Models.SanPham>();
     var searchKeyword = ViewBag.SearchTerm as string ?? "";
     var discountProducts = ViewBag.DiscountProducts as IReadOnlyList<QLBanDoAnNhanh.Models.SanPham> ?? new List<QLBanDoAnNhanh.Models.SanPham>();
+    var reviewOrderId = TempData["ReviewOrderId"]?.ToString();
+    var reviewProductId = TempData["ReviewProductId"]?.ToString();
+    var reviewProductName = TempData["ReviewProductName"]?.ToString();
+    var reviewProductImage = TempData["ReviewProductImage"]?.ToString();
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/review-overlay.css" asp-append-version="true" />
 }
 
 <script type="application/json" id="ff-products-data">
@@ -238,6 +243,63 @@
 }
 
 <script src="~/js/foodfast-catalog.js" asp-append-version="true"></script>
+<script src="~/js/review-overlay.js" asp-append-version="true"></script>
+
+@if (!string.IsNullOrWhiteSpace(reviewOrderId) && !string.IsNullOrWhiteSpace(reviewProductId))
+{
+    <div id="reviewOverlay"
+         class="review-overlay"
+         hidden
+         data-review-order-id="@reviewOrderId"
+         data-review-product-id="@reviewProductId"
+         data-review-product-name="@reviewProductName"
+         data-review-product-image="@Url.Content(string.IsNullOrWhiteSpace(reviewProductImage) ? "~/images/logo.jpg" : reviewProductImage)">
+        <div class="review-overlay-backdrop" data-review-close></div>
+        <div class="review-overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="reviewOverlayTitle">
+            <button type="button" class="review-overlay-close" aria-label="Đóng" data-review-close>&times;</button>
+
+            <h3 id="reviewOverlayTitle" class="review-overlay-title">⭐ Đánh giá sản phẩm</h3>
+            <div class="review-product">
+                <img id="reviewProductImage" class="review-product-image" src="@Url.Content(string.IsNullOrWhiteSpace(reviewProductImage) ? "~/images/logo.jpg" : reviewProductImage)" alt="Sản phẩm đã mua" />
+                <div class="review-product-meta">
+                    <p class="review-product-name">@(string.IsNullOrWhiteSpace(reviewProductName) ? "Sản phẩm" : reviewProductName)</p>
+                    <p class="review-product-subtitle">Bạn cảm thấy sản phẩm thế nào?</p>
+                </div>
+            </div>
+
+            <div class="review-star-selector" id="reviewStarSelector" aria-label="Chọn số sao">
+                <button type="button" class="review-star" data-star="1" aria-label="1 sao">★</button>
+                <button type="button" class="review-star" data-star="2" aria-label="2 sao">★</button>
+                <button type="button" class="review-star" data-star="3" aria-label="3 sao">★</button>
+                <button type="button" class="review-star" data-star="4" aria-label="4 sao">★</button>
+                <button type="button" class="review-star" data-star="5" aria-label="5 sao">★</button>
+            </div>
+
+            <div class="review-comment-wrap">
+                <label for="reviewComment" class="review-comment-label">Cảm nhận của bạn (không bắt buộc)</label>
+                <textarea id="reviewComment" class="review-comment-field" placeholder="Viết cảm nhận của bạn..."></textarea>
+            </div>
+
+            <form id="reviewRatingForm" asp-action="AddAndUpdateRating" asp-controller="SanPhams" method="post" hidden>
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="maSP" value="@reviewProductId" />
+                <input type="hidden" name="rating" id="reviewRatingValue" value="" />
+            </form>
+
+            <form id="reviewCommentForm" action="@Url.Action("AddComment", "SanPhams")" method="post" hidden>
+                <input type="hidden" name="maSP" value="@reviewProductId" />
+                <input type="hidden" name="noiDung" id="reviewCommentValue" value="" />
+            </form>
+
+            <button type="button" id="reviewSubmitButton" class="review-submit-btn" disabled>Gửi đánh giá</button>
+
+            <div class="review-success" id="reviewSuccessState" hidden>
+                <div class="review-success-check">✓</div>
+                <p>Đã gửi đánh giá thành công</p>
+            </div>
+        </div>
+    </div>
+}
 
 @* <style>
     * {

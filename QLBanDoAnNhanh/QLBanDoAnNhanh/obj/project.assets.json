@@ -15104,11 +15104,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
       "projectName": "QLBanDoAnNhanh",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
+      "projectPath": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -15262,6 +15262,16 @@
     }
   },
   "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'MailKit' 4.8.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-9j88-vvj5-vhgr",
+      "libraryId": "MailKit",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
     {
       "code": "NU1701",
       "level": "Warning",

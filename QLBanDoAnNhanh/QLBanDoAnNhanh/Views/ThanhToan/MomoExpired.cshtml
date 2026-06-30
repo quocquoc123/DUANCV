@@ -1,0 +1,18 @@
+@model QLBanDoAnNhanh.Models.DonHang
+@{
+    ViewData["Title"] = "Hết hạn thanh toán";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/momo-payment.css" asp-append-version="true" />
+}
+
+<div class="momo-page">
+    <div class="momo-card momo-card--expired">
+        <div class="momo-expired-icon">⏰</div>
+        <h1>Hết hạn thanh toán</h1>
+        <p class="momo-subtitle">Mã QR đã hết hiệu lực. Đơn hàng <strong>@Model.MaDh</strong> không còn chờ thanh toán.</p>
+        <p class="momo-note">Bạn vẫn có thể đặt hàng lại bình thường.</p>
+        <a href="@Url.Action("Index", "GioHangs")" class="momo-btn-primary">Quay lại giỏ hàng</a>
+    </div>
+</div>

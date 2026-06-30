@@ -17,5 +17,21 @@ public partial class ThanhToan
 
     public bool TrangThaiThanhToan { get; set; }
 
+    public string PaymentMethod { get; set; }
+
+    public string PaymentStatus { get; set; }
+
+    public string TransactionId { get; set; }
+
+    public DateTime? PaidAt { get; set; }
+
+    public string QrCodeUrl { get; set; }
+
+    public DateTime? PaymentExpiresAt { get; set; }
+
+    public string MomoRequestId { get; set; }
+
+    public string MomoPayUrl { get; set; }
+
     public virtual DonHang MaDhNavigation { get; set; }
 }

@@ -1,0 +1,17 @@
+@model QLBanDoAnNhanh.Models.DonHang
+@{
+    ViewData["Title"] = "Thanh toán thất bại";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/momo-payment.css" asp-append-version="true" />
+}
+
+<div class="momo-page">
+    <div class="momo-card momo-card--failed">
+        <div class="momo-failed-icon">✕</div>
+        <h1>Thanh toán thất bại</h1>
+        <p class="momo-subtitle">Giao dịch MoMo cho đơn <strong>@Model.MaDh</strong> không thành công.</p>
+        <a href="@Url.Action("Index", "GioHangs")" class="momo-btn-primary">Thử lại</a>
+    </div>
+</div>

@@ -1,0 +1,326 @@
+/* MoMo QR Payment — ShopeeFood style */
+
+.momo-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fff5f8 0%, #ffffff 40%, #fff9f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.momo-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+  padding: 28px 24px 32px;
+  text-align: center;
+  animation: momoFadeIn 0.45s ease;
+}
+
+@keyframes momoFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.momo-header h1 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #222;
+  margin: 12px 0 6px;
+}
+
+.momo-subtitle {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0 0 20px;
+}
+
+.momo-logo {
+  height: 44px;
+  object-fit: contain;
+}
+
+.momo-qr-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.momo-qr-canvas,
+.momo-qr-image {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.momo-warning-banner {
+  background: #fff8e6;
+  color: #9a6700;
+  border: 1px solid #ffe08a;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.momo-sandbox-guide {
+  background: #eef6ff;
+  border: 1px solid #b6d4fe;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  text-align: left;
+  font-size: 0.84rem;
+  color: #1a4a8a;
+}
+
+.momo-sandbox-guide ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.momo-sandbox-guide li {
+  margin-bottom: 4px;
+}
+
+.momo-payurl-hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 8px 0 14px;
+}
+
+.momo-info-note {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #555;
+  text-align: right;
+  max-width: 62%;
+}
+
+.momo-btn-open-app {
+  margin-bottom: 4px;
+}
+
+.momo-qr-placeholder {
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-weight: 600;
+}
+
+.momo-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #d82d8b;
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.momo-amount span {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.momo-info-list {
+  text-align: left;
+  background: #f8f8f8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.momo-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 0.92rem;
+}
+
+.momo-info-row .label {
+  color: #777;
+}
+
+.momo-info-row .value {
+  color: #222;
+}
+
+.momo-countdown-wrap {
+  margin-bottom: 14px;
+}
+
+.momo-countdown-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.momo-countdown {
+  display: inline-block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #e60023;
+  background: #fff0f2;
+  border-radius: 12px;
+  padding: 8px 20px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.momo-countdown.is-expired {
+  color: #888;
+  background: #f0f0f0;
+  font-size: 1rem;
+}
+
+.momo-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d82d8b;
+  margin-bottom: 16px;
+}
+
+.momo-back-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.momo-back-link:hover {
+  color: #d82d8b;
+}
+
+.momo-btn-primary {
+  display: inline-block;
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 24px;
+  background: linear-gradient(90deg, #ff5aa5, #d82d8b);
+  color: #fff;
+  border-radius: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.momo-card--success .momo-success-icon,
+.momo-card--expired .momo-expired-icon,
+.momo-card--failed .momo-failed-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.momo-card--success .momo-success-icon {
+  background: #e8f8ef;
+  color: #22a06b;
+}
+
+.momo-card--expired .momo-expired-icon {
+  background: #f5f5f5;
+  color: #888;
+}
+
+.momo-card--failed .momo-failed-icon {
+  background: #fff0f0;
+  color: #e60023;
+}
+
+.momo-order-ref {
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.momo-note {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+/* Payment method radios in cart */
+.payment-method-section {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.payment-method-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 10px;
+}
+
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.payment-method-option:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.payment-method-option input[type="radio"] {
+  accent-color: #d9a441;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.payment-method-option.is-selected {
+  border-color: rgba(217, 164, 65, 0.8);
+  background: rgba(217, 164, 65, 0.15);
+}
+
+@media (max-width: 480px) {
+  .momo-card {
+    padding: 22px 18px 28px;
+    border-radius: 20px;
+  }
+
+  .momo-qr-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .momo-amount {
+    font-size: 1.65rem;
+  }
+
+  .momo-countdown {
+    font-size: 1.6rem;
+  }
+}

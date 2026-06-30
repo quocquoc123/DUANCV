@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -86,6 +86,7 @@ namespace QLBanDoAnNhanh.Controllers
             // Lấy bình luận cho sản phẩm này
             var binhLuans = await _context.BinhLuans
                 .AsNoTracking()
+                .Include(bl => bl.MaNguoiDungNavigation)
                 .Where(bl => bl.MaSp == id)
                 .OrderByDescending(bl => bl.NgayBinhLuan)
                 .ToListAsync();
@@ -96,11 +97,71 @@ namespace QLBanDoAnNhanh.Controllers
                 .Where(dg => dg.MaSanPham == id)
                 .AverageAsync(dg => (double?)dg.SoSao) ?? 0; // Trả về 0 nếu không có đánh giá
 
+            // Thống kê phân bố sao (UI-only, không thay đổi business logic)
+            var ratingCountsQuery = await _context.DanhGia
+                .AsNoTracking()
+                .Where(dg => dg.MaSanPham == id)
+                .GroupBy(dg => dg.SoSao)
+                .Select(g => new { Star = (int)g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var ratingCounts = new int[6]; // index 1..5
+            foreach (var row in ratingCountsQuery)
+            {
+                if (row.Star >= 1 && row.Star <= 5)
+                {
+                    ratingCounts[row.Star] = row.Count;
+                }
+            }
+
+            // Map rating theo user để hiển thị trên review card (UI-only)
+            var userRatings = await _context.DanhGia
+                .AsNoTracking()
+                .Where(dg => dg.MaSanPham == id)
+                .GroupBy(dg => dg.MaNguoiDung)
+                .Select(g => new { MaNguoiDung = g.Key, SoSao = (int)g.Max(x => x.SoSao) })
+                .ToDictionaryAsync(x => x.MaNguoiDung, x => x.SoSao);
+
+            var username = HttpContext.Session.GetString("userLogin");
+            var nguoiDung = !string.IsNullOrEmpty(username)
+                ? await _context.NguoiDungs.AsNoTracking().FirstOrDefaultAsync(nd => nd.Username == username)
+                : null;
+
+            var canComment = false;
+            if (nguoiDung != null)
+            {
+                var daMuaSanPham = await _context.ChiTietDonHangs
+                    .AsNoTracking()
+                    .AnyAsync(ct =>
+                        ct.MaSp == id &&
+                        (
+                            ct.MaDhNavigation.MaNguoiDung == nguoiDung.MaNguoiDung ||
+                            ct.MaDhNavigation.Username == username
+                        ) &&
+                        ct.MaDhNavigation.TrangThai != "Đã Hủy");
+
+                var daBinhLuan = await _context.BinhLuans
+                    .AsNoTracking()
+                    .AnyAsync(bl => bl.MaSp == id && bl.MaNguoiDung == nguoiDung.MaNguoiDung);
+
+                canComment = daMuaSanPham && !daBinhLuan;
+                ViewBag.HasPurchasedProduct = daMuaSanPham;
+                ViewBag.HasCommentedProduct = daBinhLuan;
+            }
+            else
+            {
+                ViewBag.HasPurchasedProduct = false;
+                ViewBag.HasCommentedProduct = false;
+            }
+
             // Truyền sản phẩm, bình luận và điểm trung bình vào View
             ViewBag.BinhLuans = binhLuans;
             ViewBag.DiemTrungBinh = diemTrungBinh;
             ViewBag.IsDiscountActive = _discountService.IsDiscountActive(sanPham);
             ViewBag.EffectivePrice = _discountService.GetEffectivePrice(sanPham);
+            ViewBag.CanComment = canComment;
+            ViewBag.RatingCounts = ratingCounts;
+            ViewBag.UserRatings = userRatings;
 
             return View(sanPham);
         }
@@ -108,7 +169,7 @@ namespace QLBanDoAnNhanh.Controllers
 
 
         [HttpPost]
-        public IActionResult AddComment(int maSP, string noiDung)
+        public async Task<IActionResult> AddComment(int maSP, string noiDung)
         {
             // Kiểm tra xem người dùng đã đăng nhập chưa
             if (HttpContext.Session.GetString("userLogin") == null)
@@ -117,11 +178,41 @@ namespace QLBanDoAnNhanh.Controllers
             }
 
             string username = HttpContext.Session.GetString("userLogin");
-            var nguoiDung = _context.NguoiDungs.FirstOrDefault(nd => nd.Username == username);
+            var nguoiDung = await _context.NguoiDungs.FirstOrDefaultAsync(nd => nd.Username == username);
 
             if (nguoiDung == null)
             {
                 return RedirectToAction("Index", "LoginUser");
+            }
+
+            if (string.IsNullOrWhiteSpace(noiDung))
+            {
+                TempData["ErrorMessage"] = "Nội dung bình luận không được để trống.";
+                return RedirectToAction("ChiTietSanPham", new { id = maSP });
+            }
+
+            var daMuaSanPham = await _context.ChiTietDonHangs
+                .AnyAsync(ct =>
+                    ct.MaSp == maSP &&
+                    (
+                        ct.MaDhNavigation.MaNguoiDung == nguoiDung.MaNguoiDung ||
+                        ct.MaDhNavigation.Username == username
+                    ) &&
+                    ct.MaDhNavigation.TrangThai != "Đã Hủy");
+
+            if (!daMuaSanPham)
+            {
+                TempData["ErrorMessage"] = "Bạn cần mua sản phẩm trước khi bình luận.";
+                return RedirectToAction("ChiTietSanPham", new { id = maSP });
+            }
+
+            var daBinhLuan = await _context.BinhLuans
+                .AnyAsync(bl => bl.MaSp == maSP && bl.MaNguoiDung == nguoiDung.MaNguoiDung);
+
+            if (daBinhLuan)
+            {
+                TempData["ErrorMessage"] = "Bạn chỉ được bình luận 1 lần cho sản phẩm này.";
+                return RedirectToAction("ChiTietSanPham", new { id = maSP });
             }
 
             // Tạo một đối tượng bình luận mới
@@ -129,13 +220,13 @@ namespace QLBanDoAnNhanh.Controllers
             {
                 MaSp = maSP,
                 MaNguoiDung = nguoiDung.MaNguoiDung,
-                NoiDung = noiDung,
+                NoiDung = noiDung.Trim(),
                 NgayBinhLuan = DateTime.Now
             };
 
             // Thêm bình luận vào cơ sở dữ liệu
             _context.BinhLuans.Add(binhLuan);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // Chuyển hướng về trang chi tiết sản phẩm
             return RedirectToAction("ChiTietSanPham", new { id = maSP });
@@ -169,9 +260,16 @@ namespace QLBanDoAnNhanh.Controllers
                     return RedirectToAction("ChiTietSanPham", new { id = maSP });
                 }
 
-                // Kiểm tra người dùng đã mua sản phẩm chưa
+                // Kiểm tra người dùng hiện tại đã mua sản phẩm chưa
+                // (Trước đây chỉ kiểm tra sản phẩm có xuất hiện trong đơn hàng của bất kỳ ai)
                 var daMuaHang = await _context.ChiTietDonHangs
-            .AnyAsync(ct => ct.MaSp == maSP);
+                    .AnyAsync(ct =>
+                        ct.MaSp == maSP &&
+                        (
+                            ct.MaDhNavigation.MaNguoiDung == nguoiDung.MaNguoiDung ||
+                            ct.MaDhNavigation.Username == username
+                        ) &&
+                        ct.MaDhNavigation.TrangThai != "Đã Hủy");
 
                 if (!daMuaHang)
                 {

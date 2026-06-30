@@ -4,11 +4,15 @@
     ViewData["Title"] = "Giỏ Hàng";
     var tongTien = Model.ChiTietGioHangs.Sum(x => x.TongTien);
     var tongSoLuong = Model.ChiTietGioHangs.Sum(x => x.SoLuongSp);
+    var prefillUsername = ViewBag.PrefillUsername as string ?? "";
+    var prefillPhone = ViewBag.PrefillPhone as string ?? "";
+    var prefillAddress = ViewBag.PrefillAddress as string ?? "";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-cart.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/voucher.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/momo-payment.css" asp-append-version="true" />
 }
 
 <div class="cart-page">
@@ -130,12 +134,12 @@
                 <div class="cart-sidebar">
                     <div class="checkout-card">
                         <h2 class="checkout-card-title">Thông Tin Thanh Toán</h2>
-                        <form asp-action="Checkout" method="post" class="checkout-form" id="checkoutForm">
+                        <form asp-action="Checkout" method="post" class="checkout-form" id="checkoutForm" data-initial-address="@prefillAddress">
                             <div class="form-group">
                                 <label for="username">Họ tên</label>
                                 <div class="checkout-input-wrap">
                                     <span class="checkout-input-icon">👤</span>
-                                    <input type="text" class="form-control" id="username" name="username" required />
+                                    <input type="text" class="form-control" id="username" name="username" value="@prefillUsername" required />
                                 </div>
                             </div>
 
@@ -143,7 +147,7 @@
                                 <label for="Phone">Số điện thoại</label>
                                 <div class="checkout-input-wrap">
                                     <span class="checkout-input-icon">📞</span>
-                                    <input type="text" class="form-control" id="Phone" name="Phone" required />
+                                    <input type="text" class="form-control" id="Phone" name="Phone" value="@prefillPhone" required />
                                 </div>
                             </div>
 
@@ -191,10 +195,22 @@
                                     </div>
                                 </div>
 
-                                <input type="hidden" id="DiaChi" name="DiaChi" value="" />
+                                <input type="hidden" id="DiaChi" name="DiaChi" value="@prefillAddress" />
 
                                 <div class="address-preview" id="addressPreview" hidden></div>
                                 <div class="address-error" id="addressError" role="alert" hidden></div>
+                            </div>
+
+                            <div class="payment-method-section">
+                                <p class="payment-method-title">Phương thức thanh toán</p>
+                                <label class="payment-method-option is-selected">
+                                    <input type="radio" name="paymentMethod" value="cod" checked />
+                                    <span>Thanh toán khi nhận hàng (COD)</span>
+                                </label>
+                                <label class="payment-method-option">
+                                    <input type="radio" name="paymentMethod" value="momo" />
+                                    <span>Thanh toán MoMo QR</span>
+                                </label>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-checkout">Thanh toán</button>
@@ -228,4 +244,5 @@
 @section Scripts {
     <script src="~/js/cart-address.js" asp-append-version="true"></script>
     <script src="~/js/voucher.js" asp-append-version="true"></script>
+    <script src="~/js/momo-payment.js" asp-append-version="true"></script>
 }
