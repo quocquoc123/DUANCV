@@ -1,79 +1,351 @@
-﻿@model QLBanDoAnNhanh.Models.SanPham
+@model QLBanDoAnNhanh.Models.SanPham
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi Tiết Sản Phẩm - " + Model.TenSp;
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+    var img1Src = !string.IsNullOrEmpty(Model.HinhAnh1)
+        ? (Model.HinhAnh1.StartsWith("/") ? Model.HinhAnh1 : "/" + Model.HinhAnh1) : "";
+    var img2Src = !string.IsNullOrEmpty(Model.HinhAnh2)
+        ? (Model.HinhAnh2.StartsWith("/") ? Model.HinhAnh2 : "/" + Model.HinhAnh2) : "";
 }
 
-<h1>Details</h1>
+@section Styles {
+<style>
+    /* Hero section */
+    .detail-hero {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+        overflow: hidden;
+        margin-bottom: 28px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .hero-img-side {
+        width: 360px;
+        min-height: 320px;
+        flex-shrink: 0;
+        position: relative;
+        background: linear-gradient(135deg,#eaecf4,#d1d3e2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .hero-img-side img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .hero-img-placeholder {
+        font-size: 5rem;
+        color: #b7b9cc;
+    }
+    .hero-info-side {
+        flex: 1;
+        min-width: 280px;
+        padding: 32px 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e8f0fe;
+        color: #4e73df;
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 14px;
+    }
+    .hero-product-name {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+        line-height: 1.2;
+    }
+    .hero-price {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #4e73df;
+        margin-bottom: 18px;
+    }
+    .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 28px;
+    }
+    .hero-meta-item {
+        background: #f8f9fc;
+        border: 1.5px solid #e3e6f0;
+        border-radius: 10px;
+        padding: 8px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 100px;
+    }
+    .hero-meta-item .lbl { font-size: 0.7rem; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .hero-meta-item .val { font-size: 1rem; font-weight: 700; color: #2d3748; margin-top: 2px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-edit-hero {
+        background: linear-gradient(135deg,#f6c23e,#e0a800);
+        border: none; color: white;
+        padding: 11px 26px;
+        border-radius: 10px; font-weight: 700; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-edit-hero:hover { color:white; text-decoration:none; transform:translateY(-2px); box-shadow:0 6px 18px rgba(246,194,62,0.5); }
+    .btn-back-hero {
+        background: #6c757d; border: none; color: white;
+        padding: 11px 22px;
+        border-radius: 10px; font-weight: 600; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back-hero:hover { background:#545b62; color:white; text-decoration:none; transform:translateY(-2px); }
 
-<div>
-    <h4>SanPham</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TenSp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TenSp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ThanhPhan)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ThanhPhan)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GiaTien)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GiaTien)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DonVi)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DonVi)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChitietSp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChitietSp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SlbanTrongNgay)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SlbanTrongNgay)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HinhAnh1)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HinhAnh1)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HinhAnh2)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HinhAnh2)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaDmNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaDmNavigation.MaDm)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaGiamGiaNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaGiamGiaNavigation.MaGiamGia)
-        </dd>
-    </dl>
+    /* Info Cards */
+    .info-card {
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+        margin-bottom: 24px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .info-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.11); }
+    .info-card-header {
+        background: linear-gradient(90deg, #f8f9fc, #eaecf4);
+        border-bottom: 2px solid #e3e6f0;
+        padding: 13px 22px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: #4e73df;
+    }
+    .info-card-header i { margin-right: 8px; }
+    .info-card-body { padding: 20px 22px; }
+
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f5;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        min-width: 160px;
+        flex-shrink: 0;
+    }
+    .info-value { color: #1a1a2e; font-size: 0.93rem; font-weight: 500; }
+
+    .badge-cat  { background:#e8f0fe; color:#4e73df; border-radius:8px; padding:4px 14px; font-size:0.8rem; font-weight:700; }
+    .badge-disc { background:#d4edda; color:#155724; border-radius:8px; padding:4px 14px; font-size:0.8rem; font-weight:700; }
+
+    /* Second image */
+    .second-img {
+        width: 100%;
+        border-radius: 12px;
+        object-fit: cover;
+        max-height: 280px;
+        border: 2px solid #e3e6f0;
+    }
+    .desc-text {
+        color: #3d4066;
+        font-size: 0.93rem;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        margin: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-img-side { width: 100%; min-height: 220px; }
+        .hero-product-name { font-size: 1.4rem; }
+        .hero-price { font-size: 1.6rem; }
+        .hero-info-side { padding: 20px; }
+    }
+</style>
+}
+
+<!-- Hero Section -->
+<div class="detail-hero">
+    <div class="hero-img-side">
+        @if (!string.IsNullOrEmpty(img1Src))
+        {
+            <img src="@img1Src" alt="@Model.TenSp"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="hero-img-placeholder" style="display:none; position:absolute; align-items:center; justify-content:center; width:100%; height:100%;">
+                <i class="fas fa-utensils"></i>
+            </div>
+        }
+        else
+        {
+            <div class="hero-img-placeholder"><i class="fas fa-utensils"></i></div>
+        }
+    </div>
+    <div class="hero-info-side">
+        <div class="hero-badge">
+            <i class="fas fa-hashtag"></i> Mã SP: @Model.MaSp
+        </div>
+        <div class="hero-product-name">@Model.TenSp</div>
+        <div class="hero-price">@Model.GiaTien.ToString("N0") ₫</div>
+
+        <div class="hero-meta">
+            <div class="hero-meta-item">
+                <span class="lbl">Đơn vị</span>
+                <span class="val">@Model.DonVi</span>
+            </div>
+            @if (Model.SlbanTrongNgay.HasValue)
+            {
+                <div class="hero-meta-item">
+                    <span class="lbl">SL/ngày</span>
+                    <span class="val">@Model.SlbanTrongNgay</span>
+                </div>
+            }
+            @if (Model.MaDmNavigation != null)
+            {
+                <div class="hero-meta-item">
+                    <span class="lbl">Danh mục</span>
+                    <span class="val">@Model.MaDmNavigation.MaDm</span>
+                </div>
+            }
+            @if (Model.MaGiamGiaNavigation != null)
+            {
+                <div class="hero-meta-item">
+                    <span class="lbl">Giảm giá</span>
+                    <span class="val" style="color:#1cc88a;">✓ Có</span>
+                </div>
+            }
+        </div>
+
+        <div class="hero-actions">
+            <a class="btn-edit-hero" asp-action="Edit" asp-route-id="@Model.MaSp">
+                <i class="fas fa-edit"></i> Chỉnh Sửa
+            </a>
+            <a class="btn-back-hero" asp-action="Index">
+                <i class="fas fa-arrow-left"></i> Danh Sách
+            </a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.MaSp">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row">
+    <!-- Cột trái -->
+    <div class="col-lg-7">
+        <!-- Thông tin chi tiết -->
+        <div class="info-card">
+            <div class="info-card-header"><i class="fas fa-clipboard-list"></i> Thông Tin Chi Tiết</div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-hashtag fa-fw mr-2 text-muted"></i>Mã sản phẩm</span>
+                    <span class="info-value font-weight-bold">#@Model.MaSp</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-utensils fa-fw mr-2 text-primary"></i>Tên sản phẩm</span>
+                    <span class="info-value font-weight-bold">@Model.TenSp</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-coins fa-fw mr-2 text-warning"></i>Giá tiền</span>
+                    <span class="info-value" style="color:#4e73df; font-size:1.05rem; font-weight:700;">@Model.GiaTien.ToString("N0") ₫</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-weight fa-fw mr-2 text-info"></i>Đơn vị</span>
+                    <span class="info-value">@Model.DonVi</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-layer-group fa-fw mr-2 text-secondary"></i>SL bán / ngày</span>
+                    <span class="info-value">@(Model.SlbanTrongNgay.HasValue ? Model.SlbanTrongNgay.ToString() : "Không giới hạn")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-th-list fa-fw mr-2 text-primary"></i>Danh mục</span>
+                    <span class="info-value">
+                        @if (Model.MaDmNavigation != null)
+                        {
+                            <span class="badge-cat">DM #@Model.MaDmNavigation.MaDm</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-tag fa-fw mr-2 text-success"></i>Giảm giá</span>
+                    <span class="info-value">
+                        @if (Model.MaGiamGiaNavigation != null)
+                        {
+                            <span class="badge-disc"><i class="fas fa-check-circle mr-1"></i>GG #@Model.MaGiamGiaNavigation.MaGiamGia</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không áp dụng</span>
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thành phần -->
+        @if (!string.IsNullOrWhiteSpace(Model.ThanhPhan))
+        {
+            <div class="info-card">
+                <div class="info-card-header"><i class="fas fa-list-ul"></i> Thành Phần</div>
+                <div class="info-card-body">
+                    <p class="desc-text">@Model.ThanhPhan</p>
+                </div>
+            </div>
+        }
+
+        <!-- Chi tiết sản phẩm -->
+        @if (!string.IsNullOrWhiteSpace(Model.ChitietSp))
+        {
+            <div class="info-card">
+                <div class="info-card-header"><i class="fas fa-file-alt"></i> Chi Tiết Sản Phẩm</div>
+                <div class="info-card-body">
+                    <p class="desc-text">@Model.ChitietSp</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Cột phải: Hình ảnh thứ 2 -->
+    <div class="col-lg-5">
+        @if (!string.IsNullOrEmpty(img2Src))
+        {
+            <div class="info-card">
+                <div class="info-card-header"><i class="fas fa-image"></i> Hình Ảnh Phụ</div>
+                <div class="info-card-body">
+                    <img src="@img2Src" class="second-img" alt="Hình ảnh phụ - @Model.TenSp"
+                         onerror="this.parentElement.innerHTML='<div style=\'text-align:center;color:#a0aec0;padding:30px\'><i class=\'fas fa-image fa-3x\'></i><p>Hình ảnh không khả dụng</p></div>'">
+                </div>
+            </div>
+        }
+
+        <!-- Quick Actions -->
+        <div class="info-card">
+            <div class="info-card-header"><i class="fas fa-bolt"></i> Thao Tác Nhanh</div>
+            <div class="info-card-body" style="display:flex; flex-direction:column; gap:10px;">
+                <a class="btn-edit-hero w-100 justify-content-center" asp-action="Edit" asp-route-id="@Model.MaSp">
+                    <i class="fas fa-edit"></i> Chỉnh Sửa Sản Phẩm
+                </a>
+                <a class="btn-back-hero w-100 justify-content-center" asp-action="Index">
+                    <i class="fas fa-list"></i> Về Danh Sách
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

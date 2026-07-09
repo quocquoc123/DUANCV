@@ -1,85 +1,265 @@
-﻿@model QLBanDoAnNhanh.Models.SanPham
+@model QLBanDoAnNhanh.Models.SanPham
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Thêm Sản Phẩm Mới";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
 
-<h1>Create</h1>
+@section Styles {
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%);
+        border-radius: 16px;
+        padding: 24px 32px;
+        color: white;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 28px rgba(28,200,138,0.35);
+    }
+    .form-header h1 { font-size: 1.7rem; font-weight: 700; margin: 0; }
+    .form-header p  { margin: 4px 0 0; opacity: 0.88; font-size: 0.88rem; }
 
-<h4>SanPham</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <!-- Bổ sung enctype="multipart/form-data" để form cho phép tải tệp -->
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .form-card {
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .form-card-header {
+        background: linear-gradient(90deg, #f8f9fc, #eaecf4);
+        border-bottom: 2px solid #e3e6f0;
+        padding: 14px 22px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: #4e73df;
+    }
+    .form-card-header i { margin-right: 8px; }
+    .form-card-body { padding: 24px 26px; }
 
-            <div class="form-group">
-                <label asp-for="TenSp" class="control-label"></label>
-                <input asp-for="TenSp" class="form-control" />
-                <span asp-validation-for="TenSp" class="text-danger"></span>
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.82rem;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #d1d3e2;
+        padding: 10px 14px;
+        font-size: 0.93rem;
+        width: 100%;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: white;
+    }
+    .form-control:focus {
+        border-color: #1cc88a;
+        box-shadow: 0 0 0 3px rgba(28,200,138,0.15);
+        outline: none;
+    }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+    select.form-control { appearance: none; cursor: pointer; }
+
+    /* Image Upload */
+    .upload-zone {
+        border: 2px dashed #d1d3e2;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: border-color 0.2s, background 0.2s;
+        cursor: pointer;
+        position: relative;
+    }
+    .upload-zone:hover { border-color: #1cc88a; background: #f0fdf8; }
+    .upload-zone input[type="file"] {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+    }
+    .upload-preview {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: none;
+        margin-top: 10px;
+        border: 2px solid #e3e6f0;
+    }
+    .upload-placeholder i { font-size: 2.5rem; color: #a0aec0; display: block; margin-bottom: 8px; }
+    .upload-placeholder p { color: #a0aec0; font-size: 0.85rem; margin: 0; }
+    .upload-placeholder span { font-size: 0.75rem; color: #b7b9cc; display: block; margin-top: 4px; }
+
+    /* Actions */
+    .action-bar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 0 0 32px;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #1cc88a, #17a673);
+        border: none; color: white;
+        padding: 12px 32px;
+        border-radius: 10px; font-weight: 700; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.2s; cursor: pointer;
+    }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(28,200,138,0.45); color: white; }
+    .btn-back {
+        background: #6c757d; border: none; color: white;
+        padding: 12px 24px;
+        border-radius: 10px; font-weight: 600; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: #545b62; color: white; text-decoration: none; transform: translateY(-2px); }
+    .text-danger { font-size: 0.8rem; margin-top: 4px; display: block; }
+</style>
+}
+
+<!-- Header -->
+<div class="form-header">
+    <h1><i class="fas fa-plus-circle mr-2"></i> Thêm Sản Phẩm Mới</h1>
+    <p>Điền đầy đủ thông tin để thêm sản phẩm vào hệ thống</p>
+</div>
+
+<form asp-action="Create" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none;"></div>
+
+    <div class="row">
+        <!-- Cột trái: Thông tin cơ bản -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-info-circle"></i> Thông Tin Cơ Bản</div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        <label asp-for="TenSp"><i class="fas fa-utensils fa-fw mr-1 text-success"></i> Tên Sản Phẩm</label>
+                        <input asp-for="TenSp" class="form-control" placeholder="Nhập tên sản phẩm..." />
+                        <span asp-validation-for="TenSp" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="GiaTien"><i class="fas fa-coins fa-fw mr-1 text-warning"></i> Giá Tiền (₫)</label>
+                                <input asp-for="GiaTien" class="form-control" placeholder="0" type="number" min="0" step="1000" />
+                                <span asp-validation-for="GiaTien" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="DonVi"><i class="fas fa-weight fa-fw mr-1 text-info"></i> Đơn Vị</label>
+                                <input asp-for="DonVi" class="form-control" placeholder="1" type="number" min="0" />
+                                <span asp-validation-for="DonVi" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SlbanTrongNgay"><i class="fas fa-layer-group fa-fw mr-1 text-primary"></i> Số Lượng Bán / Ngày</label>
+                        <input asp-for="SlbanTrongNgay" class="form-control" placeholder="Không giới hạn nếu để trống" type="number" min="0" />
+                        <span asp-validation-for="SlbanTrongNgay" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaDm"><i class="fas fa-th-list fa-fw mr-1 text-primary"></i> Danh Mục</label>
+                        <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm">
+                            <option value="">-- Chọn danh mục --</option>
+                        </select>
+                        <span asp-validation-for="MaDm" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label asp-for="MaGiamGia"><i class="fas fa-tag fa-fw mr-1 text-success"></i> Mã Giảm Giá</label>
+                        <select asp-for="MaGiamGia" class="form-control" asp-items="ViewBag.MaGiamGia">
+                            <option value="">-- Không áp dụng --</option>
+                        </select>
+                        <span asp-validation-for="MaGiamGia" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Mô tả + Hình ảnh -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-align-left"></i> Mô Tả Sản Phẩm</div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        <label asp-for="ThanhPhan"><i class="fas fa-list-ul fa-fw mr-1 text-info"></i> Thành Phần</label>
+                        <textarea asp-for="ThanhPhan" class="form-control" placeholder="Liệt kê các thành phần nguyên liệu..." rows="3"></textarea>
+                        <span asp-validation-for="ThanhPhan" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label asp-for="ChitietSp"><i class="fas fa-file-alt fa-fw mr-1 text-secondary"></i> Chi Tiết Sản Phẩm</label>
+                        <textarea asp-for="ChitietSp" class="form-control" placeholder="Mô tả chi tiết về sản phẩm..." rows="4"></textarea>
+                        <span asp-validation-for="ChitietSp" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="MaGiamGia" class="control-label"></label>
-                <select asp-for="MaGiamGia" class="form-control" asp-items="ViewBag.MaGiamGia"></select>
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-images"></i> Hình Ảnh Sản Phẩm</div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        <label><i class="fas fa-image fa-fw mr-1 text-primary"></i> Hình Ảnh Chính</label>
+                        <div class="upload-zone" onclick="document.getElementById('img1Input').click()">
+                            <input type="file" name="HinhAnh1" id="img1Input" accept="image/*"
+                                   onchange="previewImage(this,'img1Preview','img1Placeholder')" style="display:none;">
+                            <div id="img1Placeholder" class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Nhấn để chọn hình ảnh</p>
+                                <span>JPG, PNG, WEBP (tối đa 5MB)</span>
+                            </div>
+                            <img id="img1Preview" class="upload-preview" alt="Preview 1">
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label><i class="fas fa-image fa-fw mr-1 text-secondary"></i> Hình Ảnh Phụ</label>
+                        <div class="upload-zone" onclick="document.getElementById('img2Input').click()">
+                            <input type="file" name="HinhAnh2" id="img2Input" accept="image/*"
+                                   onchange="previewImage(this,'img2Preview','img2Placeholder')" style="display:none;">
+                            <div id="img2Placeholder" class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Nhấn để chọn hình ảnh</p>
+                                <span>JPG, PNG, WEBP (tối đa 5MB)</span>
+                            </div>
+                            <img id="img2Preview" class="upload-preview" alt="Preview 2">
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label asp-for="ThanhPhan" class="control-label"></label>
-                <input asp-for="ThanhPhan" class="form-control" />
-                <span asp-validation-for="ThanhPhan" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="GiaTien" class="control-label"></label>
-                <input asp-for="GiaTien" class="form-control" />
-                <span asp-validation-for="GiaTien" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="DonVi" class="control-label"></label>
-                <input asp-for="DonVi" class="form-control" />
-                <span asp-validation-for="DonVi" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="ChitietSp" class="control-label"></label>
-                <input asp-for="ChitietSp" class="form-control" />
-                <span asp-validation-for="ChitietSp" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="MaDm" class="control-label"></label>
-                <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm"></select>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="SlbanTrongNgay" class="control-label"></label>
-                <input asp-for="SlbanTrongNgay" class="form-control" />
-                <span asp-validation-for="SlbanTrongNgay" class="text-danger"></span>
-            </div>
-
-            <!-- Trường upload file cho HinhAnh1 -->
-            <div class="form-group">
-                <label>Hình Ảnh 1</label>
-                <input type="file" name="HinhAnh1" class="form-control" />
-            </div>
-
-            <!-- Trường upload file cho HinhAnh2 -->
-            <div class="form-group">
-                <label>Hình Ảnh 2</label>
-                <input type="file" name="HinhAnh2" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <button type="submit" class="btn-save">
+            <i class="fas fa-save"></i> Lưu Sản Phẩm
+        </button>
+        <a class="btn-back" asp-action="Index">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    function previewImage(input, previewId, placeholderId) {
+        const preview = document.getElementById(previewId);
+        const placeholder = document.getElementById(placeholderId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    // Allow clicking upload zone without bubbling
+    document.querySelectorAll('.upload-zone input[type="file"]').forEach(el => {
+        el.addEventListener('click', e => e.stopPropagation());
+    });
+</script>
+}

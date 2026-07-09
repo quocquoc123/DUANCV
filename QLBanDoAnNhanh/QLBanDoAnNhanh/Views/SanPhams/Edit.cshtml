@@ -1,76 +1,366 @@
-﻿@model QLBanDoAnNhanh.Models.SanPham
+@model QLBanDoAnNhanh.Models.SanPham
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh Sửa Sản Phẩm";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+    var img1Src = !string.IsNullOrEmpty(Model.HinhAnh1)
+        ? (Model.HinhAnh1.StartsWith("/") ? Model.HinhAnh1 : "/" + Model.HinhAnh1) : "";
+    var img2Src = !string.IsNullOrEmpty(Model.HinhAnh2)
+        ? (Model.HinhAnh2.StartsWith("/") ? Model.HinhAnh2 : "/" + Model.HinhAnh2) : "";
 }
 
+@section Styles {
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #f6c23e 0%, #e0a800 100%);
+        border-radius: 16px;
+        padding: 24px 32px;
+        color: white;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 28px rgba(246,194,62,0.35);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .form-header h1 { font-size: 1.7rem; font-weight: 700; margin: 0; }
+    .form-header p  { margin: 4px 0 0; opacity: 0.88; font-size: 0.88rem; }
+    .header-id-badge {
+        background: rgba(255,255,255,0.25);
+        border-radius: 10px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
 
+    .form-card {
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .form-card-header {
+        background: linear-gradient(90deg, #f8f9fc, #eaecf4);
+        border-bottom: 2px solid #e3e6f0;
+        padding: 14px 22px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: #4e73df;
+    }
+    .form-card-header i { margin-right: 8px; }
+    .form-card-body { padding: 24px 26px; }
 
-<h4>SanPham</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MaSp" />
-            <div class="form-group">
-                <label asp-for="TenSp" class="control-label"></label>
-                <input asp-for="TenSp" class="form-control" />
-                <span asp-validation-for="TenSp" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaGiamGia" class="control-label"></label>
-                <select asp-for="MaGiamGia" class="form-control" asp-items="ViewBag.MaGiamGia"></select>
-                <span asp-validation-for="MaGiamGia" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ThanhPhan" class="control-label"></label>
-                <input asp-for="ThanhPhan" class="form-control" />
-                <span asp-validation-for="ThanhPhan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GiaTien" class="control-label"></label>
-                <input asp-for="GiaTien" class="form-control" />
-                <span asp-validation-for="GiaTien" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DonVi" class="control-label"></label>
-                <input asp-for="DonVi" class="form-control" />
-                <span asp-validation-for="DonVi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChitietSp" class="control-label"></label>
-                <input asp-for="ChitietSp" class="form-control" />
-                <span asp-validation-for="ChitietSp" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaDm" class="control-label"></label>
-                <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm"></select>
-                <span asp-validation-for="MaDm" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SlbanTrongNgay" class="control-label"></label>
-                <input asp-for="SlbanTrongNgay" class="form-control" />
-                <span asp-validation-for="SlbanTrongNgay" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>Hình Ảnh 1</label>
-                <input type="file" name="file1" class="form-control" />
-            </div>
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.82rem;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #d1d3e2;
+        padding: 10px 14px;
+        font-size: 0.93rem;
+        width: 100%;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: white;
+    }
+    .form-control:focus {
+        border-color: #f6c23e;
+        box-shadow: 0 0 0 3px rgba(246,194,62,0.18);
+        outline: none;
+    }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+    select.form-control { appearance: none; cursor: pointer; }
 
-            <!-- Trường upload file cho HinhAnh2 -->
-            <div class="form-group">
-                <label>Hình Ảnh 2</label>
-                <input type="file" name="file2" class="form-control" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    /* Image Upload with current image */
+    .img-upload-wrapper { position: relative; }
+    .current-img-preview {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: block;
+        border: 2px solid #e3e6f0;
+        margin-bottom: 10px;
+    }
+    .img-change-overlay {
+        position: absolute;
+        top: 8px; right: 8px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: background 0.2s;
+    }
+    .img-change-overlay:hover { background: rgba(0,0,0,0.85); }
+
+    .upload-zone {
+        border: 2px dashed #d1d3e2;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: border-color 0.2s, background 0.2s;
+        cursor: pointer;
+        position: relative;
+        margin-top: 8px;
+    }
+    .upload-zone:hover { border-color: #f6c23e; background: #fffdf0; }
+    .upload-zone input[type="file"] {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+    }
+    .upload-new-preview {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: none;
+        margin-top: 10px;
+        border: 2px solid #e3e6f0;
+    }
+    .upload-placeholder i { font-size: 2rem; color: #a0aec0; display: block; margin-bottom: 6px; }
+    .upload-placeholder p { color: #a0aec0; font-size: 0.82rem; margin: 0; }
+    .no-img-placeholder {
+        width: 100%;
+        height: 120px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #eaecf4, #d1d3e2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #b7b9cc;
+        margin-bottom: 10px;
+    }
+
+    /* Action Buttons */
+    .action-bar { display: flex; gap: 12px; flex-wrap: wrap; padding: 0 0 32px; }
+    .btn-save {
+        background: linear-gradient(135deg, #f6c23e, #e0a800);
+        border: none; color: white;
+        padding: 12px 32px;
+        border-radius: 10px; font-weight: 700; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.2s; cursor: pointer;
+    }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(246,194,62,0.5); color: white; }
+    .btn-detail {
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        border: none; color: white;
+        padding: 12px 24px;
+        border-radius: 10px; font-weight: 600; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-detail:hover { color: white; text-decoration: none; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(78,115,223,0.45); }
+    .btn-back {
+        background: #6c757d; border: none; color: white;
+        padding: 12px 24px;
+        border-radius: 10px; font-weight: 600; font-size: 0.93rem;
+        display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: #545b62; color: white; text-decoration: none; transform: translateY(-2px); }
+    .text-danger { font-size: 0.8rem; margin-top: 4px; display: block; }
+</style>
+}
+
+<!-- Header -->
+<div class="form-header">
+    <div>
+        <h1><i class="fas fa-edit mr-2"></i> Chỉnh Sửa Sản Phẩm</h1>
+        <p>Cập nhật thông tin sản phẩm trong hệ thống</p>
+    </div>
+    <div class="header-id-badge">
+        <i class="fas fa-hashtag mr-1"></i> #@Model.MaSp — @Model.TenSp
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="MaSp" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none;"></div>
+
+    <div class="row">
+        <!-- Cột trái: Thông tin cơ bản -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-info-circle"></i> Thông Tin Cơ Bản</div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        <label asp-for="TenSp"><i class="fas fa-utensils fa-fw mr-1 text-warning"></i> Tên Sản Phẩm</label>
+                        <input asp-for="TenSp" class="form-control" placeholder="Nhập tên sản phẩm..." />
+                        <span asp-validation-for="TenSp" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="GiaTien"><i class="fas fa-coins fa-fw mr-1 text-warning"></i> Giá Tiền (₫)</label>
+                                <input asp-for="GiaTien" class="form-control" type="number" min="0" step="1000" />
+                                <span asp-validation-for="GiaTien" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="DonVi"><i class="fas fa-weight fa-fw mr-1 text-info"></i> Đơn Vị</label>
+                                <input asp-for="DonVi" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="DonVi" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SlbanTrongNgay"><i class="fas fa-layer-group fa-fw mr-1 text-primary"></i> Số Lượng Bán / Ngày</label>
+                        <input asp-for="SlbanTrongNgay" class="form-control" type="number" min="0" />
+                        <span asp-validation-for="SlbanTrongNgay" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaDm"><i class="fas fa-th-list fa-fw mr-1 text-primary"></i> Danh Mục</label>
+                        <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm"></select>
+                        <span asp-validation-for="MaDm" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label asp-for="MaGiamGia"><i class="fas fa-tag fa-fw mr-1 text-success"></i> Mã Giảm Giá</label>
+                        <select asp-for="MaGiamGia" class="form-control" asp-items="ViewBag.MaGiamGia"></select>
+                        <span asp-validation-for="MaGiamGia" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải -->
+        <div class="col-lg-6">
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-align-left"></i> Mô Tả Sản Phẩm</div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        <label asp-for="ThanhPhan"><i class="fas fa-list-ul fa-fw mr-1 text-info"></i> Thành Phần</label>
+                        <textarea asp-for="ThanhPhan" class="form-control" rows="3" placeholder="Thành phần nguyên liệu..."></textarea>
+                        <span asp-validation-for="ThanhPhan" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label asp-for="ChitietSp"><i class="fas fa-file-alt fa-fw mr-1 text-secondary"></i> Chi Tiết Sản Phẩm</label>
+                        <textarea asp-for="ChitietSp" class="form-control" rows="4" placeholder="Mô tả chi tiết..."></textarea>
+                        <span asp-validation-for="ChitietSp" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header"><i class="fas fa-images"></i> Hình Ảnh Sản Phẩm</div>
+                <div class="form-card-body">
+                    <!-- Hình 1 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-image fa-fw mr-1 text-primary"></i> Hình Ảnh Chính</label>
+                        <div class="img-upload-wrapper">
+                            @if (!string.IsNullOrEmpty(img1Src))
+                            {
+                                <img id="currentImg1" class="current-img-preview" src="@img1Src" alt="Hình ảnh 1">
+                                <div class="img-change-overlay" onclick="toggleUpload('newImg1Zone','currentImg1')">
+                                    <i class="fas fa-camera"></i> Thay đổi
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="no-img-placeholder"><i class="fas fa-image"></i></div>
+                            }
+                        </div>
+                        <div id="newImg1Zone" class="upload-zone" style="@(!string.IsNullOrEmpty(img1Src) ? "display:none;" : "")"
+                             onclick="document.getElementById('file1Input').click()">
+                            <input type="file" name="file1" id="file1Input" accept="image/*"
+                                   onchange="previewNew(this,'newPreview1','newImg1Zone')" style="display:none;">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Nhấn để chọn ảnh mới</p>
+                            </div>
+                            <img id="newPreview1" class="upload-new-preview" alt="">
+                        </div>
+                    </div>
+
+                    <!-- Hình 2 -->
+                    <div class="form-group mb-0">
+                        <label><i class="fas fa-image fa-fw mr-1 text-secondary"></i> Hình Ảnh Phụ</label>
+                        <div class="img-upload-wrapper">
+                            @if (!string.IsNullOrEmpty(img2Src))
+                            {
+                                <img id="currentImg2" class="current-img-preview" src="@img2Src" alt="Hình ảnh 2">
+                                <div class="img-change-overlay" onclick="toggleUpload('newImg2Zone','currentImg2')">
+                                    <i class="fas fa-camera"></i> Thay đổi
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="no-img-placeholder"><i class="fas fa-image"></i></div>
+                            }
+                        </div>
+                        <div id="newImg2Zone" class="upload-zone" style="@(!string.IsNullOrEmpty(img2Src) ? "display:none;" : "")"
+                             onclick="document.getElementById('file2Input').click()">
+                            <input type="file" name="file2" id="file2Input" accept="image/*"
+                                   onchange="previewNew(this,'newPreview2','newImg2Zone')" style="display:none;">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Nhấn để chọn ảnh mới</p>
+                            </div>
+                            <img id="newPreview2" class="upload-new-preview" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <button type="submit" class="btn-save">
+            <i class="fas fa-save"></i> Lưu Thay Đổi
+        </button>
+        <a class="btn-detail" asp-action="Details" asp-route-id="@Model.MaSp">
+            <i class="fas fa-eye"></i> Xem Chi Tiết
+        </a>
+        <a class="btn-back" asp-action="Index">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    function toggleUpload(zoneId, currentImgId) {
+        const zone = document.getElementById(zoneId);
+        const img  = document.getElementById(currentImgId);
+        if (zone.style.display === 'none') {
+            zone.style.display = '';
+            if (img) img.style.opacity = '0.4';
+        } else {
+            zone.style.display = 'none';
+            if (img) img.style.opacity = '1';
+        }
+    }
+    function previewNew(input, previewId, zoneId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    document.querySelectorAll('.upload-zone input[type="file"]').forEach(el => {
+        el.addEventListener('click', e => e.stopPropagation());
+    });
+</script>
+}
