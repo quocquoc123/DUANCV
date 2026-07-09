@@ -1,206 +1,560 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.DonHang>
+@model IEnumerable<QLBanDoAnNhanh.Models.DonHang>
 
 @{
     ViewData["Title"] = "Danh sách đơn hàng";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 
-    var trangThaiOptions = new List<string> { "Chưa Giao", "Đang Giao", "Đã Giao", "Đã Hủy" };
+    // Bootstrap 4 badge classes (SB Admin 2)
+    string BadgeClass(string tt) => tt switch
+    {
+        "Chưa Giao" => "badge-secondary",
+        "Đang Giao" => "badge-warning",
+        "Đã Giao"   => "badge-success",
+        "Đã Hủy"   => "badge-danger",
+        _           => "badge-light"
+    };
+    string BadgeIcon(string tt) => tt switch
+    {
+        "Chưa Giao" => "fa-clock",
+        "Đang Giao" => "fa-truck",
+        "Đã Giao"   => "fa-check-circle",
+        "Đã Hủy"   => "fa-times-circle",
+        _           => "fa-circle"
+    };
 }
 
-<h1>Danh sách đơn hàng</h1>
+@section Styles {
+<style>
+    /* ── Bộ lọc pill ── */
+    .filter-pills .btn {
+        border-radius: 50px;
+        font-size: .8rem;
+        padding: 5px 16px;
+        margin: 0 4px 6px 0;
+    }
 
-<!-- Form lọc theo trạng thái bằng radio buttons -->
-<form method="get" asp-action="Index" class="mb-3">
-    <div class="row">
-        <div class="col-md-12">
-            <label for="trangThai">Lọc theo trạng thái:</label>
-            <select class="form-select" id="trangThai" name="trangThai">
-                @* Option cho tất cả trạng thái *@
-                @if (ViewBag.TrangThai == null)
-                {
-                    <option value="" selected>Tất cả</option>
-                }
-                else
-                {
-                    <option value="">Tất cả</option>
-                }
+    /* ── Ô tìm kiếm ── */
+    .search-form .form-control {
+        border-radius: 4px 0 0 4px;
+        border-color: #d1d3e2;
+        font-size: .85rem;
+    }
+    .search-form .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 .15rem rgba(78,115,223,.2);
+    }
+    .search-form .btn {
+        border-radius: 0 4px 4px 0;
+    }
 
-                @* Các option theo trạng thái *@
-                @foreach (var option in trangThaiOptions)
+    /* ── Bảng ── */
+    #orderTable thead th {
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        white-space: nowrap;
+        vertical-align: middle;
+        border-top: none;
+    }
+    #orderTable tbody td {
+        vertical-align: middle;
+        font-size: .875rem;
+    }
+
+    /* Mã đơn truncate */
+    .code-cell {
+        font-family: "Courier New", monospace;
+        font-size: .78rem;
+        color: #858796;
+        max-width: 110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    /* Địa chỉ truncate */
+    .addr-cell {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        font-size: .82rem;
+    }
+
+    /* Tên truncate */
+    .name-cell {
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        font-weight: 600;
+    }
+
+    /* Badge trạng thái */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-size: .75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Vùng thao tác */
+    .action-cell {
+        white-space: nowrap;
+        padding: 8px 12px !important;
+    }
+    /* Wrapper flex cho toàn bộ action cell */
+    .action-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    /* Vùng 1: nút chuyển trạng thái – cố định 160px */
+    .status-zone {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 4px;
+        min-width: 160px;
+    }
+    .status-zone form {
+        display: inline-flex;
+        margin: 0;
+    }
+    /* Vùng 2: nút tiện ích – luôn cố định vị trí */
+    .util-zone {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-left: 1px solid #e3e6f0;
+        padding-left: 8px;
+    }
+    /* Nút icon tròn nhỏ */
+    .btn-icon {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+        line-height: 1;
+    }
+    /* Label trạng thái text (Hoàn thành / Đã hủy) */
+    .status-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    /* Footer tổng */
+    .table-footer {
+        background-color: #f8f9fc;
+        border-top: 1px solid #e3e6f0;
+        padding: 8px 16px;
+        font-size: .82rem;
+        color: #858796;
+    }
+</style>
+}
+
+@* ── Tiêu đề trang ── *@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-clipboard-list mr-2"></i>Quản lý đơn hàng
+    </h1>
+</div>
+
+@* ── Thông báo ── *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fas fa-check-circle mr-1"></i> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fas fa-exclamation-circle mr-1"></i> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    </div>
+}
+
+@* ── Bộ lọc trạng thái + Tìm kiếm ── *@
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-3 px-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap:12px">
+
+            @* Pill lọc trạng thái *@
+            <div class="filter-pills">
+                <a asp-action="Index" asp-route-search="@ViewBag.Search"
+                   class="btn btn-sm @(ViewBag.TrangThai == null ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-list fa-sm mr-1"></i>Tất cả
+                </a>
+                <a asp-action="Index" asp-route-trangThai="Chưa Giao" asp-route-search="@ViewBag.Search"
+                   class="btn btn-sm @((string)ViewBag.TrangThai == "Chưa Giao" ? "btn-secondary" : "btn-outline-secondary")">
+                    <i class="fas fa-clock fa-sm mr-1"></i>Chưa giao
+                </a>
+                <a asp-action="Index" asp-route-trangThai="Đang Giao" asp-route-search="@ViewBag.Search"
+                   class="btn btn-sm @((string)ViewBag.TrangThai == "Đang Giao" ? "btn-warning" : "btn-outline-warning")">
+                    <i class="fas fa-truck fa-sm mr-1"></i>Đang giao
+                </a>
+                <a asp-action="Index" asp-route-trangThai="Đã Giao" asp-route-search="@ViewBag.Search"
+                   class="btn btn-sm @((string)ViewBag.TrangThai == "Đã Giao" ? "btn-success" : "btn-outline-success")">
+                    <i class="fas fa-check-circle fa-sm mr-1"></i>Đã giao
+                </a>
+                <a asp-action="Index" asp-route-trangThai="Đã Hủy" asp-route-search="@ViewBag.Search"
+                   class="btn btn-sm @((string)ViewBag.TrangThai == "Đã Hủy" ? "btn-danger" : "btn-outline-danger")">
+                    <i class="fas fa-times-circle fa-sm mr-1"></i>Đã hủy
+                </a>
+            </div>
+
+            @* Ô tìm kiếm *@
+            <form asp-action="Index" method="get" class="search-form">
+                @if (ViewBag.TrangThai != null)
                 {
-                    if (option == (string)ViewBag.TrangThai)
-                    {
-                        <option value="@option" selected>@option</option>
-                    }
-                    else
-                    {
-                        <option value="@option">@option</option>
-                    }
+                    <input type="hidden" name="trangThai" value="@ViewBag.TrangThai" />
                 }
-            </select>
+                <div class="input-group input-group-sm">
+                    <input type="text"
+                           name="search"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Mã đơn hoặc tên khách..."
+                           value="@ViewBag.Search"
+                           autocomplete="off"
+                           style="min-width:220px" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                        @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+                        {
+                            <a asp-action="Index" asp-route-trangThai="@ViewBag.TrangThai"
+                               class="btn btn-outline-secondary" title="Xóa tìm kiếm">
+                                <i class="fas fa-times fa-sm"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        @* Thông báo đang tìm kiếm *@
+        @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+        {
+            <div class="mt-2">
+                <span class="badge badge-primary px-2 py-1">
+                    <i class="fas fa-search mr-1"></i>
+                    Kết quả cho: "<strong>@ViewBag.Search</strong>" — @Model.Count() đơn hàng
+                </span>
+            </div>
+        }
+    </div>
+</div>
+
+
+@* ── Bảng đơn hàng ── *@
+<div class="card shadow">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="orderTable">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="width:110px">Mã đơn</th>
+                        <th style="width:140px">Khách hàng</th>
+                        <th style="width:150px">Địa chỉ</th>
+                        <th style="width:105px" class="text-right">Tổng tiền</th>
+                        <th style="width:42px"  class="text-center">SL</th>
+                        <th style="width:115px" class="text-center">Trạng thái</th>
+                        <th style="width:95px">Ngày tạo</th>
+                        <th style="width:75px"  class="text-center">Mã KM</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @* Mã đơn *@
+                            <td title="@item.MaDh">
+                                <span class="code-cell">@item.MaDh</span>
+                            </td>
+
+                            @* Khách hàng *@
+                            <td>
+                                <span class="name-cell" title="@item.Username">@item.Username</span>
+                                @if (item.MaNguoiDungNavigation != null)
+                                {
+                                    <small class="text-muted">#@item.MaNguoiDungNavigation.MaNguoiDung</small>
+                                }
+                            </td>
+
+                            @* Địa chỉ *@
+                            <td title="@item.Diachi">
+                                <span class="addr-cell">@item.Diachi</span>
+                            </td>
+
+                            @* Tổng tiền *@
+                            <td class="text-right font-weight-bold text-nowrap">
+                                @string.Format("{0:N0}đ", item.TongTien)
+                            </td>
+
+                            @* SL *@
+                            <td class="text-center">@item.SoLuong</td>
+
+                            @* Trạng thái *@
+                            <td class="text-center">
+                                <span class="badge @BadgeClass(item.TrangThai) status-badge">
+                                    <i class="fas @BadgeIcon(item.TrangThai) fa-sm"></i>
+                                    @item.TrangThai
+                                </span>
+                            </td>
+
+                            @* Ngày tạo *@
+                            <td class="text-nowrap">
+                                <small class="d-block">@item.CreatedAt?.ToString("dd/MM/yyyy")</small>
+                                <small class="text-muted">@item.CreatedAt?.ToString("HH:mm")</small>
+                            </td>
+
+                            @* Mã KM *@
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(item.MaKhuyenMai))
+                                {
+                                    <span class="badge badge-info">@item.MaKhuyenMai</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+
+                            @* ── Thao tác ── *@
+                            <td class="action-cell">
+                                <div class="action-wrap">
+
+                                    @* ─ Vùng 1: Nút chuyển trạng thái (160px cố định) ─ *@
+                                    <div class="status-zone">
+
+                                        @* CHƯA GIAO → Đang giao + Hủy *@
+                                        @if (item.TrangThai == "Chưa Giao")
+                                        {
+                                            <form asp-action="UpdateTrangThai_DangGiao" asp-route-id="@item.MaDh" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-warning"
+                                                        title="Chuyển sang Đang giao">
+                                                    <i class="fas fa-truck fa-sm mr-1"></i>Đang giao
+                                                </button>
+                                            </form>
+                                            <form asp-action="UpdateTrangThai_DaHuy" asp-route-id="@item.MaDh" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger btn-icon"
+                                                        onclick="return confirm('Xác nhận hủy đơn hàng này?')"
+                                                        title="Hủy đơn">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @* ĐANG GIAO → Đã giao + Hoàn lại *@
+                                        else if (item.TrangThai == "Đang Giao")
+                                        {
+                                            <form asp-action="UpdateTrangThai_DaGiao" asp-route-id="@item.MaDh" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        title="Xác nhận đã giao">
+                                                    <i class="fas fa-check fa-sm mr-1"></i>Đã giao
+                                                </button>
+                                            </form>
+                                            <form asp-action="UpdateTrangThai_ChuaGiao" asp-route-id="@item.MaDh" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-secondary btn-icon"
+                                                        title="Hoàn lại Chưa giao">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @* ĐÃ GIAO *@
+                                        else if (item.TrangThai == "Đã Giao")
+                                        {
+                                            <span class="status-label text-success">
+                                                <i class="fas fa-check-double"></i> Hoàn thành
+                                            </span>
+                                        }
+
+                                        @* ĐÃ HỦY *@
+                                        else if (item.TrangThai == "Đã Hủy")
+                                        {
+                                            <span class="status-label text-muted">
+                                                <i class="fas fa-ban"></i> Đã hủy
+                                            </span>
+                                        }
+
+                                        @* Khác (Chờ TT…) *@
+                                        else
+                                        {
+                                            <span class="status-label text-muted">@item.TrangThai</span>
+                                        }
+
+                                    </div>@* end status-zone *@
+
+                                    @* ─ Vùng 2: Tiện ích – luôn cố định vị trí ─ *@
+                                    <div class="util-zone">
+                                        <a asp-action="Details" asp-route-id="@item.MaDh"
+                                           class="btn btn-sm btn-info btn-icon" title="Chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (item.TrangThai != "Đã Giao")
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger btn-icon btn-delete"
+                                                    title="Xóa đơn"
+                                                    data-id="@item.MaDh"
+                                                    data-name="@item.Username"
+                                                    data-addr="@item.Diachi"
+                                                    data-total="@string.Format("{0:N0}", item.TongTien)"
+                                                    data-status="@item.TrangThai"
+                                                    data-toggle="modal"
+                                                    data-target="#deleteModal">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            @* Placeholder để giữ chiều rộng đều *@
+                                            <span style="width:28px;display:inline-block"></span>
+                                        }
+                                    </div>@* end util-zone *@
+
+                                </div>@* end action-wrap *@
+                            </td>
+                        </tr>
+                    }
+
+                    @* Rỗng *@
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block text-gray-300"></i>
+                                Không có đơn hàng nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
+    <div class="table-footer d-flex align-items-center">
+        <i class="fas fa-info-circle mr-2"></i>
+        Tổng cộng: <strong class="ml-1 mr-1">@Model.Count()</strong> đơn hàng
+    </div>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3">Lọc</button>
-</form>
+@* ─── Modal xác nhận xóa đơn hàng ─── *@
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow">
 
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Xác nhận xóa đơn hàng
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
 
-<table class="table table-striped mt-4">
-    <thead>
-        <tr>
-            <th>Tên</th>
-            <th>Địa Chỉ</th>
-            <th>Tổng tiền</th>
-            <th>Số lượng</th>
-            <th>Số điện thoại</th>
-            <th>Trạng thái</th>
-            <th>Ngày tạo</th>
-            <th>Ngày cập nhật</th>
-            <th>Mã khuyến mãi</th>
-            <th>Mã người dùng</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Username)</td>
-                <td>@Html.DisplayFor(modelItem => item.Diachi)</td>
-                <td>@string.Format("{0:C}", item.TongTien)</td>
-                <td>@Html.DisplayFor(modelItem => item.SoLuong)</td>
-                <td>0352385133</td>
-                <td>@Html.DisplayFor(modelItem => item.TrangThai)</td>
-                <td>@item.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@item.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>
-                    @(item.MaKhuyenMaiNavigation != null ? item.MaKhuyenMaiNavigation.MaKhuyenMai : "Không có")
-                </td>
-                <td>
-                    @(item.MaNguoiDungNavigation != null ? item.MaNguoiDungNavigation.MaNguoiDung : "Không có")
-                </td>
-             <td>
+            <div class="modal-body">
+                <p class="text-muted mb-3">Bạn có chắc muốn xóa đơn hàng này không? Hành động này <strong>không thể hoàn tác</strong>.</p>
 
-    <a asp-action="Edit" asp-route-id="@item.MaDh" class="btn btn-sm btn-warning">Sửa</a>
-                    
-    <a asp-action="Details" asp-route-id="@item.MaDh" class="btn btn-sm btn-info">Chi tiết</a>
+                <div class="card bg-light border-0">
+                    <div class="card-body py-3">
+                        <div class="row">
+                            <div class="col-5 text-muted small">Mã đơn:</div>
+                            <div class="col-7"><code id="modal-id" class="text-danger font-weight-bold"></code></div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-5 text-muted small">Khách hàng:</div>
+                            <div class="col-7 font-weight-bold" id="modal-name"></div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-5 text-muted small">Địa chỉ:</div>
+                            <div class="col-7 small" id="modal-addr"></div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-5 text-muted small">Tổng tiền:</div>
+                            <div class="col-7 font-weight-bold text-primary" id="modal-total"></div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-5 text-muted small">Trạng thái:</div>
+                            <div class="col-7" id="modal-status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    @if (item.TrangThai != "Đã Giao")
-    {
-        <a asp-action="Delete" asp-route-id="@item.MaDh" class="btn btn-sm btn-danger">Xóa</a>
-    }
-</td>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>Hủy bỏ
+                </button>
+                <form id="deleteForm" method="post" asp-action="Delete" asp-route-id="__ID__">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteId" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash mr-1"></i>Xác nhận xóa
+                    </button>
+                </form>
+            </div>
 
-            </tr>
-        }
-    </tbody>
-</table>
-<style>
-    /* CSS tổng thể */
-    
+        </div>
+    </div>
+</div>
 
-    /* Tiêu đề */
-    h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #333;
-    }
+@section Scripts {
+<script>
+    // Gán thông tin đơn hàng vào modal khi click nút xóa
+    document.querySelectorAll('.btn-delete').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id     = this.dataset.id;
+            var name   = this.dataset.name;
+            var addr   = this.dataset.addr;
+            var total  = this.dataset.total;
+            var status = this.dataset.status;
 
-    /* Form lọc */
-    form {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+            document.getElementById('modal-id').textContent     = id;
+            document.getElementById('modal-name').textContent   = name;
+            document.getElementById('modal-addr').textContent   = addr;
+            document.getElementById('modal-total').textContent  = total + 'đ';
+            document.getElementById('modal-status').textContent = status;
 
-    label {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+            // Cập nhật action của form xóa
+            var form = document.getElementById('deleteForm');
+            form.action = '/DonHangs/Delete/' + id;
+            document.getElementById('deleteId').value = id;
+        });
+    });
 
-    .form-select {
-        width: 100%;
-        max-width: 300px;
-        margin-bottom: 10px;
-    }
-
-    button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        transition: background-color 0.3s;
-        cursor: pointer;
-    }
-
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-    /* Bảng danh sách đơn hàng */
-    .table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-        .table thead tr {
-            background-color: #007bff;
-            color: white;
-            text-align: left;
-        }
-
-        .table th,
-        .table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .table tbody tr:hover {
-            background-color: #e9ecef;
-        }
-
-    /* Các nút hành động */
-    .btn {
-        padding: 5px 10px;
-        border-radius: 5px;
-        margin-right: 5px;
-        text-decoration: none;
-        color: white;
-        transition: background-color 0.3s;
-    }
-
-    .btn-warning {
-        background-color: #ffc107;
-    }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-
-    .btn-info {
-        background-color: #17a2b8;
-    }
-
-        .btn-info:hover {
-            background-color: #138496;
-        }
-
-    .btn-danger {
-        background-color: #dc3545;
-    }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-</style>
+    // Tự động ẩn alert sau 4 giây
+    setTimeout(function () {
+        document.querySelectorAll('.alert.show').forEach(function (el) {
+            $(el).alert('close');
+        });
+    }, 4000);
+</script>
+}

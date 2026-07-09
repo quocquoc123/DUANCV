@@ -1,76 +1,409 @@
-﻿@model QLBanDoAnNhanh.Models.DonHang
+@model QLBanDoAnNhanh.Models.DonHang
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh Sửa Đơn Hàng - " + Model.MaDh;
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
 }
+
+@section Styles {
+<style>
+    .edit-header {
+        background: linear-gradient(135deg, #f6c23e 0%, #e0a800 100%);
+        border-radius: 14px;
+        padding: 22px 28px;
+        color: white;
+        margin-bottom: 28px;
+        box-shadow: 0 6px 24px rgba(246,194,62,0.35);
+    }
+    .edit-header h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    .edit-header .sub-text {
+        opacity: 0.88;
+        font-size: 0.9rem;
+    }
+    .edit-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .edit-card .card-header {
+        background: linear-gradient(90deg, #f8f9fc, #eaecf4);
+        border-bottom: 2px solid #e3e6f0;
+        padding: 14px 22px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: #4e73df;
+    }
+    .edit-card .card-header i { margin-right: 8px; }
+    .edit-card .card-body { padding: 24px 26px; }
+
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #d1d3e2;
+        padding: 10px 14px;
+        font-size: 0.93rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 3px rgba(78,115,223,0.15);
+    }
+    .form-control[readonly] {
+        background: #f4f5fc;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+    .field-note {
+        font-size: 0.78rem;
+        color: #a0aec0;
+        margin-top: 4px;
+    }
+    select.form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236c757d' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        appearance: none;
+    }
+    .status-option-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    .action-bar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #1cc88a, #17a673);
+        border: none;
+        color: white;
+        padding: 11px 28px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.93rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(28,200,138,0.4);
+    }
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        color: white;
+        padding: 11px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.93rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover {
+        background: #545b62;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    .btn-detail {
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        border: none;
+        color: white;
+        padding: 11px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.93rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-detail:hover {
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(78,115,223,0.4);
+    }
+    .current-status-display {
+        background: #f8f9fc;
+        border: 1.5px solid #e3e6f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.88rem;
+        color: #5a5c69;
+    }
+    .warning-note {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.83rem;
+        color: #856404;
+        margin-top: 8px;
+    }
+    .readonly-field-group {
+        background: #f4f5fc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+    .readonly-field-group .field-label {
+        font-size: 0.78rem;
+        color: #a0aec0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .readonly-field-group .field-val {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #3d4066;
+    }
+</style>
+}
+
+<!-- Header -->
+<div class="edit-header">
+    <div class="d-flex align-items-center">
+        <div>
+            <div class="sub-text"><i class="fas fa-edit mr-1"></i> Chỉnh sửa đơn hàng</div>
+            <h2>#@Model.MaDh</h2>
+        </div>
+    </div>
+</div>
 
 <form asp-action="Edit">
     <input type="hidden" asp-for="MaDh" />
 
-    <div class="form-group">
-        <label>Tên</label>
-        <input class="form-control" type="text" asp-for="Username" />
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label>Tổng Tiền</label>
-        <input class="form-control" type="text" asp-for="TongTien" readonly /> <!-- Nếu không muốn chỉnh sửa -->
+    <div class="row">
+        <!-- Cột trái -->
+        <div class="col-lg-6">
+
+            <!-- Thông tin cơ bản (chỉ xem) -->
+            <div class="edit-card card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Thông Tin Cố Định (Chỉ Xem)
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-hashtag mr-1"></i>Mã đơn hàng</div>
+                                <div class="field-val">#@Model.MaDh</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-coins mr-1"></i>Tổng tiền</div>
+                                <div class="field-val text-primary">@Model.TongTien.ToString("N0") ₫</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-calendar-plus mr-1"></i>Ngày tạo</div>
+                                <div class="field-val">@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-calendar-check mr-1"></i>Cập nhật</div>
+                                <div class="field-val">@(Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-layer-group mr-1"></i>Số lượng SP</div>
+                                <div class="field-val">@Model.SoLuong sản phẩm</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="readonly-field-group">
+                                <div class="field-label"><i class="fas fa-ticket-alt mr-1"></i>Mã khuyến mãi</div>
+                                <div class="field-val">@(string.IsNullOrEmpty(Model.MaKhuyenMai) ? "Không có" : Model.MaKhuyenMai)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hidden fields để giữ giá trị khi submit -->
+                    <input type="hidden" asp-for="TongTien" />
+                    <input type="hidden" asp-for="SoLuong" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="MaNguoiDung" />
+                </div>
+            </div>
+
+            <!-- Thông tin có thể chỉnh sửa -->
+            <div class="edit-card card">
+                <div class="card-header">
+                    <i class="fas fa-user-edit"></i> Thông Tin Khách Hàng
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Username">
+                            <i class="fas fa-user fa-fw text-primary"></i> Tên người dùng (Username)
+                        </label>
+                        <input class="form-control" type="text" asp-for="Username" placeholder="Nhập username..." />
+                        <span asp-validation-for="Username" class="text-danger small"></span>
+                        <div class="field-note"><i class="fas fa-info-circle"></i> Username được dùng để xác định khách hàng trong hệ thống.</div>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label asp-for="Diachi">
+                            <i class="fas fa-map-marker-alt fa-fw text-danger"></i> Địa Chỉ Giao Hàng
+                        </label>
+                        <textarea class="form-control" asp-for="Diachi" rows="3" placeholder="Nhập địa chỉ giao hàng..."></textarea>
+                        <span asp-validation-for="Diachi" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải -->
+        <div class="col-lg-6">
+
+            <!-- Trạng thái đơn hàng -->
+            <div class="edit-card card">
+                <div class="card-header">
+                    <i class="fas fa-flag"></i> Trạng Thái Đơn Hàng
+                </div>
+                <div class="card-body">
+                    <div class="current-status-display">
+                        <i class="fas fa-circle mr-2"></i>Trạng thái hiện tại:
+                        <strong class="ml-1">@Model.TrangThai</strong>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label asp-for="TrangThai">
+                            <i class="fas fa-exchange-alt fa-fw text-warning"></i> Chuyển sang trạng thái
+                        </label>
+                        <select class="form-control" asp-for="TrangThai">
+                            @if (Model.TrangThai == "Chưa Giao")
+                            {
+                                <option value="Chưa Giao" selected>⏳ Chưa Giao</option>
+                                <option value="Đang giao">🚚 Đang Giao</option>
+                                <option value="Đã Hủy">❌ Đã Hủy</option>
+                            }
+                            else if (Model.TrangThai == "Đang giao" || Model.TrangThai == "Đang Giao")
+                            {
+                                <option value="Đang giao" selected>🚚 Đang Giao</option>
+                                <option value="Đã Giao">✅ Đã Giao</option>
+                            }
+                            else if (Model.TrangThai == "Đã Giao")
+                            {
+                                <option value="Đã Giao" selected>✅ Đã Giao</option>
+                            }
+                            else if (Model.TrangThai == "Đã Hủy")
+                            {
+                                <option value="Đã Hủy" selected>❌ Đã Hủy</option>
+                            }
+                            else
+                            {
+                                <option value="@Model.TrangThai" selected>@Model.TrangThai</option>
+                                <option value="Chưa Giao">⏳ Chưa Giao</option>
+                                <option value="Đang giao">🚚 Đang Giao</option>
+                                <option value="Đã Giao">✅ Đã Giao</option>
+                                <option value="Đã Hủy">❌ Đã Hủy</option>
+                            }
+                        </select>
+                        <div class="warning-note mt-2">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            Lưu ý: Đơn hàng đã giao hoặc đã hủy không nên thay đổi trạng thái.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mã khuyến mãi (admin view) -->
+            <div class="edit-card card">
+                <div class="card-header">
+                    <i class="fas fa-tags"></i> Khuyến Mãi
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-0">
+                        <label asp-for="MaKhuyenMai">
+                            <i class="fas fa-ticket-alt fa-fw text-success"></i> Mã Khuyến Mãi
+                        </label>
+                        <input class="form-control" type="text" asp-for="MaKhuyenMai"
+                               placeholder="Để trống nếu không có khuyến mãi" />
+                        <span asp-validation-for="MaKhuyenMai" class="text-danger small"></span>
+                        <div class="field-note">
+                            <i class="fas fa-info-circle"></i>
+                            Nhập mã khuyến mãi hợp lệ (đang hoạt động trong hệ thống).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cập nhật ngày -->
+            <div class="edit-card card">
+                <div class="card-header">
+                    <i class="fas fa-clock"></i> Thời Gian
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-calendar-plus fa-fw text-success"></i> Ngày Tạo
+                        </label>
+                        <input class="form-control" type="text" asp-for="CreatedAt" readonly />
+                        <div class="field-note"><i class="fas fa-lock"></i> Chỉ đọc – không thể thay đổi</div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label>
+                            <i class="fas fa-calendar-check fa-fw text-info"></i> Ngày Cập Nhật
+                        </label>
+                        <input class="form-control" type="text" asp-for="UpdatedAt" readonly />
+                        <div class="field-note"><i class="fas fa-sync-alt"></i> Tự động cập nhật khi lưu</div>
+                        <input type="hidden" asp-for="UpdatedAt" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Số Lượng</label>
-        <input class="form-control" type="number" asp-for="SoLuong" />
+    <!-- Thanh hành động -->
+    <div class="action-bar mb-4">
+        <button type="submit" class="btn-save">
+            <i class="fas fa-save"></i> Lưu Thay Đổi
+        </button>
+        <a class="btn-detail" asp-action="Details" asp-route-id="@Model.MaDh">
+            <i class="fas fa-eye"></i> Xem Chi Tiết
+        </a>
+        <a class="btn-cancel" asp-action="Index">
+            <i class="fas fa-times"></i> Hủy
+        </a>
     </div>
-
-    <div class="form-group">
-        <label>Ngày Tạo</label>
-        <input class="form-control" type="text" asp-for="CreatedAt" readonly /> <!-- Ngày tạo chỉ để xem, không sửa -->
-    </div>
-
-    <div class="form-group">
-        <label>Ngày Cập Nhật</label>
-        <input class="form-control" type="text" asp-for="UpdatedAt" readonly /> <!-- Ngày cập nhật sẽ tự động cập nhật -->
-    </div>
-
-    <div class="form-group">
-        <label>Địa Chỉ</label>
-        <input class="form-control" type="text" asp-for="Diachi" />
-    </div>
-
-    <div class="form-group">
-        <label>Mã Khuyến mãi </label>
-        <input class="form-control" type="text" asp-for="MaKhuyenMai" />
-        <span asp-validation-for="MaKhuyenMai" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label>Trạng Thái</label>
-        <select class="form-control" asp-for="TrangThai">
-            @if (Model.TrangThai == "Chưa Giao" && Model.TrangThai != "Đang xử lý" && Model.TrangThai != "Mới")
-            {
-                <option value="Chưa Giao" selected>Chưa Giao</option>
-                <option value="Đang giao">Đang giao</option>
-                <option value="Đã Hủy">Đã Hủy</option>
-            }
-          
-            else if (Model.TrangThai == "Đang giao")
-            {
-                <option value="Đang giao"selected>Đang giao</option>
-                <option value="Đã Giao">Đã Giao</option>
-            }
-            else if (Model.TrangThai == "Đã Giao")
-            {
-                <option value="Đã Giao" selected>Đã Giao</option>
-            }
-            else if (Model.TrangThai == "Đã Hủy")
-            {
-                <option value="Đã Hủy" selected>Đã Hủy</option>
-
-            }
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-success">Cập Nhật</button>
-    <a class="btn btn-secondary" asp-action="Index">Hủy</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

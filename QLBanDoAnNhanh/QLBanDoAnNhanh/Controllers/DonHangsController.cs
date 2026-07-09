@@ -1,4 +1,4 @@
-﻿﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ public class DonHangsController : Controller
     }
 
     // GET: DonHangs
-    public async Task<IActionResult> Index(string trangThai = null)
+    public async Task<IActionResult> Index(string trangThai = null, string search = null)
     {
         var query = _context.DonHangs.AsNoTracking().AsQueryable();
 
@@ -29,8 +29,21 @@ public class DonHangsController : Controller
             query = query.Where(d => d.TrangThai == trangThai);
         }
 
-        var donHangs = await query.ToListAsync();
-        ViewBag.TrangThai = trangThai; // Truyền trạng thái hiện tại về view
+        // Tìm kiếm theo mã đơn hoặc tên khách hàng
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var keyword = search.Trim().ToLower();
+            query = query.Where(d =>
+                d.MaDh.ToLower().Contains(keyword) ||
+                d.Username.ToLower().Contains(keyword));
+        }
+
+        var donHangs = await query
+            .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync();
+
+        ViewBag.TrangThai = trangThai;
+        ViewBag.Search = search;
         return View(donHangs);
     }
 
@@ -46,6 +59,10 @@ public class DonHangsController : Controller
         var donHang = await _context.DonHangs
             .AsNoTracking()
             .Include(dh => dh.ThanhToans)
+            .Include(dh => dh.ChiTietDonHangs)
+                .ThenInclude(ct => ct.MaSpNavigation)
+            .Include(dh => dh.MaKhuyenMaiNavigation)
+            .Include(dh => dh.MaNguoiDungNavigation)
             .FirstOrDefaultAsync(m => m.MaDh == id);
         if (donHang == null)
         {
@@ -127,21 +144,29 @@ public class DonHangsController : Controller
 
 
     // Cập nhật trạng thái đơn hàng
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateTrangThai_ChuaGiao(string id)
     {
         return await UpdateTrangThai(id, "Chưa Giao");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateTrangThai_DaGiao(string id)
     {
         return await UpdateTrangThai(id, "Đã Giao");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateTrangThai_DangGiao(string id)
     {
         return await UpdateTrangThai(id, "Đang Giao");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateTrangThai_DaHuy(string id)
     {
         return await UpdateTrangThai(id, "Đã Hủy");
@@ -165,6 +190,7 @@ public class DonHangsController : Controller
         _context.Entry(donHang).State = EntityState.Modified;
         await _context.SaveChangesAsync();
 
+        TempData["SuccessMessage"] = $"Đã chuyển đơn hàng {id} sang trạng thái \u201c{trangThai}\u201d.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -191,21 +217,22 @@ public class DonHangsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        // Tìm đơn hàng và các chi tiết đơn hàng liên quan
         var donHang = await _context.DonHangs.FindAsync(id);
         if (donHang != null)
         {
             var chiTietDonHang = _context.ChiTietDonHangs.Where(ct => ct.MaDh == id);
 
-            // Xóa các chi tiết đơn hàng trước
+            // Xóa chi tiết đơn hàng trước
             _context.ChiTietDonHangs.RemoveRange(chiTietDonHang);
 
             // Xóa đơn hàng
             _context.DonHangs.Remove(donHang);
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Đã xóa đơn hàng {id} thành công.";
         }
         return RedirectToAction(nameof(Index));
+
     }
 
     // Kiểm tra tồn tại đơn hàng

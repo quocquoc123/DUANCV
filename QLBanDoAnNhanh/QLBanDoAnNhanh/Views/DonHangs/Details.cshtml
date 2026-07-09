@@ -1,55 +1,620 @@
-﻿@model QLBanDoAnNhanh.Models.DonHang
+@model QLBanDoAnNhanh.Models.DonHang
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi Tiết Đơn Hàng - " + Model.MaDh;
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
     var thanhToan = Model.ThanhToans?.FirstOrDefault();
-    var phuongThucThanhToan = string.IsNullOrWhiteSpace(thanhToan?.PhuongThucThanhToan)
-        ? "Chưa có thông tin"
+    var phuongThucTT = string.IsNullOrWhiteSpace(thanhToan?.PhuongThucThanhToan)
+        ? (string.IsNullOrWhiteSpace(thanhToan?.PaymentMethod) ? "Chưa có thông tin" : thanhToan.PaymentMethod)
         : thanhToan.PhuongThucThanhToan;
+    var trangThaiTT = thanhToan?.TrangThaiThanhToan == true ? "Đã thanh toán" : (thanhToan != null ? "Chưa thanh toán" : "—");
+
+    // Helper: chuẩn hóa đường dẫn ảnh về dạng /images/... bất kể DB lưu thế nào
+    Func<string, string> GetImgSrc = (path) => {
+        if (string.IsNullOrWhiteSpace(path)) return "";
+        // Nếu là URL đầy đủ (http/https) thì dùng nguyên
+        if (path.StartsWith("http://") || path.StartsWith("https://")) return path;
+        // Nếu có ~ thì dùng Url.Content
+        if (path.StartsWith("~/")) return Url.Content(path);
+        // Nếu đã có / ở đầu thì giữ nguyên
+        if (path.StartsWith("/")) return path;
+        // Nếu chỉ là tên file hoặc images/... thì thêm /
+        return "/" + path;
+    };
+
+    var badgeClass = Model.TrangThai switch {
+        "Đã Giao" => "badge-success",
+        "Đang giao" or "Đang Giao" => "badge-info",
+        "Chưa Giao" => "badge-warning",
+        "Đã Hủy" => "badge-danger",
+        _ => "badge-secondary"
+    };
+    var ttBadge = thanhToan?.TrangThaiThanhToan == true ? "badge-success" : "badge-warning";
 }
-<h2>Chi Tiết Đơn Hàng</h2>
 
-<div class="card">
-    <div class="card-body">
-        <p><strong>Mã Đơn Hàng:</strong> @Model.MaDh</p>
-        <p><strong>Người Đặt:</strong> @Model.Username</p>
-        <p><strong>Địa Chỉ:</strong> @Model.Diachi</p>
-        <p><strong>Phương Thức Thanh Toán:</strong> @phuongThucThanhToan</p>
-        <p><strong>Tổng Tiền:</strong> @Model.TongTien.ToString("N0") VND</p>
-        <p><strong>Số Lượng Sản Phẩm:</strong> @Model.SoLuong</p>
-        <p><strong>Trạng Thái:</strong> @Model.TrangThai</p>
-        <p><strong>Ngày Tạo:</strong> @Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</p>
-        <p><strong>Ngày Cập Nhật:</strong> @Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm")</p>
-
-        <a class="btn btn-primary" asp-action="Index">Quay lại danh sách</a>
-
-    </div>
-    @if (Model.TrangThai == "Đã Giao")
-{
-    <a href="@Url.Action("ExportInvoiceToPdf", "DonHangs", new { maDh = Model.MaDh })" class="btn btn-custom">
-        Xuất hóa đơn
-    </a>
-}
-</div>
+@section Styles {
 <style>
-        .btn-custom {
-            background-color: #007bff; 
-            border: none; 
-            color: white; 
-            padding: 10px 20px; 
-            text-align: center;
-            text-decoration: none;
-            display: inline-block; 
-            font-size: 16px; 
-            border-radius: 5px;
-            transition: background-color 0.3s, transform 0.3s; 
-        }
+    .order-detail-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border-radius: 16px;
+        padding: 28px 32px;
+        color: white;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 32px rgba(78,115,223,0.3);
+    }
+    .order-detail-header .order-id {
+        font-size: 1.1rem;
+        opacity: 0.85;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+    }
+    .order-detail-header h2 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 4px 0 0;
+    }
+    .info-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+    }
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .info-card .card-header {
+        background: linear-gradient(90deg, #f8f9fc 0%, #eaecf4 100%);
+        border-bottom: 2px solid #e3e6f0;
+        padding: 14px 22px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #4e73df;
+    }
+    .info-card .card-header i {
+        margin-right: 8px;
+    }
+    .info-card .card-body {
+        padding: 20px 22px;
+    }
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f5;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        min-width: 180px;
+        flex-shrink: 0;
+    }
+    .info-value {
+        color: #1a1a2e;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .badge-status {
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-info    { background: #d1ecf1; color: #0c5460; }
+    .badge-warning { background: #fff3cd; color: #856404; }
+    .badge-danger  { background: #f8d7da; color: #721c24; }
+    .badge-secondary { background: #e2e3e5; color: #383d41; }
 
-            .btn-custom:hover {
-                background-color: #0056b3;
-               
-            }
-
-           
+    .product-table {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e3e6f0;
+    }
+    .product-table thead tr {
+        background: linear-gradient(90deg, #4e73df, #224abe);
+        color: white;
+    }
+    .product-table thead th {
+        border: none;
+        padding: 14px 16px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .product-table tbody tr {
+        transition: background 0.15s;
+    }
+    .product-table tbody tr:hover {
+        background: #f0f4ff;
+    }
+    .product-table tbody td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        border-top: 1px solid #eaecf4;
+        font-size: 0.92rem;
+    }
+    .product-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid #e3e6f0;
+    }
+    .product-img-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #e3e6f0, #c8cbcf);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #adb5bd;
+        font-size: 1.2rem;
+    }
+    .tong-tien-row td {
+        background: linear-gradient(90deg, #f8f9fc, #eef0fa);
+        font-weight: 700;
+        font-size: 1rem;
+        color: #4e73df;
+        border-top: 2px solid #4e73df !important;
+    }
+    .action-bar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    .btn-action {
+        border-radius: 8px;
+        padding: 9px 22px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        border: none;
+        text-decoration: none;
+    }
+    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .btn-back { background: #6c757d; color: white; }
+    .btn-edit { background: linear-gradient(135deg, #f6c23e, #e0a800); color: white; }
+    .btn-pdf  { background: linear-gradient(135deg, #4e73df, #224abe); color: white; }
+    .stat-badge {
+        background: #eef0fa;
+        border: 1.5px solid #c5caea;
+        border-radius: 10px;
+        padding: 10px 18px;
+        text-align: center;
+    }
+    .stat-badge .stat-num {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #4e73df;
+        display: block;
+    }
+    .stat-badge .stat-lbl {
+        font-size: 0.78rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .voucher-badge {
+        background: linear-gradient(90deg, #1cc88a, #17a673);
+        color: white;
+        border-radius: 8px;
+        padding: 4px 14px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .section-title-bar {
+        border-left: 4px solid #4e73df;
+        padding-left: 12px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 18px;
+    }
 </style>
+}
+
+<!-- Header -->
+<div class="order-detail-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <div class="order-id"><i class="fas fa-receipt mr-1"></i> Mã đơn hàng</div>
+            <h2>#@Model.MaDh</h2>
+        </div>
+        <div class="text-right">
+            <span class="badge-status @badgeClass" style="font-size:1rem; padding: 10px 24px;">
+                @Model.TrangThai
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Cột trái: Thông tin đơn hàng + Thanh toán -->
+    <div class="col-lg-6">
+
+        <!-- Thống kê nhanh -->
+        <div class="row mb-4">
+            <div class="col-4">
+                <div class="stat-badge">
+                    <span class="stat-num">@Model.ChiTietDonHangs.Count</span>
+                    <span class="stat-lbl">Sản phẩm</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-badge">
+                    <span class="stat-num">@Model.SoLuong</span>
+                    <span class="stat-lbl">Số lượng</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-badge">
+                    <span class="stat-num" style="font-size:1.1rem;">@Model.TongTien.ToString("N0")</span>
+                    <span class="stat-lbl">Tổng (VND)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin đơn hàng -->
+        <div class="card info-card">
+            <div class="card-header">
+                <i class="fas fa-clipboard-list"></i> Thông Tin Đơn Hàng
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-hashtag fa-fw mr-2 text-primary"></i>Mã đơn hàng</span>
+                    <span class="info-value font-weight-bold">#@Model.MaDh</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-flag fa-fw mr-2 text-warning"></i>Trạng thái</span>
+                    <span class="info-value">
+                        <span class="badge-status @badgeClass">@Model.TrangThai</span>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-map-marker-alt fa-fw mr-2 text-danger"></i>Địa chỉ giao</span>
+                    <span class="info-value">@(string.IsNullOrEmpty(Model.Diachi) ? "—" : Model.Diachi)</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-calendar-plus fa-fw mr-2 text-success"></i>Ngày tạo</span>
+                    <span class="info-value">@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-calendar-check fa-fw mr-2 text-info"></i>Cập nhật lần cuối</span>
+                    <span class="info-value">@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm:ss") : "—")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-coins fa-fw mr-2 text-warning"></i>Tổng tiền</span>
+                    <span class="info-value" style="font-size:1.1rem; color:#4e73df; font-weight:700;">
+                        @Model.TongTien.ToString("N0") ₫
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-layer-group fa-fw mr-2 text-secondary"></i>Số lượng SP</span>
+                    <span class="info-value">@Model.SoLuong sản phẩm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin khuyến mãi -->
+        <div class="card info-card">
+            <div class="card-header">
+                <i class="fas fa-tags"></i> Khuyến Mãi Áp Dụng
+            </div>
+            <div class="card-body">
+                @if (Model.MaKhuyenMaiNavigation != null)
+                {
+                    var km = Model.MaKhuyenMaiNavigation;
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-ticket-alt fa-fw mr-2 text-success"></i>Mã voucher</span>
+                        <span class="info-value"><span class="voucher-badge">@km.MaKhuyenMai</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-percent fa-fw mr-2 text-success"></i>Giá trị giảm</span>
+                        <span class="info-value font-weight-bold text-success">@km.GiaTri.ToString("N0") ₫</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-shopping-bag fa-fw mr-2 text-info"></i>Điều kiện áp dụng</span>
+                        <span class="info-value">@(km.DieuKienApDung.HasValue ? km.DieuKienApDung.Value.ToString("N0") + " ₫" : "Không giới hạn")</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock fa-fw mr-2 text-warning"></i>Hiệu lực</span>
+                        <span class="info-value">@km.ThoiGianBatDau.ToString("dd/MM/yyyy") – @km.ThoiGianKetThuc.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-toggle-on fa-fw mr-2 text-primary"></i>Trạng thái KM</span>
+                        <span class="info-value">
+                            @if (km.TrangThai)
+                            {
+                                <span class="badge-status badge-success">Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge-status badge-danger">Đã kết thúc</span>
+                            }
+                        </span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.MaKhuyenMai))
+                {
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-ticket-alt fa-fw mr-2 text-muted"></i>Mã KM</span>
+                        <span class="info-value">@Model.MaKhuyenMai</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-tag fa-2x mb-2 d-block text-muted opacity-50"></i>
+                        Không áp dụng khuyến mãi
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột phải: Khách hàng + Thanh toán -->
+    <div class="col-lg-6">
+
+        <!-- Thông tin khách hàng -->
+        <div class="card info-card">
+            <div class="card-header">
+                <i class="fas fa-user-circle"></i> Thông Tin Khách Hàng
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-user fa-fw mr-2 text-primary"></i>Username</span>
+                    <span class="info-value font-weight-bold">@Model.Username</span>
+                </div>
+                @if (Model.MaNguoiDungNavigation != null)
+                {
+                    var nd = Model.MaNguoiDungNavigation;
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-id-card fa-fw mr-2 text-secondary"></i>Họ tên</span>
+                        <span class="info-value">@(string.IsNullOrEmpty(nd.HoTen) ? "—" : nd.HoTen)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-envelope fa-fw mr-2 text-info"></i>Email</span>
+                        <span class="info-value">
+                            @if (!string.IsNullOrEmpty(nd.Email))
+                            {
+                                <a href="mailto:@nd.Email" class="text-info">@nd.Email</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-phone fa-fw mr-2 text-success"></i>Số điện thoại</span>
+                        <span class="info-value">
+                            @if (!string.IsNullOrEmpty(nd.Sdt))
+                            {
+                                <a href="tel:@nd.Sdt" class="text-success">@nd.Sdt</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-toggle-on fa-fw mr-2 text-warning"></i>TT tài khoản</span>
+                        <span class="info-value">
+                            @if (nd.TrangThai == "Active" || nd.TrangThai == "active" || nd.TrangThai == "Hoạt động")
+                            {
+                                <span class="badge-status badge-success">@nd.TrangThai</span>
+                            }
+                            else
+                            {
+                                <span class="badge-status badge-danger">@(nd.TrangThai ?? "—")</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-hashtag fa-fw mr-2 text-muted"></i>Mã người dùng</span>
+                        <span class="info-value text-muted">#@nd.MaNguoiDung</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-hashtag fa-fw mr-2 text-muted"></i>Mã NSD</span>
+                        <span class="info-value text-muted">#@Model.MaNguoiDung</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Thông tin thanh toán -->
+        <div class="card info-card">
+            <div class="card-header">
+                <i class="fas fa-credit-card"></i> Thông Tin Thanh Toán
+            </div>
+            <div class="card-body">
+                @if (thanhToan != null)
+                {
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-hashtag fa-fw mr-2 text-muted"></i>Mã thanh toán</span>
+                        <span class="info-value">#@thanhToan.MaThanhToan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-wallet fa-fw mr-2 text-primary"></i>Phương thức</span>
+                        <span class="info-value font-weight-bold">@phuongThucTT</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-check-circle fa-fw mr-2 text-success"></i>Trạng thái TT</span>
+                        <span class="info-value">
+                            <span class="badge-status @ttBadge">@trangThaiTT</span>
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(thanhToan.PaymentStatus))
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-info-circle fa-fw mr-2 text-info"></i>Payment Status</span>
+                            <span class="info-value">@thanhToan.PaymentStatus</span>
+                        </div>
+                    }
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-coins fa-fw mr-2 text-warning"></i>Số tiền TT</span>
+                        <span class="info-value font-weight-bold text-primary">@thanhToan.TongTien.ToString("N0") ₫</span>
+                    </div>
+                    @if (thanhToan.NgayThanhToan.HasValue)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-calendar fa-fw mr-2 text-success"></i>Ngày thanh toán</span>
+                            <span class="info-value">@thanhToan.NgayThanhToan.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    }
+                    @if (thanhToan.PaidAt.HasValue)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-clock fa-fw mr-2 text-secondary"></i>Paid At</span>
+                            <span class="info-value">@thanhToan.PaidAt.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(thanhToan.TransactionId))
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-fingerprint fa-fw mr-2 text-muted"></i>Transaction ID</span>
+                            <span class="info-value" style="word-break:break-all; font-family:monospace; font-size:0.82rem;">@thanhToan.TransactionId</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(thanhToan.MomoRequestId))
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-key fa-fw mr-2 text-muted"></i>MoMo Request ID</span>
+                            <span class="info-value" style="word-break:break-all; font-family:monospace; font-size:0.82rem;">@thanhToan.MomoRequestId</span>
+                        </div>
+                    }
+                    @if (thanhToan.PaymentExpiresAt.HasValue)
+                    {
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-hourglass-end fa-fw mr-2 text-danger"></i>Hết hạn TT</span>
+                            <span class="info-value text-danger">@thanhToan.PaymentExpiresAt.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-credit-card fa-2x mb-2 d-block text-muted opacity-50"></i>
+                        Chưa có thông tin thanh toán
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danh sách sản phẩm trong đơn -->
+<div class="card info-card">
+    <div class="card-header">
+        <i class="fas fa-utensils"></i> Danh Sách Sản Phẩm Trong Đơn
+    </div>
+    <div class="card-body p-0">
+        @if (Model.ChiTietDonHangs != null && Model.ChiTietDonHangs.Any())
+        {
+            <div class="table-responsive">
+                <table class="table product-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Hình</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Mã SP</th>
+                            <th class="text-center">Số Lượng</th>
+                            <th class="text-right">Đơn Giá</th>
+                            <th class="text-right">Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int idx = 1;}
+                        @foreach (var ct in Model.ChiTietDonHangs)
+                        {
+                            var sp = ct.MaSpNavigation;
+                            var donGia = sp != null ? sp.GiaTien : (ct.SoLuong > 0 ? ct.TongTien / ct.SoLuong : 0);
+                            <tr>
+                                <td class="text-muted font-weight-600">@idx</td>
+                                <td>
+                                    @if (sp != null && !string.IsNullOrEmpty(sp.HinhAnh1))
+                                    {
+                                        <img src="@GetImgSrc(sp.HinhAnh1)" class="product-img" alt="@sp.TenSp"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span class="product-img-placeholder" style="display:none;"><i class="fas fa-utensils"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="product-img-placeholder"><i class="fas fa-utensils"></i></span>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@(sp?.TenSp ?? "—")</strong>
+                                    @if (sp != null && !string.IsNullOrEmpty(sp.ThanhPhan))
+                                    {
+                                        <small class="d-block text-muted">@(sp.ThanhPhan.Length > 60 ? sp.ThanhPhan.Substring(0, 60) + "…" : sp.ThanhPhan)</small>
+                                    }
+                                </td>
+                                <td><span class="text-muted font-family-monospace">#@ct.MaSp</span></td>
+                                <td class="text-center font-weight-bold">@ct.SoLuong</td>
+                                <td class="text-right">@donGia.ToString("N0") ₫</td>
+                                <td class="text-right font-weight-bold text-primary">@ct.TongTien.ToString("N0") ₫</td>
+                            </tr>
+                            idx++;
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="tong-tien-row">
+                            <td colspan="5" class="text-right font-weight-bold">TỔNG CỘNG</td>
+                            <td colspan="2" class="text-right" style="font-size:1.15rem;">
+                                @Model.TongTien.ToString("N0") ₫
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
+                Không có sản phẩm trong đơn hàng này
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Thanh hành động -->
+<div class="action-bar mb-4">
+    <a class="btn-action btn-back" asp-action="Index">
+        <i class="fas fa-arrow-left"></i> Quay lại
+    </a>
+    <a class="btn-action btn-edit" asp-action="Edit" asp-route-id="@Model.MaDh">
+        <i class="fas fa-edit"></i> Chỉnh sửa đơn hàng
+    </a>
+    @if (Model.TrangThai == "Đã Giao")
+    {
+        <a class="btn-action btn-pdf" href="@Url.Action("ExportInvoiceToPdf", "DonHangs", new { maDh = Model.MaDh })">
+            <i class="fas fa-file-pdf"></i> Xuất hóa đơn PDF
+        </a>
+    }
+</div>
