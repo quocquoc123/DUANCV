@@ -28,6 +28,8 @@ builder.Services.AddScoped<PayPalService>();
 builder.Services.AddScoped<VoucherService>();
 builder.Services.AddScoped<IProductDiscountRepository, ProductDiscountRepository>();
 builder.Services.AddScoped<IProductDiscountService, ProductDiscountService>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddHttpClient();
 // Thêm dịch vụ SignalR cho chat
 builder.Services.AddSignalR();
@@ -67,6 +69,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=SanPhams}/{action=TrangChu}/{id?}");
+app.MapControllers();
 
 // Định tuyến SignalR cho chat
 app.MapHub<ChatHub>("/chatHub");

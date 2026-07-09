@@ -17,4 +17,9 @@ public class DashboardController : Controller
         var discountDashboard = await _discountService.GetManagementPageAsync(cancellationToken);
         return View(discountDashboard.Dashboard);
     }
+
+    public IActionResult Statistics()
+    {
+        return View();
+    }
 }

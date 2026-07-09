@@ -2824,3 +2824,12 @@ C:\Users\Admin\Desktop\DangTrienKhai\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net
 C:\Users\Admin\Desktop\DangTrienKhai\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\QLBanDoAnNhanh.pdb
 C:\Users\Admin\Desktop\DangTrienKhai\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\QLBanDoAnNhanh.genruntimeconfig.cache
 C:\Users\Admin\Desktop\DangTrienKhai\QLBanDoAnNhanh\QLBanDoAnNhanh\obj\Debug\net8.0\ref\QLBanDoAnNhanh.dll
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\appsettings.Development.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\appsettings.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\libman.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.staticwebassets.runtime.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.exe
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.deps.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.runtimeconfig.json
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.dll
+C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.pdb

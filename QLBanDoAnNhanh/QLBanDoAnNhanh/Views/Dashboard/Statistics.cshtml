@@ -1,0 +1,458 @@
+@{
+    ViewData["Title"] = "Thống kê";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+@section Styles {
+    <style>
+        .statistics-chart {
+            position: relative;
+            min-height: 320px;
+        }
+
+        .statistics-table {
+            max-height: 360px;
+            overflow: auto;
+        }
+
+        .statistics-filter .form-control {
+            min-width: 150px;
+        }
+    </style>
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Thống kê</h1>
+    <button id="refreshStatistics" class="btn btn-primary">
+        <i class="fas fa-sync-alt mr-2"></i>Cập nhật
+    </button>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-row align-items-end statistics-filter">
+            <div class="form-group col-lg-2 col-md-4">
+                <label for="period">Doanh thu</label>
+                <select id="period" class="form-control">
+                    <option value="day">Theo ngày</option>
+                    <option value="week">Theo tuần</option>
+                    <option value="month" selected>Theo tháng</option>
+                    <option value="quarter">Theo quý</option>
+                    <option value="year">Theo năm</option>
+                </select>
+            </div>
+            <div class="form-group col-lg-2 col-md-4">
+                <label for="groupBy">Đơn hàng</label>
+                <select id="groupBy" class="form-control">
+                    <option value="day">Theo ngày</option>
+                    <option value="month" selected>Theo tháng</option>
+                    <option value="year">Theo năm</option>
+                </select>
+            </div>
+            <div class="form-group col-lg-2 col-md-4">
+                <label for="fromDate">Từ ngày</label>
+                <input id="fromDate" type="date" class="form-control" />
+            </div>
+            <div class="form-group col-lg-2 col-md-4">
+                <label for="toDate">Đến ngày</label>
+                <input id="toDate" type="date" class="form-control" />
+            </div>
+            <div class="form-group col-lg-4 col-md-8">
+                <button class="btn btn-outline-secondary mr-2" type="button" data-range="30">30 ngày</button>
+                <button class="btn btn-outline-secondary mr-2" type="button" data-range="90">90 ngày</button>
+                <button class="btn btn-outline-secondary" type="button" data-range="365">1 năm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="statisticsAlert" class="alert alert-danger d-none" role="alert"></div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng doanh thu</div>
+                        <div id="totalRevenue" class="h5 mb-0 font-weight-bold text-gray-800">0 đ</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-coins fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng đơn hàng</div>
+                        <div id="orderCount" class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                        <div class="small text-gray-500">Đã giao: <span id="successOrderCount">0</span></div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-shopping-cart fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">TB/đơn đã giao</div>
+                        <div id="averageOrderValue" class="h5 mb-0 font-weight-bold text-gray-800">0 đ</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-receipt fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tỷ lệ thành công</div>
+                        <div id="successRate" class="h5 mb-0 font-weight-bold text-gray-800">0%</div>
+                    </div>
+                    <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Doanh thu <small class="text-muted font-weight-normal">(từ đơn đã giao)</small></h6>
+            </div>
+            <div class="card-body statistics-chart">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Trạng thái đơn hàng</h6>
+            </div>
+            <div class="card-body statistics-chart">
+                <canvas id="orderStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Top 10 sản phẩm bán chạy <small class="text-muted font-weight-normal">(số lượng, đơn đã giao)</small></h6>
+            </div>
+            <div class="card-body statistics-chart">
+                <canvas id="topProductChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Doanh thu theo danh mục <small class="text-muted font-weight-normal">(đơn đã giao)</small></h6>
+            </div>
+            <div class="card-body statistics-chart">
+                <canvas id="categoryRevenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Phương thức thanh toán</h6>
+            </div>
+            <div class="card-body statistics-chart">
+                <canvas id="paymentMethodChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Khách hàng chi tiêu cao nhất</h6>
+            </div>
+            <div class="card-body statistics-table p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th class="text-right">Đơn</th>
+                            <th class="text-right">Chi tiêu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topCustomersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Khuyến mãi <small class="text-muted font-weight-normal">(đơn đã giao)</small></h6>
+            </div>
+            <div class="card-body statistics-table p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Mã</th>
+                            <th class="text-right">Lượt</th>
+                            <th class="text-right">Giảm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="promotionsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Top 10 sản phẩm doanh thu cao nhất <small class="text-muted font-weight-normal">(đơn đã giao)</small></h6>
+            </div>
+            <div class="card-body statistics-table p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-right">SL</th>
+                            <th class="text-right">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topRevenueProductsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Top 10 sản phẩm bán chậm <small class="text-muted font-weight-normal">(trong số sản phẩm đã từng bán)</small></h6>
+            </div>
+            <div class="card-body statistics-table p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-right">SL</th>
+                            <th class="text-right">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slowProductsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var charts = {};
+            var colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#20c997', '#6f42c1', '#5a5c69'];
+
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('vi-VN').format(Math.round(value || 0)) + ' đ';
+            }
+
+            function formatNumber(value) {
+                return new Intl.NumberFormat('vi-VN').format(value || 0);
+            }
+
+            function formatPercent(value) {
+                return (value || 0).toFixed(2) + '%';
+            }
+
+            function escapeHtml(value) {
+                return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+
+            function getFilters() {
+                var params = new URLSearchParams();
+                var fromDate = $('#fromDate').val();
+                var toDate = $('#toDate').val();
+                if (fromDate) params.append('fromDate', fromDate);
+                if (toDate) params.append('toDate', toDate);
+                return params;
+            }
+
+            function fetchJson(url) {
+                return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function (response) {
+                    if (!response.ok) throw new Error('Không tải được dữ liệu thống kê.');
+                    return response.json();
+                });
+            }
+
+            function destroyChart(name) {
+                if (charts[name]) charts[name].destroy();
+            }
+
+            function renderLineChart(name, canvasId, labels, values) {
+                destroyChart(name);
+                charts[name] = new Chart(document.getElementById(canvasId), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            lineTension: 0.2,
+                            backgroundColor: 'rgba(78, 115, 223, 0.08)',
+                            borderColor: '#4e73df',
+                            pointRadius: 3,
+                            pointBackgroundColor: '#4e73df',
+                            pointBorderColor: '#4e73df',
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: { display: false },
+                        scales: { yAxes: [{ ticks: { beginAtZero: true, callback: function (value) { return formatCurrency(value); } } }] },
+                        tooltips: { callbacks: { label: function (tooltipItem) { return formatCurrency(tooltipItem.yLabel); } } }
+                    }
+                });
+            }
+
+            function renderBarChart(name, canvasId, labels, values, currency) {
+                destroyChart(name);
+                charts[name] = new Chart(document.getElementById(canvasId), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ data: values, backgroundColor: '#4e73df' }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: { display: false },
+                        scales: { yAxes: [{ ticks: { beginAtZero: true, callback: function (value) { return currency ? formatCurrency(value) : formatNumber(value); } } }] },
+                        tooltips: { callbacks: { label: function (tooltipItem) { return currency ? formatCurrency(tooltipItem.yLabel) : formatNumber(tooltipItem.yLabel); } } }
+                    }
+                });
+            }
+
+            function renderPieChart(name, canvasId, labels, values) {
+                destroyChart(name);
+                charts[name] = new Chart(document.getElementById(canvasId), {
+                    type: 'doughnut',
+                    data: { labels: labels, datasets: [{ data: values, backgroundColor: colors }] },
+                    options: { maintainAspectRatio: false, legend: { position: 'bottom' } }
+                });
+            }
+
+            function renderProductRows(selector, rows) {
+                var html = rows.length ? rows.map(function (item) {
+                    return '<tr><td>' + escapeHtml(item.productName) + '</td><td class="text-right">' + formatNumber(item.quantitySold) + '</td><td class="text-right">' + formatCurrency(item.revenue) + '</td></tr>';
+                }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
+                $(selector).html(html);
+            }
+
+            function renderCustomerRows(rows) {
+                var html = rows.length ? rows.map(function (item) {
+                    var name = item.fullName || item.username || 'Khách hàng';
+                    return '<tr><td>' + escapeHtml(name) + '</td><td class="text-right">' + formatNumber(item.orderCount) + '</td><td class="text-right">' + formatCurrency(item.totalSpent) + '</td></tr>';
+                }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
+                $('#topCustomersBody').html(html);
+            }
+
+            function renderPromotionRows(rows) {
+                var html = rows.length ? rows.map(function (item) {
+                    return '<tr><td>' + escapeHtml(item.promotionCode) + '</td><td class="text-right">' + formatNumber(item.usageCount) + '</td><td class="text-right">' + formatCurrency(item.totalDiscountAmount) + '</td></tr>';
+                }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
+                $('#promotionsBody').html(html);
+            }
+
+            function loadStatistics() {
+                $('#statisticsAlert').addClass('d-none').text('');
+                $('#refreshStatistics').prop('disabled', true);
+
+                var common = getFilters();
+                var revenueParams = new URLSearchParams(common);
+                var orderParams = new URLSearchParams(common);
+                revenueParams.append('period', $('#period').val());
+                orderParams.append('groupBy', $('#groupBy').val());
+
+                Promise.all([
+                    fetchJson('/api/statistics/revenue?' + revenueParams.toString()),
+                    fetchJson('/api/statistics/products?' + common.toString()),
+                    fetchJson('/api/statistics/customers?' + common.toString()),
+                    fetchJson('/api/statistics/orders?' + orderParams.toString()),
+                    fetchJson('/api/statistics/payments?' + common.toString()),
+                    fetchJson('/api/statistics/promotions?' + common.toString())
+                ]).then(function (results) {
+                    var revenue = results[0];
+                    var products = results[1];
+                    var customers = results[2];
+                    var orders = results[3];
+                    var payments = results[4];
+                    var promotions = results[5];
+
+                    $('#totalRevenue').text(formatCurrency(revenue.totalRevenue));
+                    // totalOrderCount = tổng mọi trạng thái; orderCount = đơn hoàn thành (tạo ra doanh thu)
+                    $('#orderCount').text(formatNumber(revenue.totalOrderCount));
+                    $('#successOrderCount').text(formatNumber(revenue.orderCount));
+                    $('#averageOrderValue').text(formatCurrency(revenue.averageOrderValue));
+                    $('#successRate').text(formatPercent(orders.successRate));
+
+                    renderLineChart('revenue', 'revenueChart', revenue.series.map(function (x) { return x.label; }), revenue.series.map(function (x) { return x.value; }));
+                    renderPieChart('orderStatus', 'orderStatusChart', orders.ordersByStatus.map(function (x) { return x.status; }), orders.ordersByStatus.map(function (x) { return x.count; }));
+                    renderBarChart('topProduct', 'topProductChart', products.topSellingProducts.map(function (x) { return x.productName; }), products.topSellingProducts.map(function (x) { return x.quantitySold; }), false);
+                    renderBarChart('categoryRevenue', 'categoryRevenueChart', products.revenueByCategory.map(function (x) { return x.categoryName; }), products.revenueByCategory.map(function (x) { return x.revenue; }), true);
+                    renderPieChart('paymentMethod', 'paymentMethodChart', payments.paymentMethodUsageRate.map(function (x) { return x.paymentMethod; }), payments.paymentMethodUsageRate.map(function (x) { return x.paymentCount; }));
+
+                    renderCustomerRows(customers.topSpendingCustomers);
+                    renderPromotionRows(promotions.promotions);
+                    renderProductRows('#topRevenueProductsBody', products.topRevenueProducts);
+                    renderProductRows('#slowProductsBody', products.slowSellingProducts);
+                }).catch(function (error) {
+                    $('#statisticsAlert').removeClass('d-none').text(error.message || 'Có lỗi khi tải dữ liệu thống kê.');
+                }).finally(function () {
+                    $('#refreshStatistics').prop('disabled', false);
+                });
+            }
+
+            function setDefaultRange(days) {
+                var to = new Date();
+                var from = new Date();
+                from.setDate(to.getDate() - days + 1);
+                $('#fromDate').val(from.toISOString().slice(0, 10));
+                $('#toDate').val(to.toISOString().slice(0, 10));
+            }
+
+            $('[data-range]').on('click', function () {
+                setDefaultRange(Number($(this).data('range')));
+                loadStatistics();
+            });
+
+            $('#refreshStatistics').on('click', loadStatistics);
+            $('#period, #groupBy, #fromDate, #toDate').on('change', loadStatistics);
+
+            setDefaultRange(365);
+            loadStatistics();
+        })();
+    </script>
+}

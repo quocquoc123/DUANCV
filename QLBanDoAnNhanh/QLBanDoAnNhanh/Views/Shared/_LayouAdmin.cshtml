@@ -83,15 +83,9 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("DoanhThu", "DonHangs")">
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Statistics">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Thống Kê doanh thu </span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("SoLuongDaBan", "DonHangs")">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Thống Kê số lượng bán</span>
+                    <span>Thống Kê</span>
                 </a>
             </li>
 
@@ -258,9 +252,6 @@
         <!-- Page level plugins -->
         <script src="~/admin/vendor/chart.js/Chart.min.js"></script>
 
-        <!-- Page level custom scripts -->
-        <script src="~/admin/js/demo/chart-area-demo.js"></script>
-        <script src="~/admin/js/demo/chart-pie-demo.js"></script>
         @RenderSection("Scripts", required: false)
 
 </body>
