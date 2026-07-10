@@ -162,9 +162,11 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="MaDm"><i class="fas fa-th-list fa-fw mr-1 text-primary"></i> Danh Mục</label>
-                        <select asp-for="MaDm" class="form-control" asp-items="ViewBag.MaDm">
-                            <option value="">-- Chọn danh mục --</option>
-                        </select>
+                        <select asp-for="MaDm"
+        class="form-control"
+        asp-items="@(ViewData["MaDm"] as SelectList)">
+    <option value="">-- Chọn danh mục --</option>
+</select>
                         <span asp-validation-for="MaDm" class="text-danger"></span>
                     </div>
                     <div class="form-group mb-0">

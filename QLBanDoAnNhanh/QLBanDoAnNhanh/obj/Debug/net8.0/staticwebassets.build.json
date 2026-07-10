@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Ri7rYDy7ZwrRvYHqQCVUtqjx5RIDJOxCGZR4AyHeSNo=",
+  "Hash": "KCaIKzyukRor5ANZ97YzZUm1lsXCeTwdW+HtIw2SPUc=",
   "Source": "QLBanDoAnNhanh",
   "BasePath": "_content/QLBanDoAnNhanh",
   "Mode": "Default",
@@ -35148,6 +35148,25 @@
       "OriginalItemSpec": "wwwroot\\images\\banhmi.jpg"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\BUCKET-5-COB_HDE.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/BUCKET-5-COB_HDE.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\BUCKET-5-COB_HDE.jpg"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Burger-Flava.jpg",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -35165,6 +35184,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\Burger-Flava.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Burger-Zinger.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/Burger-Zinger.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\Burger-Zinger.jpg"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Cart.jpg",
@@ -35317,6 +35355,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\D-CBO-Bucket-2.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\EC.Bucket-3-COB.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/EC.Bucket-3-COB.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\EC.Bucket-3-COB.jpg"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\fb.png",
@@ -35528,6 +35585,25 @@
       "OriginalItemSpec": "wwwroot\\images\\MON AN NHE.jpg"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\NANBAN.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/NANBAN.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\NANBAN.jpg"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Nitro_Wallpaper_5000x2813.jpg",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -35640,6 +35716,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\post_8 (3).webp"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Sausage-Pasta-COB.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/Sausage-Pasta-COB.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\Sausage-Pasta-COB.jpg"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Sting-A.jpg",

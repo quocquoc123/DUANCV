@@ -5,21 +5,74 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<!-- Phần này sẽ hiển thị bản đồ -->
-<div id="map" style="height: 500px; width: 100%;"></div>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.ApiKey"></script>
-<script>
-    function initMap() {
-        var storeLocation = { lat: 10.77603, lng: 106.66735 };
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 15,
-            center: storeLocation
-        });
-        var marker = new google.maps.Marker({
-            position: storeLocation,
-            map: map
-        });
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+    #map-container {
+        position: relative;
     }
-    window.onload = initMap;
+
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+
+    .google-map-btn {
+    position: absolute;
+    left: 15px;
+    bottom: 20px;
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 1000;
+    font-size: 22px;
+    transition: .2s;
+}
+
+.google-map-btn:hover {
+    background: #f5f5f5;
+    transform: scale(1.08);
+}
+</style>
+
+<div id="map-container">
+
+    <div id="map"></div>
+
+    <a class="google-map-btn"
+       href="https://www.google.com/maps/dir/?api=1&destination=10.77603,106.66735"
+       target="_blank"
+       title="Chỉ đường bằng Google Maps">
+        <a class="google-map-btn"
+   href="https://www.google.com/maps/dir/?api=1&destination=10.77603,106.66735"
+   target="_blank"
+   title="Chỉ đường bằng Google Maps">
+    <i class="fas fa-location-arrow"></i>
+</a>
+    </a>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var storeLocation = [10.77603, 106.66735];
+
+    var map = L.map('map').setView(storeLocation, 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker(storeLocation)
+        .addTo(map)
+        .bindPopup("<b>Cửa hàng QL Bán Đồ Ăn Nhanh</b>")
+        .openPopup();
 </script>

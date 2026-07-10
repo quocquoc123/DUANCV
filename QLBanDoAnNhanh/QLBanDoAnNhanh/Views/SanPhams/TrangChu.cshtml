@@ -1,4 +1,4 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
 @using System.Text.Json
 
 @{
@@ -16,7 +16,550 @@
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/review-overlay.css" asp-append-version="true" />
+    <style>
+        /* ===== UPGRADED PRODUCT CARDS ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            padding: 10px 0 20px;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .product-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 18px 48px rgba(0,0,0,0.15);
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 68%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fef3e2, #fde8c0);
+        }
+        .product-image {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.55s cubic-bezier(.25,.8,.25,1);
+        }
+        .product-card:hover .product-image { transform: scale(1.09); }
+
+        .product-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.42);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+            backdrop-filter: blur(3px);
+        }
+        .product-card:hover .product-overlay { opacity: 1; }
+
+        .btn-view-detail {
+            padding: 11px 28px;
+            background: white;
+            color: #ff9800;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+        }
+        .btn-view-detail:hover {
+            background: #ff9800;
+            color: white;
+            transform: scale(1.06);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 0; left: 0;
+            background: linear-gradient(135deg, #ff4444, #ff6b6b);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 14px 6px 12px;
+            border-radius: 0 0 16px 0;
+            z-index: 6;
+            box-shadow: 2px 2px 10px rgba(255,68,68,0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .product-category-tag {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            background: rgba(255,255,255,0.92);
+            color: #ff9800;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            z-index: 6;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,152,0,0.25);
+        }
+
+        .product-hot-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 7;
+            box-shadow: 0 3px 8px rgba(255,152,0,0.5);
+            letter-spacing: 0.5px;
+            animation: hotPulse 2s ease-in-out infinite;
+        }
+        @@keyframes hotPulse {
+            0%,100% { box-shadow: 0 3px 8px rgba(255,152,0,0.5); }
+            50%      { box-shadow: 0 3px 18px rgba(255,152,0,0.85); }
+        }
+
+        .product-info {
+            padding: 16px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0 0 6px;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.25s;
+        }
+        .product-card:hover .product-name { color: #ff9800; }
+
+        .product-price-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .product-price-original {
+            font-size: 13px;
+            color: #bbb;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+        .product-price-sale {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ff4444;
+        }
+        .product-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ff9800;
+            margin: 0 0 8px;
+        }
+
+        .product-ingredient {
+            font-size: 12.5px;
+            color: #888;
+            margin: 0 0 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+        .product-ingredient strong { color: #555; }
+
+        .product-card-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #f0e6d3, transparent);
+            margin: 10px 0;
+        }
+
+        .btn-buy {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            background: linear-gradient(135deg, #ff9800, #ff6d00);
+            color: white;
+            text-align: center;
+            font-weight: 800;
+            font-size: 14.5px;
+            border-radius: 12px;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(255,152,0,0.30);
+            margin-top: auto;
+        }
+        .btn-buy:hover {
+            background: linear-gradient(135deg, #ff6d00, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255,152,0,0.45);
+            color: white;
+            text-decoration: none;
+        }
+        .btn-buy:active { transform: translateY(0); }
+
+        .section-header h2 {
+            background: linear-gradient(135deg, #ff9800, #e65100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .discount-featured-section {
+            background: linear-gradient(135deg, #fff8ee, #fff3e0);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: inset 0 0 0 1px rgba(255,152,0,0.15);
+        }
+
+        .product-image-wrapper::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+            background-size: 200% 100%;
+            z-index: 1;
+            animation: shimmer 2.5s infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .product-card:hover .product-image-wrapper::before { opacity: 1; }
+        @@keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        .products-grid .product-card { animation: cardIn 0.5s ease-out both; }
+        @@keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .products-grid .product-card:nth-child(1)  { animation-delay:.05s }
+        .products-grid .product-card:nth-child(2)  { animation-delay:.10s }
+        .products-grid .product-card:nth-child(3)  { animation-delay:.15s }
+        .products-grid .product-card:nth-child(4)  { animation-delay:.20s }
+        .products-grid .product-card:nth-child(5)  { animation-delay:.25s }
+        .products-grid .product-card:nth-child(6)  { animation-delay:.30s }
+        .products-grid .product-card:nth-child(7)  { animation-delay:.35s }
+        .products-grid .product-card:nth-child(8)  { animation-delay:.40s }
+        .products-grid .product-card:nth-child(9)  { animation-delay:.45s }
+        .products-grid .product-card:nth-child(10) { animation-delay:.50s }
+        .products-grid .product-card:nth-child(11) { animation-delay:.55s }
+        .products-grid .product-card:nth-child(12) { animation-delay:.60s }
+
+        @@media (max-width: 600px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .product-name { font-size: 14px; }
+            .product-price-sale, .product-price { font-size: 17px; }
+            .btn-buy { font-size: 13px; padding: 10px 0; }
+            .discount-featured-section { padding: 24px 14px; border-radius: 16px; }
+        }
+        @@media (max-width: 380px) {
+            .products-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 }
+<style>
+        .product-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .product-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 18px 48px rgba(0,0,0,0.15);
+        }
+
+        /* Image */
+        .product-image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 68%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fef3e2, #fde8c0);
+        }
+        .product-image {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.55s cubic-bezier(.25,.8,.25,1);
+        }
+        .product-card:hover .product-image { transform: scale(1.09); }
+
+        /* Overlay */
+        .product-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.42);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+            backdrop-filter: blur(3px);
+        }
+        .product-card:hover .product-overlay { opacity: 1; }
+
+        .btn-view-detail {
+            padding: 11px 28px;
+            background: white;
+            color: #ff9800;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+        }
+        .btn-view-detail:hover {
+            background: #ff9800;
+            color: white;
+            transform: scale(1.06);
+        }
+
+        /* Discount ribbon */
+        .discount-badge {
+            position: absolute;
+            top: 0; left: 0;
+            background: linear-gradient(135deg, #ff4444, #ff6b6b);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 14px 6px 12px;
+            border-radius: 0 0 16px 0;
+            z-index: 6;
+            box-shadow: 2px 2px 10px rgba(255,68,68,0.4);
+            letter-spacing: 0.5px;
+        }
+
+        /* Category tag */
+        .product-category-tag {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            background: rgba(255,255,255,0.92);
+            color: #ff9800;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            z-index: 6;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,152,0,0.25);
+        }
+
+        /* HOT badge */
+        .product-hot-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 7;
+            box-shadow: 0 3px 8px rgba(255,152,0,0.5);
+            letter-spacing: 0.5px;
+            animation: hotPulse 2s ease-in-out infinite;
+        }
+        @@keyframes hotPulse {
+            0%,100% { box-shadow: 0 3px 8px rgba(255,152,0,0.5); }
+            50%      { box-shadow: 0 3px 18px rgba(255,152,0,0.85); }
+        }
+
+        /* Card body */
+        .product-info {
+            padding: 16px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0 0 6px;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.25s;
+        }
+        .product-card:hover .product-name { color: #ff9800; }
+
+        .product-price-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .product-price-original {
+            font-size: 13px;
+            color: #bbb;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+        .product-price-sale {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ff4444;
+        }
+        .product-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ff9800;
+            margin: 0 0 8px;
+        }
+
+        /* Ingredient short */
+        .product-ingredient {
+            font-size: 12.5px;
+            color: #888;
+            margin: 0 0 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+        .product-ingredient strong { color: #555; }
+
+        /* Divider */
+        .product-card-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #f0e6d3, transparent);
+            margin: 10px 0;
+        }
+
+        /* Buy button */
+        .btn-buy {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            background: linear-gradient(135deg, #ff9800, #ff6d00);
+            color: white;
+            text-align: center;
+            font-weight: 800;
+            font-size: 14.5px;
+            border-radius: 12px;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(255,152,0,0.30);
+            margin-top: auto;
+        }
+        .btn-buy:hover {
+            background: linear-gradient(135deg, #ff6d00, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255,152,0,0.45);
+            color: white;
+            text-decoration: none;
+        }
+        .btn-buy:active { transform: translateY(0); }
+
+        /* Section header tweak */
+        .section-header h2 {
+            background: linear-gradient(135deg, #ff9800, #e65100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Discount section special */
+        .discount-featured-section {
+            background: linear-gradient(135deg, #fff8ee, #fff3e0);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: inset 0 0 0 1px rgba(255,152,0,0.15);
+        }
+
+        /* Shimmer loading on image */
+        .product-image-wrapper::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+            background-size: 200% 100%;
+            z-index: 1;
+            animation: shimmer 2.5s infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .product-card:hover .product-image-wrapper::before { opacity: 1; }
+        @@keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        /* Animation stagger */
+        .products-grid .product-card {
+            animation: cardIn 0.5s ease-out both;
+        }
+        @@keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .products-grid .product-card:nth-child(1)  { animation-delay:.05s }
+        .products-grid .product-card:nth-child(2)  { animation-delay:.10s }
+        .products-grid .product-card:nth-child(3)  { animation-delay:.15s }
+        .products-grid .product-card:nth-child(4)  { animation-delay:.20s }
+        .products-grid .product-card:nth-child(5)  { animation-delay:.25s }
+        .products-grid .product-card:nth-child(6)  { animation-delay:.30s }
+        .products-grid .product-card:nth-child(7)  { animation-delay:.35s }
+        .products-grid .product-card:nth-child(8)  { animation-delay:.40s }
+        .products-grid .product-card:nth-child(9)  { animation-delay:.45s }
+        .products-grid .product-card:nth-child(10) { animation-delay:.50s }
+        .products-grid .product-card:nth-child(11) { animation-delay:.55s }
+        .products-grid .product-card:nth-child(12) { animation-delay:.60s }
+
+        @@media (max-width: 600px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+            .product-name { font-size: 14px; }
+            .product-price-sale, .product-price { font-size: 17px; }
+            .btn-buy { font-size: 13px; padding: 10px 0; }
+            .discount-featured-section { padding: 24px 14px; border-radius: 16px; }
+        }
+        @@media (max-width: 380px) {
+            .products-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
 
 <script type="application/json" id="ff-products-data">
 @Html.Raw(JsonSerializer.Serialize(productList.Select(p => new {
@@ -119,10 +662,16 @@
             {
                 var discountPercent = product.MaGiamGiaNavigation?.GiaTri ?? 0;
                 var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
+                var catName = product.MaDmNavigation?.TenDm ?? "";
                 <div class="product-card product-card-discount">
                     <div class="product-image-wrapper">
-                        <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
-                        <div class="discount-badge shopee-style">-@discountPercent.ToString("0.##")%</div>
+                        <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
+                             onerror="this.src='/images/logo.jpg'" loading="lazy" />
+                        <div class="discount-badge">-@discountPercent.ToString("0.##")%</div>
+                        @if (!string.IsNullOrEmpty(catName))
+                        {
+                            <span class="product-category-tag">@catName</span>
+                        }
                         <div class="product-overlay">
                             <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
                         </div>
@@ -130,14 +679,19 @@
                     <div class="product-info">
                         <h3 class="product-name">@product.TenSp</h3>
                         <div class="product-price-block">
-                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                            
                             <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
                         </div>
-                        <div class="product-description">
-                            <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
-                            <p><strong>Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm")</p>
-                        </div>
-                        <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                        @if (!string.IsNullOrEmpty(product.ThanhPhan))
+                        {
+                            <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
+                        }
+                        <p class="product-ingredient" style="color:#e74c3c;">
+                            <strong>⏰ Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
+                        </p>
+                        <div class="product-card-divider"></div>
+                        <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
                     </div>
                 </div>
             }
@@ -161,21 +715,28 @@
                 && product.MaGiamGiaNavigation.GiaTri > 0
                 && product.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now
                 && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now;
-            var discountPct = isDiscountActive ? product.MaGiamGiaNavigation.GiaTri : 0;
-            var discountPrice = isDiscountActive ? Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPct / 100), 0) : (decimal)product.GiaTien;
-            var categoryCode = product.MaDmNavigation?.TenDm ?? "";
+            var discountPct  = isDiscountActive ? product.MaGiamGiaNavigation.GiaTri : 0;
+            var discountPrice = isDiscountActive
+                ? Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPct / 100), 0)
+                : (decimal)product.GiaTien;
+            var categoryName = product.MaDmNavigation?.TenDm ?? "";
             <div class="product-card"
                  data-ma-sp="@product.MaSp"
                  data-price="@product.GiaTien"
                  data-name="@product.TenSp"
                  data-sales="@(product.SlbanTrongNgay ?? 0)"
                  data-discount="@discountPct"
-                 data-category="@categoryCode">
+                 data-category="@categoryName">
                 <div class="product-image-wrapper">
-                    <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
+                    <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
+                         onerror="this.src='/images/logo.jpg'" loading="lazy" />
                     @if (isDiscountActive)
                     {
-                        <div class="discount-badge shopee-style">-@discountPct.ToString("0.##")%</div>
+                        <div class="discount-badge">-@discountPct.ToString("0.##")%</div>
+                    }
+                    @if (!string.IsNullOrEmpty(categoryName))
+                    {
+                        <span class="product-category-tag">@categoryName</span>
                     }
                     <div class="product-overlay">
                         <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
@@ -186,19 +747,21 @@
                     @if (isDiscountActive)
                     {
                         <div class="product-price-block">
-                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
                             <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                            
                         </div>
                     }
                     else
                     {
-                        <p class="product-price">@String.Format("{0:0,0} đ", product.GiaTien)</p>
+                        <p class="product-price">@discountPrice.ToString("N0") đ</p>
                     }
-                    <div class="product-description">
-                        <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
-                        <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>
-                    </div>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                    @if (!string.IsNullOrEmpty(product.ThanhPhan))
+                    {
+                        <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
+                    }
+                    <div class="product-card-divider"></div>
+                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
                 </div>
             </div>
         }
@@ -219,21 +782,29 @@
             <div class="products-grid">
                 @foreach (var suggestedProduct in suggestedProducts)
                 {
+                    var sCat = suggestedProduct.MaDmNavigation?.TenDm ?? "";
                     <div class="product-card">
                         <div class="product-image-wrapper">
-                            <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="product-image" alt="@suggestedProduct.TenSp" />
+                            <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="product-image" alt="@suggestedProduct.TenSp"
+                                 onerror="this.src='/images/logo.jpg'" loading="lazy" />
+                            <div class="product-hot-badge">🔥 Bán chạy</div>
+                            @if (!string.IsNullOrEmpty(sCat))
+                            {
+                                <span class="product-category-tag">@sCat</span>
+                            }
                             <div class="product-overlay">
                                 <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
                             </div>
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">@suggestedProduct.TenSp</h3>
-                            <p class="product-price">@suggestedProduct.GiaTien.ToString("C") VND</p>
-                            <div class="product-description">
-                                <p><strong>Thành phần:</strong> @suggestedProduct.ThanhPhan</p>
-                                <p><strong>Bán:</strong> @suggestedProduct.SlbanTrongNgay</p>
-                            </div>
-                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-buy">Mua Ngay</a>
+                            <p class="product-price">@suggestedProduct.GiaTien.ToString("N0") đ</p>
+                            @if (!string.IsNullOrEmpty(suggestedProduct.ThanhPhan))
+                            {
+                                <p class="product-ingredient"><strong>Nguyên liệu:</strong> @suggestedProduct.ThanhPhan</p>
+                            }
+                            <div class="product-card-divider"></div>
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
                         </div>
                     </div>
                 }

@@ -52,7 +52,7 @@
             </div>
 
             <div class="hero-content">
-                <h1 class="hero-title">Danh mục</h1>
+                @* <h1 class="hero-title">Danh mục</h1> *@
                 <h2 class="hero-subtitle category-hero-name">@categoryTitle</h2>
                 <p class="hero-description">@categoryDesc</p>
                 @if (productList.Count > 0)
@@ -110,6 +110,13 @@
                 {
                     var discountPct = product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now
                         ? product.MaGiamGiaNavigation.GiaTri : 0;
+                        var discountPercent = product.MaGiamGiaNavigation?.GiaTri ?? 0;
+                     var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
+
+                     var isDiscountActive = product.MaGiamGiaNavigation != null
+                      && product.MaGiamGiaNavigation.GiaTri > 0
+                      && product.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now
+                      && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now;
                     var categoryCode = product.MaDmNavigation?.TenDm ?? tenDanhMuc;
                     <div class="product-card"
                          data-ma-sp="@product.MaSp"
@@ -129,14 +136,26 @@
                             </div>
                         </div>
                         <div class="product-info">
-                            <h3 class="product-name">@product.TenSp</h3>
-                            <p class="product-price">@product.GiaTien.ToString("C") VND</p>
-                            <div class="product-description">
-                                <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
-                                <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>
-                            </div>
-                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                    <h3 class="product-name">@product.TenSp</h3>
+                    @if (isDiscountActive)
+                    {
+                        <div class="product-price-block">
+                            <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                            
                         </div>
+                    }
+                    else
+                    {
+                        <p class="product-price">@discountPrice.ToString("N0") đ</p>
+                    }
+                    @if (!string.IsNullOrEmpty(product.ThanhPhan))
+                    {
+                        <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
+                    }
+                    <div class="product-card-divider"></div>
+                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
+                </div>
                     </div>
                 }
             </div>

@@ -7433,8 +7433,16 @@
       "PackagePath": "staticwebassets\\images\\4-eggtart.jpg"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\BUCKET-5-COB_HDE.jpg",
+      "PackagePath": "staticwebassets\\images\\BUCKET-5-COB_HDE.jpg"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Burger-Flava.jpg",
       "PackagePath": "staticwebassets\\images\\Burger-Flava.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Burger-Zinger.jpg",
+      "PackagePath": "staticwebassets\\images\\Burger-Zinger.jpg"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\COM.jpg",
@@ -7457,6 +7465,10 @@
       "PackagePath": "staticwebassets\\images\\D-CBO-Bucket-2.jpg"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\EC.Bucket-3-COB.jpg",
+      "PackagePath": "staticwebassets\\images\\EC.Bucket-3-COB.jpg"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\IMG_2955.JPG",
       "PackagePath": "staticwebassets\\images\\IMG_2955.JPG"
     },
@@ -7477,6 +7489,10 @@
       "PackagePath": "staticwebassets\\images\\MON AN NHE.jpg"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\NANBAN.jpg",
+      "PackagePath": "staticwebassets\\images\\NANBAN.jpg"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Nitro_Wallpaper_5000x2813.jpg",
       "PackagePath": "staticwebassets\\images\\Nitro_Wallpaper_5000x2813.jpg"
     },
@@ -7491,6 +7507,10 @@
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Peach-Tea.jpg",
       "PackagePath": "staticwebassets\\images\\Peach-Tea.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Sausage-Pasta-COB.jpg",
+      "PackagePath": "staticwebassets\\images\\Sausage-Pasta-COB.jpg"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Sting-A.jpg",

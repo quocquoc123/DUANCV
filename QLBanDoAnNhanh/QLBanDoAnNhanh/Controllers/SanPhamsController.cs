@@ -320,7 +320,7 @@ namespace QLBanDoAnNhanh.Controllers
         // GET: SanPhams/Create
         public IActionResult Create()
         {
-            ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "MaDm");
+            ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "TenDm");
             ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia");
             return View();
         }
@@ -340,7 +340,7 @@ namespace QLBanDoAnNhanh.Controllers
             // Nếu có lỗi, trả lại View với dữ liệu nhập trước đó
             if (!ModelState.IsValid)
             {
-                ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "MaDm", sanPham.MaDm);
+                ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "TenDm", sanPham.MaDm);
                 ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia", sanPham.MaGiamGia);
                 return View(sanPham);
             }
