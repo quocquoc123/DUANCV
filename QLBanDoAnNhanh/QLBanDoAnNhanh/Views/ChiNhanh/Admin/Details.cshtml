@@ -1,0 +1,115 @@
+@model QLBanDoAnNhanh.Models.ChiNhanh
+
+@{
+    ViewData["Title"] = "Chi Tiết Chi Nhánh";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+<div class="container-fluid mt-4" style="max-width:720px;">
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <a asp-action="AdminIndex" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <h1 class="mb-0"><i class="fas fa-store text-info"></i> Chi Tiết Chi Nhánh</h1>
+    </div>
+
+    <div class="card shadow-sm">
+        @* Ảnh bìa *@
+        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+        {
+            <img src="@Model.HinhAnh" alt="Ảnh @Model.TenChiNhanh"
+                 class="card-img-top"
+                 style="max-height:260px;object-fit:cover;" />
+        }
+
+        <div class="card-body">
+            @* Trạng thái badge *@
+            <div class="mb-3">
+                @if (Model.TrangThai)
+                {
+                    <span class="badge bg-success fs-6">
+                        <i class="fas fa-check-circle"></i> Đang hoạt động
+                    </span>
+                    @if (Model.IsOpen)
+                    {
+                        <span class="badge bg-primary ms-2 fs-6">
+                            <i class="fas fa-door-open"></i> Đang mở cửa
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark ms-2 fs-6">
+                            <i class="fas fa-door-closed"></i> Đóng cửa
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6">
+                        <i class="fas fa-times-circle"></i> Ngừng hoạt động
+                    </span>
+                }
+            </div>
+
+            <h2 class="card-title">@Model.TenChiNhanh <small class="text-muted fs-6">#@Model.MaChiNhanh</small></h2>
+
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr>
+                        <th style="width:35%" class="table-light">📍 Địa chỉ</th>
+                        <td>@Model.DiaChi</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">📞 Số điện thoại</th>
+                        <td><a href="tel:@Model.SoDienThoai">@Model.SoDienThoai</a></td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">✉️ Email</th>
+                        <td>
+                            @if (!string.IsNullOrEmpty(Model.Email))
+                            {
+                                <a href="mailto:@Model.Email">@Model.Email</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">🕐 Giờ hoạt động</th>
+                        <td>@Model.GioMoCua – @Model.GioDongCua</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">🗺️ Tọa độ</th>
+                        <td>
+                            @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                            {
+                                var lat = Model.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                                var lng = Model.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                                <span>@lat, @lng</span>
+                                <a href="https://www.google.com/maps?q=@lat,@lng"
+                                   target="_blank" rel="noopener" class="ms-2 btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-map-location-dot"></i> Google Maps
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa thiết lập</span>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.MaChiNhanh" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+            <a asp-action="AdminIndex" class="btn btn-outline-secondary">
+                <i class="fas fa-list"></i> Danh sách
+            </a>
+        </div>
+    </div>
+</div>

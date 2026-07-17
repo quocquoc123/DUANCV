@@ -1,4 +1,4 @@
-﻿    using System;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -104,6 +104,64 @@ namespace QLBanDoAnNhanh.Controllers
 
             // Điều hướng về trang giỏ hàng
             return RedirectToAction("Index");
+        }
+
+        // ============================================================
+        // AJAX endpoint – Thêm vào giỏ hàng (trả JSON, không redirect)
+        // POST /GioHangs/AddToCartAjax
+        // ============================================================
+        [HttpPost]
+        public IActionResult AddToCartAjax(int MaSp, int quantity = 1)
+        {
+            var gioHang = GetGioHangFromSession();
+
+            using (var context = new QlbanDoAnNhanh3Context())
+            {
+                var sanPham = context.SanPhams
+                    .Include(sp => sp.MaGiamGiaNavigation)
+                    .FirstOrDefault(sp => sp.MaSp == MaSp);
+
+                if (sanPham == null)
+                {
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+                }
+
+                var chiTietGioHang = gioHang.ChiTietGioHangs.FirstOrDefault(ct => ct.MaSp == MaSp);
+                int currentQty = chiTietGioHang?.SoLuongSp ?? 0;
+                int totalQty   = currentQty + quantity;
+
+                if (totalQty > sanPham.SlbanTrongNgay)
+                {
+                    return Json(new { success = false, message = "Không đủ số lượng sản phẩm trong kho!" });
+                }
+
+                if (chiTietGioHang == null)
+                {
+                    chiTietGioHang = NewMethod(MaSp, quantity, sanPham, _discountService.GetEffectivePrice(sanPham));
+                    gioHang.ChiTietGioHangs.Add(chiTietGioHang);
+                }
+                else
+                {
+                    chiTietGioHang.SoLuongSp += quantity;
+                    chiTietGioHang.TongTien   = (int)(chiTietGioHang.SoLuongSp * _discountService.GetEffectivePrice(sanPham));
+                }
+
+                SaveGioHangToSession(gioHang);
+                UpdateCartItemCount(gioHang);
+
+                int cartCount = gioHang.ChiTietGioHangs.Sum(ct => ct.SoLuongSp ?? 0);
+                return Json(new { success = true, cartCount });
+            }
+        }
+
+        // ============================================================
+        // GET /GioHangs/GetCartItemCount  – Trả về số lượng hiện tại
+        // ============================================================
+        [HttpGet]
+        public IActionResult GetCartItemCount()
+        {
+            int count = HttpContext.Session.GetInt32("CartItemCount") ?? 0;
+            return Json(count);
         }
 
         private static ChiTietGioHang NewMethod(int MaSp, int quantity, SanPham sanPham, decimal effectivePrice)

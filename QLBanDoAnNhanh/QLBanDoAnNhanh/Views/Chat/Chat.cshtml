@@ -1,136 +1,21 @@
-﻿@{
-    var userLogin = ViewBag.UserLogin; // Username từ session
-    var isAdmin = ViewBag.IsAdmin; // Kiểm tra nếu là admin
+@{
+    ViewData["Title"] = "Trò Chuyện Hỗ Trợ";
 }
-<style>
-    /* Bong bóng chat */
-    #chatBubble {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        z-index: 1000;
-    }
 
-        #chatBubble img {
-            width: 30px;
-            height: 30px;
-        }
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    /* Khung chat ẩn mặc định */
-    #chatContainer {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 300px;
-        height: 400px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        display: none;
-        flex-direction: column;
-        overflow: hidden;
-        z-index: 999;
-    }
-
-        /* Hiển thị khung chat khi nhấn */
-        #chatContainer.active {
-            display: flex;
-        }
-
-    /* Khung chat */
-    #chatBox {
-        flex-grow: 1;
-        padding: 10px;
-        background-color: #f5f6fa;
-        overflow-y: auto;
-    }
-
-    /* Vùng nhập và nút gửi */
-    #inputContainer {
-        display: flex;
-        padding: 10px;
-        background-color: #f0f2f5;
-        border-top: 1px solid #ddd;
-    }
-
-    #username {
-        display: none;
-    }
-
-    #message {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-right: 8px;
-    }
-
-    #sendButton {
-        background-color: #0078fe;
-        color: white;
-        padding: 8px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.3s;
-    }
-
-        #sendButton:hover {
-            background-color: #005bb5;
-        }
-
-</style>
-<div id="chatBubble" onclick="toggleChat()">
-    <img src="~/images/chattt.jpg" alt="Chat Icon" />
-</div>
-
-<div id="chatContainer">
-    <div id="chatBox"></div>
-    <div id="inputContainer">
-        <input type="text" id="username" value="@userLogin" placeholder="Enter your username" readonly />
-        <input type="text" id="message" placeholder="Enter your message" />
-        <button id="sendButton">Gửi</button>
+<div class="container text-center" style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 100px 20px; max-width: 600px; margin: 0 auto;">
+    <div style="font-size: 5rem; margin-bottom: 24px; background: linear-gradient(135deg, #0084ff 0%, #00c6ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 12px rgba(0, 132, 255, 0.15));">
+        <i class="bi bi-messenger"></i>
     </div>
+    <h2 style="font-weight: 800; color: #0f172a; margin-bottom: 12px; letter-spacing: -0.5px;">Giao Diện Chat Đã Được Kích Hoạt!</h2>
+    <p style="font-size: 1rem; color: #64748b; line-height: 1.6; margin-bottom: 30px;">
+        Hệ thống chat hỗ trợ khách hàng trực tuyến đã được tích hợp ở góc phải màn hình của bạn. Hãy nhấn vào bong bóng chat để bắt đầu trò chuyện với Food Fast Support từ bất kỳ trang nào.
+    </p>
+    <button onclick="toggleGlobalChat()" style="background: linear-gradient(135deg, #0084ff 0%, #00a2ff 100%); color: white; border: none; padding: 12px 30px; font-weight: 700; border-radius: 30px; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 132, 255, 0.3); transition: all 0.25s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        Mở Khung Chat Ngay
+    </button>
 </div>
-
-<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
-<script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-    connection.on("ReceiveMessage", function (user, message) {
-        var encodedUser = $("<div />").text(user).html();
-        var encodedMsg = $("<div />").text(message).html();
-        $("#chatBox").append("<p class='bubble user'><strong>" + encodedUser + "</strong>: " + encodedMsg + "</p>");
-    });
-
-    $("#sendButton").click(function () {
-        var userLogin = $("#username").val();
-        var message = $("#message").val();
-
-        if (message) {
-            connection.invoke("SendMessage", userLogin, message).catch(function (err) {
-                return console.error(err.toString());
-            });
-            $("#message").val("").focus();
-        }
-    });
-
-    connection.start().catch(function (err) {
-        console.error(err.toString());
-    });
-
-    function toggleChat() {
-        const chatContainer = document.getElementById("chatContainer");
-        chatContainer.classList.toggle("active");
-    }
-</script>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/wishlist.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/add-to-cart.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.13/signalr.min.js"></script>
@@ -42,10 +44,51 @@
                         <a href="@Url.Action("UserDetails", "LoginUser")"><text>Hello</text> @Session["Email"]</a>
                         <span style="padding-left:15px">@Html.ActionLink("Đăng Xuất", "LogOutUser", "LoginUser")</span>
                     } *@
+                  
                     </a>
+                    <!-- Branch Picker – chọn chi nhánh kiểu GrabFood -->
+                    <div class="branch-picker" id="branchPicker">
+                        <button class="branch-trigger" id="branchTriggerBtn"
+                                aria-haspopup="listbox" aria-expanded="false"
+                                title="Chọn chi nhánh cửa hàng">
+                            <span class="branch-icon">📍</span>
+                            <span class="branch-label" id="branchLabel">Chọn chi nhánh</span>
+                            <svg class="branch-chevron" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+
+                        <div class="branch-dropdown" id="branchDropdown" role="listbox" aria-label="Danh sách chi nhánh">
+                            <div class="branch-dropdown-header">
+                                <span class="branch-dropdown-title">🏪 Chọn chi nhánh</span>
+                            </div>
+                            <div class="branch-search-wrap">
+                                <input type="text" class="branch-search-input"
+                                       id="branchSearchInput"
+                                       placeholder="Tìm tên hoặc địa chỉ..."
+                                       autocomplete="off" />
+                            </div>
+                            <ul class="branch-list" id="branchList" role="listbox">
+                                <li class="branch-list-loading">Đang tải chi nhánh...</li>
+                            </ul>
+                        </div>
+                    </div>
+  <a asp-controller="ChiNhanh" asp-action="Index" class="btn btn-outline-primary">
+    🏪 Chi nhánh
+</a>
+                    <!-- Icon Yêu thích -->
+                    <div style="position: relative; display: inline-block; margin-right: 14px;">
+                        <a href="@Url.Action("Index", "Wishlist")" class="wishlist-header-link" title="Sản phẩm yêu thích" aria-label="Sản phẩm yêu thích">
+                            
+                            <svg class="header-wishlist-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 26px; height: 26px; vertical-align: middle; transition: transform 0.2s ease;">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff4757" stroke="#e84118" stroke-width="1"/>
+                            </svg>
+                        </a>
+                    </div>
+                    
                     <div style="position: relative; display: inline-block;">
                         <a href="@Url.Action("Index", "GioHangs")">
-                            <img src="@Url.Content("~/images/cart.jpg")" id="cart" height="30" width="30" />
+                            <img src="@Url.Content("~/images/cart.jpg")" id="ff-cart-icon" height="30" width="30" />
                             <span class="cart-count" style="position: absolute; top: -8px; right: -20px; background-color: red; color: white; border-radius: 50%; padding: 3px;">
                                 @(Context.Session.GetInt32("CartItemCount") ?? 0)
                             </span>
@@ -81,6 +124,8 @@
                         <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "BESTSELLER" }, null)">Best seller</a></li>
                         <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "KHUYENMAI" }, null)">Khuyến mãi</a></li>
                         <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "DOANCAY" }, null)">Đồ ăn cay</a></li>
+                        
+                       
                     </ul>
                 </nav>
                 <div class="col-6 text-right ff-search-wrap">
@@ -102,11 +147,7 @@
     <div>
         @RenderBody()
     </div>
-    <div id="chatBubble" onclick="toggleChat()">
-        <a asp-controller="BaoCaoUser" asp-action="SubmitFeedback">
-        <img src="~/images/chattt.jpg" alt="Chat Icon" />
-    </a>
-    </div>
+    @await Html.PartialAsync("_ChatPopup")
     <footer class="footer">
         <div class="container">
             <div class="row">
@@ -142,7 +183,7 @@
                     <h5>Liên Hệ</h5>
                     <ul>
                         <li><a href="#">Theo dõi đơn hàng</a></li>
-                        <li><a href="#">Hệ Thống Nhà Hàng</a></li>
+                        <li><a href="@Url.Action("Index", "ChiNhanh")">Hệ Thống Nhà Hàng</a></li>
                         <li><a href="#">Liên hệ</a></li>
                     </ul>
                 </div>
@@ -189,10 +230,229 @@
             });
         }
 
+        function updateWishlistBadge(count) {
+            const badge = document.getElementById('wishlist-count-badge');
+            if (!badge) return;
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function loadWishlistCount() {
+            fetch('/Wishlist/Count')
+                .then(r => r.json())
+                .then(data => updateWishlistBadge(data.count))
+                .catch(() => {});
+        }
+
         $(document).ready(function () {
             updateCartCount();
+            loadWishlistCount();
         });
     </script>
+    <!-- ===== Branch Picker Script (chạy toàn site) ===== -->
+    <script>
+    (function () {
+        'use strict';
+
+        // ---- Constants ----
+        const LS_KEY     = 'selectedBranchId';
+        const LS_NAME    = 'selectedBranchName';
+        const API_LIST   = '/ChiNhanh/GetDanhSachChiNhanh';
+        const API_SET    = '/ChiNhanh/SetChiNhanh';
+
+        // ---- State ----
+        let allBranches  = [];     // cache danh sách từ API
+        let selectedId   = null;   // MaChiNhanh đang chọn (null = tất cả)
+
+        // ---- DOM ----
+        const picker     = document.getElementById('branchPicker');
+        const triggerBtn = document.getElementById('branchTriggerBtn');
+        const label      = document.getElementById('branchLabel');
+        const dropdown   = document.getElementById('branchDropdown');
+        const list       = document.getElementById('branchList');
+        const searchInput = document.getElementById('branchSearchInput');
+
+        if (!picker || !triggerBtn) return; // Guard: không phải trang có layout này
+
+        // ---- Helpers ----
+        function setLabel(name) {
+            label.textContent = name || 'Chọn chi nhánh';
+        }
+
+        function openPicker() {
+            picker.classList.add('open');
+            triggerBtn.setAttribute('aria-expanded', 'true');
+            if (searchInput) { searchInput.value = ''; renderList(allBranches); searchInput.focus(); }
+        }
+
+        function closePicker() {
+            picker.classList.remove('open');
+            triggerBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        function togglePicker() {
+            picker.classList.contains('open') ? closePicker() : openPicker();
+        }
+
+        // ---- Render branch list ----
+        function renderList(branches) {
+            if (!list) return;
+
+            list.innerHTML = '';
+
+            // Option reset "Tất cả chi nhánh"
+            const resetLi = document.createElement('li');
+            resetLi.className = 'branch-item-reset' + (selectedId === null ? ' active' : '');
+            resetLi.innerHTML = `<span>🌐</span> Tất cả chi nhánh`;
+            resetLi.addEventListener('click', () => selectBranch(null, 'Chọn chi nhánh'));
+            list.appendChild(resetLi);
+
+            if (branches.length === 0) {
+                const empty = document.createElement('li');
+                empty.className = 'branch-list-empty';
+                empty.textContent = 'Không tìm thấy chi nhánh nào.';
+                list.appendChild(empty);
+                return;
+            }
+
+            branches.forEach(cn => {
+                const li = document.createElement('li');
+                li.className = 'branch-item' + (selectedId === cn.id ? ' active' : '');
+                li.setAttribute('role', 'option');
+                li.setAttribute('data-id', cn.id);
+                li.setAttribute('aria-selected', selectedId === cn.id ? 'true' : 'false');
+
+                const statusClass = cn.isOpen ? 'open' : 'closed';
+                const statusText  = cn.isOpen ? 'Đang mở' : 'Đã đóng';
+
+                li.innerHTML = `
+                    <span class="branch-item-icon">📍</span>
+                    <div class="branch-item-info">
+                        <div class="branch-item-name">${escapeHtml(cn.tenChiNhanh)}</div>
+                        <div class="branch-item-address">${escapeHtml(cn.diaChi)}</div>
+                        <div class="branch-item-hours">⏰ ${escapeHtml(cn.gioMoCua)} – ${escapeHtml(cn.gioDongCua)}</div>
+                    </div>
+                    <span class="branch-status-badge ${statusClass}">${statusText}</span>
+                    <svg class="branch-item-check" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>`;
+
+                li.addEventListener('click', () => selectBranch(cn.id, cn.tenChiNhanh));
+                list.appendChild(li);
+            });
+        }
+
+        // ---- Escape HTML helper ----
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // ---- Select a branch ----
+        function selectBranch(id, name) {
+            selectedId = id;
+
+            // Update localStorage
+            if (id) {
+                localStorage.setItem(LS_KEY,  String(id));
+                localStorage.setItem(LS_NAME, name);
+            } else {
+                localStorage.removeItem(LS_KEY);
+                localStorage.removeItem(LS_NAME);
+            }
+
+            // Update label
+            setLabel(id ? '📍 ' + name : 'Chọn chi nhánh');
+
+            // POST lên server để lưu Session
+            fetch(API_SET, {
+                method : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body   : JSON.stringify({ maChiNhanh: id || 0 })
+            }).catch(() => {});
+
+            // Dispatch event cho TrangChu.cshtml lắng nghe
+            document.dispatchEvent(new CustomEvent('branchChanged', {
+                detail: { id: id, name: name }
+            }));
+
+            closePicker();
+        }
+
+        // ---- Load branches from API ----
+        async function loadBranches() {
+            try {
+                const res  = await fetch(API_LIST);
+                allBranches = await res.json();
+                renderList(allBranches);
+            } catch (err) {
+                if (list) {
+                    list.innerHTML = '<li class="branch-list-empty">⚠️ Không tải được danh sách chi nhánh.</li>';
+                }
+            }
+        }
+
+        // ---- Search filter ----
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const kw = this.value.trim().toLowerCase();
+                if (!kw) { renderList(allBranches); return; }
+                const filtered = allBranches.filter(cn =>
+                    cn.tenChiNhanh.toLowerCase().includes(kw) ||
+                    cn.diaChi.toLowerCase().includes(kw)
+                );
+                renderList(filtered);
+            });
+
+            // Prevent dropdown closing when typing in search
+            searchInput.addEventListener('click', e => e.stopPropagation());
+        }
+
+        // ---- Toggle on trigger click ----
+        triggerBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            togglePicker();
+            // Load lazy khi mở lần đầu
+            if (picker.classList.contains('open') && allBranches.length === 0) {
+                loadBranches();
+            }
+        });
+
+        // ---- Close when clicking outside ----
+        document.addEventListener('click', function (e) {
+            if (!picker.contains(e.target)) closePicker();
+        });
+
+        // ---- Close on Escape ----
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePicker();
+        });
+
+        // ---- Restore from localStorage on page load ----
+        (function restoreState() {
+            const savedId   = localStorage.getItem(LS_KEY);
+            const savedName = localStorage.getItem(LS_NAME);
+            if (savedId && savedName) {
+                selectedId = parseInt(savedId, 10);
+                setLabel('📍 ' + savedName);
+
+                // Đồng bộ Session về phía server (silent)
+                fetch(API_SET, {
+                    method : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body   : JSON.stringify({ maChiNhanh: selectedId })
+                }).catch(() => {});
+            }
+        })();
+
+    })();
+    </script>
+
+    <script src="~/js/add-to-cart.js" asp-append-version="true"></script>
 
 </body>
 </html>

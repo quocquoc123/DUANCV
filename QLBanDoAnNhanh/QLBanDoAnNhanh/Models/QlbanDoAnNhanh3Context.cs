@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +18,8 @@ public partial class QlbanDoAnNhanh3Context : DbContext
     public virtual DbSet<BaoCaoNguoiDung> BaoCaoNguoiDungs { get; set; }
 
     public virtual DbSet<BinhLuan> BinhLuans { get; set; }
+
+    public virtual DbSet<ChiNhanh> ChiNhanhs { get; set; }
 
     public virtual DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
 
@@ -46,6 +48,10 @@ public partial class QlbanDoAnNhanh3Context : DbContext
     public virtual DbSet<SanPham> SanPhams { get; set; }
 
     public virtual DbSet<ThanhToan> ThanhToans { get; set; }
+
+    public virtual DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
+
+    public virtual DbSet<SanPhamChiNhanh> SanPhamChiNhanhs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -92,6 +98,41 @@ public partial class QlbanDoAnNhanh3Context : DbContext
                 .HasForeignKey(d => d.MaSp)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BinhLuan__maSP__6A30C649");
+        });
+
+        modelBuilder.Entity<ChiNhanh>(entity =>
+        {
+            entity.HasKey(e => e.MaChiNhanh).HasName("PK__ChiNhanh__MaChiNhanh");
+
+            entity.ToTable("ChiNhanh");
+
+            entity.Property(e => e.TenChiNhanh)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.DiaChi)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(e => e.SoDienThoai)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Email).HasMaxLength(200);
+
+            entity.Property(e => e.GioMoCua)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasDefaultValue("07:00");
+
+            entity.Property(e => e.GioDongCua)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasDefaultValue("22:00");
+
+            entity.Property(e => e.HinhAnh).HasMaxLength(500);
+
+            entity.Property(e => e.TrangThai).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ChiTietDonHang>(entity =>
@@ -428,6 +469,53 @@ public partial class QlbanDoAnNhanh3Context : DbContext
                 .HasForeignKey(d => d.MaDh)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ThanhToan__maDH__66603565");
+        });
+
+        modelBuilder.Entity<SanPhamYeuThich>(entity =>
+        {
+            entity.HasKey(e => e.WishlistId).HasName("PK__SanPhamYeuThich__WishlistId");
+
+            entity.ToTable("SanPhamYeuThich");
+
+            entity.Property(e => e.NgayThem)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasIndex(e => new { e.MaNguoiDung, e.MaSp })
+                .IsUnique()
+                .HasDatabaseName("UQ__SanPhamYeuThich__UserProduct");
+
+            entity.HasOne(d => d.NguoiDung).WithMany(p => p.SanPhamYeuThichs)
+                .HasForeignKey(d => d.MaNguoiDung)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__SanPhamYeuThich__NguoiDung");
+
+            entity.HasOne(d => d.SanPham).WithMany(p => p.SanPhamYeuThichs)
+                .HasForeignKey(d => d.MaSp)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__SanPhamYeuThich__SanPham");
+        });
+
+        modelBuilder.Entity<SanPhamChiNhanh>(entity =>
+        {
+            entity.HasKey(e => new { e.MaSp, e.MaChiNhanh });
+
+            entity.ToTable("SanPhamChiNhanh");
+
+            entity.Property(e => e.MaSp).HasColumnName("MaSp");
+            entity.Property(e => e.MaChiNhanh).HasColumnName("MaChiNhanh");
+
+            entity.HasOne(d => d.MaSpNavigation)
+                .WithMany(p => p.SanPhamChiNhanhs)
+                .HasForeignKey(d => d.MaSp)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_SanPhamChiNhanh_SanPham");
+
+            entity.HasOne(d => d.MaChiNhanhNavigation)
+                .WithMany(p => p.SanPhamChiNhanhs)
+                .HasForeignKey(d => d.MaChiNhanh)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_SanPhamChiNhanh_ChiNhanh");
         });
 
         OnModelCreatingPartial(modelBuilder);

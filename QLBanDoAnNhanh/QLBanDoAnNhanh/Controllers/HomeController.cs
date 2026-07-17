@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QLBanDoAnNhanh.Models;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ namespace QLBanDoAnNhanh.Controllers
 
         public IActionResult Index()
         {
-            var products = _context.SanPhams.ToList(); // L?y danh sách s?n ph?m
+            var products = _context.SanPhams.Include(p => p.MaDmNavigation).ToList(); // Lấy danh sách sản phẩm kèm danh mục
             return View(products); // Truy?n danh sách s?n ph?m vào view
         }
 

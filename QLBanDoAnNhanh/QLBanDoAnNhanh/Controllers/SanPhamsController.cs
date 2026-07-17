@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +37,9 @@ namespace QLBanDoAnNhanh.Controllers
             var sanPhams = _context.SanPhams
                 .AsNoTracking()
                 .Include(sp => sp.MaDmNavigation)
-                .Include(sp => sp.MaGiamGiaNavigation);// Lấy thông tin giảm giá
+                .Include(sp => sp.MaGiamGiaNavigation)// Lấy thông tin giảm giá
+                .Include(sp => sp.SanPhamChiNhanhs)
+                    .ThenInclude(spn => spn.MaChiNhanhNavigation);
                 
 
             return View(await sanPhams.ToListAsync());
@@ -322,6 +324,8 @@ namespace QLBanDoAnNhanh.Controllers
         {
             ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "TenDm");
             ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia");
+            ViewBag.ChiNhanhs = _context.ChiNhanhs.Where(cn => cn.TrangThai).OrderBy(cn => cn.TenChiNhanh).ToList();
+            ViewBag.SelectedChiNhanhs = new List<int>();
             return View();
         }
 
@@ -330,7 +334,7 @@ namespace QLBanDoAnNhanh.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MaSp,TenSp,MaGiamGia,ThanhPhan,GiaTien,DonVi,ChitietSp,MaDm,SlbanTrongNgay")] SanPham sanPham, IFormFile HinhAnh1, IFormFile HinhAnh2)
+        public async Task<IActionResult> Create([Bind("MaSp,TenSp,MaGiamGia,ThanhPhan,GiaTien,DonVi,ChitietSp,MaDm,SlbanTrongNgay")] SanPham sanPham, IFormFile HinhAnh1, IFormFile HinhAnh2, int[] selectedChiNhanhs)
         {
             if (sanPham.SlbanTrongNgay < 0)
             {
@@ -342,6 +346,8 @@ namespace QLBanDoAnNhanh.Controllers
             {
                 ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "TenDm", sanPham.MaDm);
                 ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia", sanPham.MaGiamGia);
+                ViewBag.ChiNhanhs = _context.ChiNhanhs.Where(cn => cn.TrangThai).OrderBy(cn => cn.TenChiNhanh).ToList();
+                ViewBag.SelectedChiNhanhs = selectedChiNhanhs?.ToList() ?? new List<int>();
                 return View(sanPham);
             }
             // Kiểm tra tệp HinhAnh1 và HinhAnh2 có được chọn không
@@ -377,6 +383,21 @@ namespace QLBanDoAnNhanh.Controllers
             // Lưu sản phẩm vào database
             _context.Add(sanPham);
             await _context.SaveChangesAsync();
+
+            // Lưu quan hệ chi nhánh
+            if (selectedChiNhanhs != null && selectedChiNhanhs.Length > 0)
+            {
+                foreach (var maChiNhanh in selectedChiNhanhs)
+                {
+                    _context.SanPhamChiNhanhs.Add(new SanPhamChiNhanh
+                    {
+                        MaSp = sanPham.MaSp,
+                        MaChiNhanh = maChiNhanh
+                    });
+                }
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -388,13 +409,17 @@ namespace QLBanDoAnNhanh.Controllers
                 return NotFound();
             }
 
-            var sanPham = await _context.SanPhams.FindAsync(id);
+            var sanPham = await _context.SanPhams
+                .Include(sp => sp.SanPhamChiNhanhs)
+                .FirstOrDefaultAsync(sp => sp.MaSp == id);
             if (sanPham == null)
             {
                 return NotFound();
             }
             ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "MaDm", sanPham.MaDm);
             ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia", sanPham.MaGiamGia);
+            ViewBag.ChiNhanhs = _context.ChiNhanhs.Where(cn => cn.TrangThai).OrderBy(cn => cn.TenChiNhanh).ToList();
+            ViewBag.SelectedChiNhanhs = sanPham.SanPhamChiNhanhs.Select(x => x.MaChiNhanh).ToList();
             return View(sanPham);
         }
 
@@ -404,7 +429,7 @@ namespace QLBanDoAnNhanh.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("MaSp,TenSp,MaGiamGia,ThanhPhan,GiaTien,DonVi,ChitietSp,MaDm,SlbanTrongNgay,HinhAnh1,HinhAnh2")]
-        SanPham sanPham, IFormFile file1, IFormFile file2)
+        SanPham sanPham, IFormFile file1, IFormFile file2, int[] selectedChiNhanhs)
         {
             if (id != sanPham.MaSp)
             {
@@ -445,6 +470,23 @@ namespace QLBanDoAnNhanh.Controllers
 
                     // Cập nhật thông tin sản phẩm
                     _context.Update(sanPham);
+
+                    // Cập nhật quan hệ chi nhánh: xóa cũ, thêm mới
+                    var existing = _context.SanPhamChiNhanhs.Where(x => x.MaSp == id).ToList();
+                    _context.SanPhamChiNhanhs.RemoveRange(existing);
+
+                    if (selectedChiNhanhs != null && selectedChiNhanhs.Length > 0)
+                    {
+                        foreach (var maChiNhanh in selectedChiNhanhs)
+                        {
+                            _context.SanPhamChiNhanhs.Add(new SanPhamChiNhanh
+                            {
+                                MaSp = id,
+                                MaChiNhanh = maChiNhanh
+                            });
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -464,6 +506,8 @@ namespace QLBanDoAnNhanh.Controllers
             }
             ViewData["MaDm"] = new SelectList(_context.DanhMucs, "MaDm", "MaDm", sanPham.MaDm);
             ViewData["MaGiamGia"] = new SelectList(_context.GiamGia, "MaGiamGia", "MaGiamGia", sanPham.MaGiamGia);
+            ViewBag.ChiNhanhs = _context.ChiNhanhs.Where(cn => cn.TrangThai).OrderBy(cn => cn.TenChiNhanh).ToList();
+            ViewBag.SelectedChiNhanhs = selectedChiNhanhs?.ToList() ?? new List<int>();
             return View(sanPham);
         }
         // GET: SanPhams/Delete/5
@@ -555,20 +599,24 @@ namespace QLBanDoAnNhanh.Controllers
         private List<SanPham> GetMostPurchasedProducts(int topN = 5)
         {
                 // Lấy top N sản phẩm được mua nhiều nhất
-                var mostPurchasedProducts = _context.ChiTietDonHangs
+                var mostPurchasedProductIds = _context.ChiTietDonHangs
                     .AsNoTracking()
                     .GroupBy(ct => ct.MaSp) // Nhóm theo mã sản phẩm
-                    .Select(g => new
-                    {
-                        MaSp = g.Key,
-                        TotalQuantity = g.Sum(ct => ct.SoLuong) // Tổng số lượng mua
-                    })
-                    .OrderByDescending(g => g.TotalQuantity) // Sắp xếp theo số lượng giảm dần
+                    .OrderByDescending(g => g.Sum(ct => ct.SoLuong)) // Sắp xếp theo số lượng giảm dần
+                    .Select(g => g.Key)
                     .Take(topN) // Lấy N sản phẩm mua nhiều nhất
-                    .Join(_context.SanPhams, // Join để lấy thông tin sản phẩm
-                        topProduct => topProduct.MaSp,
-                        sanPham => sanPham.MaSp,
-                        (topProduct, sanPham) => sanPham)
+                    .ToList();
+
+                var mostPurchasedProducts = _context.SanPhams
+                    .AsNoTracking()
+                    .Include(p => p.MaGiamGiaNavigation)
+                    .Include(p => p.MaDmNavigation)
+                    .Where(p => mostPurchasedProductIds.Contains(p.MaSp))
+                    .ToList();
+
+                // Sắp xếp lại danh sách sản phẩm theo thứ tự ID bán chạy nhất
+                mostPurchasedProducts = mostPurchasedProducts
+                    .OrderBy(p => mostPurchasedProductIds.IndexOf(p.MaSp))
                     .ToList();
 
                 return mostPurchasedProducts;

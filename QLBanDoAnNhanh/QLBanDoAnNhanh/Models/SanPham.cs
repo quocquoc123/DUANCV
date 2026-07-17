@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -56,4 +56,8 @@ public partial class SanPham
     public virtual DanhMuc MaDmNavigation { get; set; }
 
     public virtual GiamGium MaGiamGiaNavigation { get; set; }
+
+    public virtual ICollection<SanPhamYeuThich> SanPhamYeuThichs { get; set; } = new List<SanPhamYeuThich>();
+
+    public virtual ICollection<SanPhamChiNhanh> SanPhamChiNhanhs { get; set; } = new List<SanPhamChiNhanh>();
 }

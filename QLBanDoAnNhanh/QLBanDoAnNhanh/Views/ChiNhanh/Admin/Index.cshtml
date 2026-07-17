@@ -1,0 +1,208 @@
+@model IEnumerable<QLBanDoAnNhanh.Models.ChiNhanh>
+
+@{
+    ViewData["Title"] = "Quản Lý Chi Nhánh";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+    var search    = ViewBag.Search    as string ?? "";
+    var trangThai = ViewBag.TrangThai as string ?? "";
+    var tongCN    = (int)(ViewBag.TongChiNhanh ?? 0);
+}
+
+<div class="container-fluid mt-4">
+
+    @* ===== HEADER ===== *@
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <h1><i class="fas fa-store"></i> Quản Lý Chi Nhánh</h1>
+            <small class="text-muted">Tổng cộng <strong>@tongCN</strong> chi nhánh</small>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm Chi Nhánh Mới
+            </a>
+        </div>
+    </div>
+
+    @* ===== THÔNG BÁO ===== *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-triangle-exclamation"></i> @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* ===== BỘ LỌC / TÌM KIẾM ===== *@
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body py-2">
+            <form method="get" asp-action="AdminIndex" class="row g-2 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="search" class="form-control"
+                               placeholder="Tìm theo tên, địa chỉ, SĐT, email..."
+                               value="@search" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="trangThai" class="form-select">
+                        <option value="" selected="@(trangThai == "")">-- Tất cả trạng thái --</option>
+                        <option value="hoatdong"      selected="@(trangThai == "hoatdong")">Đang hoạt động</option>
+                        <option value="ngunghoatdong" selected="@(trangThai == "ngunghoatdong")">Ngừng hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Lọc
+                    </button>
+                    <a asp-action="AdminIndex" class="btn btn-outline-secondary ms-1">
+                        <i class="fas fa-rotate-left"></i> Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* ===== BẢNG DANH SÁCH ===== *@
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:5%">Mã</th>
+                        <th style="width:5%">Ảnh</th>
+                        <th style="width:22%">Tên Chi Nhánh</th>
+                        <th style="width:25%">Địa Chỉ</th>
+                        <th style="width:12%">Số Điện Thoại</th>
+                        <th style="width:12%">Giờ Hoạt Động</th>
+                        <th style="width:9%; text-align:center">Trạng Thái</th>
+                        <th style="width:10%; text-align:center">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cn in Model)
+                    {
+                        <tr>
+                            <td><strong>#@cn.MaChiNhanh</strong></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(cn.HinhAnh))
+                                {
+                                    <img src="@cn.HinhAnh" alt="Ảnh @cn.TenChiNhanh"
+                                         style="width:48px;height:48px;object-fit:cover;border-radius:6px;" />
+                                }
+                                else
+                                {
+                                    <span style="font-size:28px;">🏪</span>
+                                }
+                            </td>
+                            <td><strong>@cn.TenChiNhanh</strong></td>
+                            <td class="text-muted small">@cn.DiaChi</td>
+                            <td>
+                                <a href="tel:@cn.SoDienThoai">@cn.SoDienThoai</a>
+                            </td>
+                            <td class="small">@cn.GioMoCua – @cn.GioDongCua</td>
+                            <td style="text-align:center">
+                                @if (cn.TrangThai)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-times-circle"></i> Ngừng
+                                    </span>
+                                }
+                            </td>
+                            <td style="text-align:center">
+                                <a asp-action="Details" asp-route-id="@cn.MaChiNhanh"
+                                   class="btn btn-sm btn-info" title="Chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@cn.MaChiNhanh"
+                                   class="btn btn-sm btn-warning" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        title="Xóa"
+                                        onclick="confirmDelete(@cn.MaChiNhanh, '@Html.Raw(cn.TenChiNhanh)')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Không tìm thấy chi nhánh nào.
+            <a asp-action="Create" class="alert-link">Thêm chi nhánh mới</a>
+        </div>
+    }
+</div>
+
+@* ===== MODAL XÁC NHẬN XÓA ===== *@
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-trash"></i> Xác nhận xóa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc muốn xóa chi nhánh <strong id="deleteModalName"></strong>?
+                <br /><small class="text-muted">Hành động này không thể hoàn tác.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" asp-action="DeleteConfirmed">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteModalId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            document.getElementById('deleteModalId').value = id;
+            document.getElementById('deleteModalName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}
+
+<style>
+    h1 { color: #333; font-weight: 700; margin-bottom: 0; }
+    .table { background-color: white; border-radius: 8px; overflow: hidden; }
+    .table td { vertical-align: middle; padding: 10px 12px; }
+    .btn-sm { margin: 0 2px; }
+</style>

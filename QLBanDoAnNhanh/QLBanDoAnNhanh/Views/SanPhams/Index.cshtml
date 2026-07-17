@@ -217,6 +217,7 @@
                 <th style="width:110px;">Danh Mục</th>
                 <th style="width:110px;">Giảm Giá</th>
                 <th style="width:110px;">SL / Ngày</th>
+                <th>Chi Nhánh</th>
                 <th style="width:140px;">Thao Tác</th>
             </tr>
         </thead>
@@ -288,6 +289,24 @@
                         }
                     </td>
                     <td>
+                        @if (item.SanPhamChiNhanhs != null && item.SanPhamChiNhanhs.Any())
+                        {
+                            <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                                @foreach (var spn in item.SanPhamChiNhanhs)
+                                {
+                                    <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#e3f0ff,#d0e8ff);color:#2563eb;border-radius:6px;padding:3px 8px;font-size:0.73rem;font-weight:600;white-space:nowrap;">
+                                        <i class="fas fa-store" style="font-size:0.65rem;"></i>
+                                        @spn.MaChiNhanhNavigation?.TenChiNhanh
+                                    </span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span style="color:#b7b9cc;font-size:0.82rem;">— Tất cả chi nhánh</span>
+                        }
+                    </td>
+                    <td>
                         <div class="action-btns">
                             <a asp-action="Edit"    asp-route-id="@item.MaSp" class="btn-tbl btn-edit">
                                 <i class="fas fa-edit"></i> Sửa
@@ -303,7 +322,7 @@
             @if (!Model.Any())
             {
                 <tr class="empty-row">
-                    <td colspan="9">
+                    <td colspan="10">
                         <i class="fas fa-box-open"></i>
                         Chưa có sản phẩm nào trong hệ thống
                     </td>

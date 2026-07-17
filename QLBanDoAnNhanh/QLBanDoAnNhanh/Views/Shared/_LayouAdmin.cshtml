@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,7 +76,12 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="DonHangs" asp-action="Index">Đơn Hàng</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="BinhLuans" asp-action="Index">Bình luận</a>
                         <a class="nav-link text-dark" asp-area="" asp-controller="BaoCao" asp-action="ManageReports">Phản hồi hỗ trợ</a>
-                           
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Wishlist" asp-action="AdminIndex">
+                            <i class="fas fa-heart mr-1 text-danger"></i> Sản Phẩm Yêu Thích
+                        </a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="ChiNhanh" asp-action="AdminIndex">
+                            <i class="fas fa-store mr-1 text-primary"></i> Chi Nhánh
+                        </a>
                     </div>
                 </div>
             </li>
@@ -131,7 +136,7 @@
                                    aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
+                                     <i class="fas fa-search fa-sm"></i>
                                 </button>
                             </div>
                         </div>

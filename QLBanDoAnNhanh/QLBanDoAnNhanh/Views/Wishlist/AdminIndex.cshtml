@@ -1,0 +1,360 @@
+@model QLBanDoAnNhanh.ViewModels.AdminWishlistViewModel
+@{
+    ViewData["Title"] = "Quản lý sản phẩm yêu thích";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/wishlist.css" asp-append-version="true" />
+    <style>
+        .sort-link { color: inherit; text-decoration: none; }
+        .sort-link:hover { color: #e65c00; }
+        .sort-active { color: #e65c00; font-weight: 700; }
+    </style>
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-heart text-danger mr-2"></i> Quản lý sản phẩm yêu thích
+    </h1>
+    <a href="#" onclick="exportExcel()" class="btn btn-sm btn-success shadow-sm">
+        <i class="fas fa-file-excel fa-sm text-white-50 mr-1"></i> Xuất Excel
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    </div>
+}
+
+<!-- Thống kê nhanh -->
+<div class="admin-wl-stats">
+    <div class="admin-wl-stat-card">
+        <div class="admin-wl-stat-val">@(Model.Stats?.TongLuotYeuThich ?? 0)</div>
+        <div class="admin-wl-stat-label"><i class="fas fa-heart mr-1"></i> Tổng lượt yêu thích</div>
+    </div>
+    <div class="admin-wl-stat-card blue">
+        <div class="admin-wl-stat-val">@(Model.Stats?.TongSanPhamDuocYeuThich ?? 0)</div>
+        <div class="admin-wl-stat-label"><i class="fas fa-box mr-1"></i> Sản phẩm được yêu thích</div>
+    </div>
+    <div class="admin-wl-stat-card red">
+        <div class="admin-wl-stat-val">@Model.TotalCount</div>
+        <div class="admin-wl-stat-label"><i class="fas fa-filter mr-1"></i> Kết quả lọc hiện tại</div>
+    </div>
+</div>
+
+<!-- Filter Form -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-filter mr-1"></i> Bộ lọc tìm kiếm</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="AdminIndex" asp-controller="Wishlist">
+            <div class="form-row">
+                <!-- Tìm kiếm -->
+                <div class="form-group col-md-3">
+                    <label>Tìm kiếm</label>
+                    <input type="text" name="searchKeyword" class="form-control"
+                           placeholder="Tên KH, email, sản phẩm..."
+                           value="@Model.SearchKeyword" />
+                </div>
+                <!-- Lọc user -->
+                <div class="form-group col-md-2">
+                    <label>Khách hàng</label>
+                    <select name="filterUserId" class="form-control">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var u in Model.UserList)
+                        {
+                            <option value="@u.Id" selected="@(Model.FilterUserId == u.Id)">@u.HoTen</option>
+                        }
+                    </select>
+                </div>
+                <!-- Lọc sản phẩm -->
+                <div class="form-group col-md-2">
+                    <label>Sản phẩm</label>
+                    <select name="filterProductId" class="form-control">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var p in Model.ProductList)
+                        {
+                            <option value="@p.Id" selected="@(Model.FilterProductId == p.Id)">@p.TenSp</option>
+                        }
+                    </select>
+                </div>
+                <!-- Từ ngày -->
+                <div class="form-group col-md-2">
+                    <label>Từ ngày</label>
+                    <input type="date" name="fromDate" class="form-control"
+                           value="@Model.FilterFromDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <!-- Đến ngày -->
+                <div class="form-group col-md-2">
+                    <label>Đến ngày</label>
+                    <input type="date" name="toDate" class="form-control"
+                           value="@Model.FilterToDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <!-- Buttons -->
+                <div class="form-group col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+            <input type="hidden" name="sortDir" value="@Model.SortDir" />
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+        </form>
+    </div>
+</div>
+
+<!-- Bảng dữ liệu -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Danh sách yêu thích
+            <span class="badge badge-secondary ml-2">@Model.TotalCount bản ghi</span>
+        </h6>
+        <div>
+            <span class="text-muted small">Trang @Model.CurrentPage / @(Model.TotalPages == 0 ? 1 : Model.TotalPages)</span>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Items.Count == 0)
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-heart-broken fa-3x mb-3 d-block"></i>
+                <p>Không có dữ liệu yêu thích nào phù hợp.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="wishlistTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th style="width:50px;">STT</th>
+                            <th>
+                                @{
+                                    var nextDirHoTen = (Model.SortBy == "HoTen" && Model.SortDir == "asc") ? "desc" : "asc";
+                                }
+                                <a class="sort-link @(Model.SortBy == "HoTen" ? "sort-active" : "")"
+                                   href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, sortBy = "HoTen", sortDir = nextDirHoTen, page = 1, Model.PageSize })">
+                                    Tên khách hàng
+                                    @if (Model.SortBy == "HoTen") { <i class="fas fa-sort-@(Model.SortDir == "asc" ? "up" : "down") ml-1"></i> }
+                                </a>
+                            </th>
+                            <th>Email</th>
+                            <th>Ảnh</th>
+                            <th>
+                                @{
+                                    var nextDirTenSp = (Model.SortBy == "TenSp" && Model.SortDir == "asc") ? "desc" : "asc";
+                                }
+                                <a class="sort-link @(Model.SortBy == "TenSp" ? "sort-active" : "")"
+                                   href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, sortBy = "TenSp", sortDir = nextDirTenSp, page = 1, Model.PageSize })">
+                                    Tên sản phẩm
+                                    @if (Model.SortBy == "TenSp") { <i class="fas fa-sort-@(Model.SortDir == "asc" ? "up" : "down") ml-1"></i> }
+                                </a>
+                            </th>
+                            <th>Danh mục</th>
+                            <th>Giá</th>
+                            <th>
+                                @{
+                                    var nextDirNgay = (Model.SortBy == "NgayThem" && Model.SortDir == "asc") ? "desc" : "asc";
+                                }
+                                <a class="sort-link @(Model.SortBy == "NgayThem" ? "sort-active" : "")"
+                                   href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, sortBy = "NgayThem", sortDir = nextDirNgay, page = 1, Model.PageSize })">
+                                    Ngày thêm
+                                    @if (Model.SortBy == "NgayThem") { <i class="fas fa-sort-@(Model.SortDir == "asc" ? "up" : "down") ml-1"></i> }
+                                </a>
+                            </th>
+                            <th style="width:100px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int stt = (Model.CurrentPage - 1) * Model.PageSize + 1;}
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr id="tr-@item.WishlistId">
+                                <td class="text-center">@stt</td>
+                                <td>
+                                    <strong>@item.HoTen</strong>
+                                    <br /><small class="text-muted">ID: @item.MaNguoiDung</small>
+                                </td>
+                                <td><small>@item.Email</small></td>
+                                <td>
+                                    <img src="@Url.Content(item.HinhAnh1)"
+                                         class="admin-wl-product-img"
+                                         alt="@item.TenSp"
+                                         onerror="this.src='/images/logo.jpg'" />
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = item.MaSp })" target="_blank">
+                                        @item.TenSp
+                                    </a>
+                                </td>
+                                <td><span class="badge badge-light">@item.TenDanhMuc</span></td>
+                                <td><strong>@item.GiaTien.ToString("N0") đ</strong></td>
+                                <td>@item.NgayThem.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger" title="Xóa bản ghi"
+                                            onclick="adminDeleteWishlist(@item.WishlistId)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Phân trang">
+                    <ul class="pagination justify-content-center mt-3">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, Model.SortBy, Model.SortDir, page = Model.CurrentPage - 1, Model.PageSize })">
+                                    &laquo; Trước
+                                </a>
+                            </li>
+                        }
+                        @for (int p = Math.Max(1, Model.CurrentPage - 2); p <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); p++)
+                        {
+                            <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, Model.SortBy, Model.SortDir, page = p, Model.PageSize })">@p</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("AdminIndex", "Wishlist", new { Model.SearchKeyword, Model.FilterUserId, Model.FilterProductId, Model.FilterFromDate, Model.FilterToDate, Model.SortBy, Model.SortDir, page = Model.CurrentPage + 1, Model.PageSize })">
+                                    Sau &raquo;
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+    </div>
+</div>
+
+<!-- Top 10 Chart -->
+@if (Model.Stats?.Top10SanPham?.Count > 0)
+{
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-chart-bar mr-1"></i> Top 10 sản phẩm được yêu thích nhiều nhất
+            </h6>
+        </div>
+        <div class="card-body">
+            <canvas id="wishlistChart" height="80"></canvas>
+        </div>
+    </div>
+}
+
+@section Scripts {
+<script>
+    // ---- Admin Xóa bản ghi ----
+    function adminDeleteWishlist(wishlistId) {
+        if (!confirm('Xóa bản ghi yêu thích này?')) return;
+
+        fetch('/Wishlist/AdminDelete/' + wishlistId, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.getElementById('tr-' + wishlistId);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s';
+                        row.style.opacity = '0';
+                        setTimeout(() => row.remove(), 300);
+                    }
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            });
+    }
+
+    // ---- Export Excel (simple CSV) ----
+    function exportExcel() {
+        const table = document.getElementById('wishlistTable');
+        if (!table) { alert('Không có dữ liệu để xuất'); return; }
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+            const cols = row.querySelectorAll('td, th');
+            const rowData = Array.from(cols).map(col => {
+                let text = col.innerText.replace(/"/g, '""').trim();
+                return '"' + text + '"';
+            });
+            csv.push(rowData.join(','));
+        });
+
+        const csvContent = '\uFEFF' + csv.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'wishlist_' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    // ---- Biểu đồ Top 10 ----
+    @if (Model.Stats?.Top10SanPham?.Count > 0)
+    {
+        <text>
+        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            Model.Stats.Top10SanPham.Select(p => p.TenSp.Length > 20 ? p.TenSp.Substring(0, 20) + "..." : p.TenSp).ToList()));
+        const values = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            Model.Stats.Top10SanPham.Select(p => p.SoLuotYeuThich).ToList()));
+
+        const ctx = document.getElementById('wishlistChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Số lượt yêu thích',
+                    data: values,
+                    backgroundColor: [
+                        'rgba(255,87,87,0.8)', 'rgba(255,152,0,0.8)', 'rgba(255,193,7,0.8)',
+                        'rgba(76,175,80,0.8)', 'rgba(33,150,243,0.8)', 'rgba(156,39,176,0.8)',
+                        'rgba(0,188,212,0.8)', 'rgba(255,87,34,0.8)', 'rgba(96,125,139,0.8)',
+                        'rgba(233,30,99,0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ctx.parsed.y + ' lượt yêu thích'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+        </text>
+    }
+</script>
+}

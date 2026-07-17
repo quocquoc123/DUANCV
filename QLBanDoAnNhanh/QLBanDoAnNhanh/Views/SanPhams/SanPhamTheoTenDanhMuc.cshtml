@@ -1,4 +1,4 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
 
 @{
     ViewData["Title"] = "Sản phẩm theo danh mục: " + ViewBag.TenDanhMuc;
@@ -125,6 +125,11 @@
                          data-sales="@(product.SlbanTrongNgay ?? 0)"
                          data-discount="@discountPct"
                          data-category="@categoryCode">
+                        <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                            <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
                         <div class="product-image-wrapper">
                             <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
                             @if (product.MaGiamGiaNavigation != null && product.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now)
@@ -154,7 +159,12 @@
                         <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
                     }
                     <div class="product-card-divider"></div>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
+                    <button class="btn-buy"
+                            data-ma-sp="@product.MaSp"
+                            data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
+                            aria-label="Thêm @product.TenSp vào giỏ hàng">
+                        🛒 Thêm vào giỏ hàng
+                    </button>
                 </div>
                     </div>
                 }
@@ -173,3 +183,41 @@
 </div>
 
 <script src="~/js/foodfast-catalog.js" asp-append-version="true"></script>
+
+<script>
+(function () {
+    async function loadWishlistStates() {
+        document.querySelectorAll('.wishlist-heart-btn').forEach(async (btn) => {
+            try {
+                const res = await fetch(`/Wishlist/Check/${btn.dataset.productId}`);
+                const data = await res.json();
+                if (data.isWishlisted) btn.classList.add('active');
+            } catch (_) {}
+        });
+    }
+
+    document.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+                const res = await fetch(`/Wishlist/Toggle/${this.dataset.productId}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.requireLogin) { window.location.href = '/User/Login'; return; }
+                if (data.success) {
+                    this.classList.toggle('active', data.isWishlisted);
+                    this.classList.add('pop');
+                    this.addEventListener('animationend', () => this.classList.remove('pop'), { once: true });
+                    const counter = document.querySelector('.wishlist-count, #wishlist-count');
+                    if (counter && data.count !== undefined) {
+                        counter.textContent = data.count;
+                        counter.style.display = data.count > 0 ? '' : 'none';
+                    }
+                }
+            } catch (err) { console.error('Wishlist error:', err); }
+        });
+    });
+
+    loadWishlistStates();
+})();
+</script>

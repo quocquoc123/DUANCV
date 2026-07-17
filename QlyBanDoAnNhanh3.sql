@@ -1,4 +1,4 @@
-﻿USE master;
+USE master;
 GO
 
 -- Tạo Cơ Sở Dữ Liệu
@@ -168,3 +168,18 @@ CREATE TABLE [dbo].[ChiTietGioHang](
     FOREIGN KEY (maSP) REFERENCES SanPham(maSP),
     FOREIGN KEY (maGH) REFERENCES GioHang(maGH)
 );
+
+-- Tạo Bảng Chi Nhánh
+CREATE TABLE [dbo].[ChiNhanh](
+    [MaChiNhanh]   INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [TenChiNhanh]  NVARCHAR(200)     NOT NULL,
+    [DiaChi]       NVARCHAR(500)     NOT NULL,
+    [SoDienThoai]  NVARCHAR(20)      NOT NULL,
+    [Email]        NVARCHAR(200)     NULL,
+    [GioMoCua]     NVARCHAR(10)      NOT NULL DEFAULT '07:00',
+    [GioDongCua]   NVARCHAR(10)      NOT NULL DEFAULT '22:00',
+    [Latitude]     FLOAT             NULL,
+    [Longitude]    FLOAT             NULL,
+    [HinhAnh]      NVARCHAR(500)     NULL,
+    [TrangThai]    BIT               NOT NULL DEFAULT 1
+);

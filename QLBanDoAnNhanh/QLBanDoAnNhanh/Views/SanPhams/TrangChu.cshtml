@@ -115,7 +115,7 @@
 
         .product-hot-badge {
             position: absolute;
-            top: 10px; right: 10px;
+            bottom: 10px; right: 10px;
             background: linear-gradient(135deg, #ff9800, #f57c00);
             color: white;
             font-size: 11px;
@@ -379,7 +379,7 @@
         /* HOT badge */
         .product-hot-badge {
             position: absolute;
-            top: 10px; right: 10px;
+            bottom: 10px; right: 10px;
             background: linear-gradient(135deg, #ff9800, #f57c00);
             color: white;
             font-size: 11px;
@@ -664,6 +664,11 @@
                 var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
                 var catName = product.MaDmNavigation?.TenDm ?? "";
                 <div class="product-card product-card-discount">
+                    <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                        <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
                     <div class="product-image-wrapper">
                         <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
                              onerror="this.src='/images/logo.jpg'" loading="lazy" />
@@ -691,7 +696,12 @@
                             <strong>⏰ Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
                         </p>
                         <div class="product-card-divider"></div>
-                        <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
+                        <button class="btn-buy"
+                                data-ma-sp="@product.MaSp"
+                                data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
+                                aria-label="Thêm @product.TenSp vào giỏ hàng">
+                            🛒 Thêm vào giỏ hàng
+                        </button>
                     </div>
                 </div>
             }
@@ -702,13 +712,32 @@
 <!-- Products Section -->
 <div id="products-section" class="products-container" data-ff-catalog data-ff-search-term="@searchKeyword">
     <div class="section-header">
-        <h2>@(string.IsNullOrEmpty(searchKeyword) ? "Danh Sách Sản Phẩm Nổi Bật" : "Kết Quả Tìm Kiếm")</h2>
-        <p>@(string.IsNullOrEmpty(searchKeyword) ? "Những món ăn được yêu thích nhất của chúng tôi" : $"Kết quả cho từ khóa \"{searchKeyword}\"")</p>
+        <h2 id="productSectionTitle">@(string.IsNullOrEmpty(searchKeyword) ? "Danh Sách Sản Phẩm Nổi Bật" : "Kết Quả Tìm Kiếm")</h2>
+        <p id="productSectionSubtitle">@(string.IsNullOrEmpty(searchKeyword) ? "Những món ăn được yêu thích nhất của chúng tôi" : $"Kết quả cho từ khóa \"{searchKeyword}\"")</p>
+    </div>
+
+    <!-- Branch Filter Info Bar (ẩn mặc định, hiện khi đã chọn chi nhánh) -->
+    <div id="branchInfoBar" style="display:none; align-items:center; gap:10px; margin-bottom:18px;
+         background:linear-gradient(135deg,#fff8ef,#fff3e0); border-radius:14px;
+         padding:12px 20px; border:1px solid rgba(255,152,0,0.2); box-shadow:0 2px 12px rgba(255,152,0,0.1);">
+        <span style="font-size:18px;">📍</span>
+        <div style="flex:1;">
+            <span style="font-size:13px; color:#888; font-weight:600;">Đang xem sản phẩm tại</span>
+            <strong id="branchInfoName" style="font-size:14px; color:#d67b00; margin-left:6px;"></strong>
+        </div>
+        <button id="branchInfoClearBtn"
+                style="border:none; background:none; color:#aaa; cursor:pointer; font-size:12px;
+                       padding:4px 10px; border-radius:999px; transition:all 0.2s;
+                       font-weight:600; font-family:inherit;"
+                onmouseover="this.style.background='rgba(0,0,0,0.06)';this.style.color='#333'"
+                onmouseout="this.style.background='none';this.style.color='#aaa'">
+            ✕ Bỏ lọc
+        </button>
     </div>
 
     @await Html.PartialAsync("_ProductFilters")
 
-    <div class="products-grid">
+    <div class="products-grid" id="productsGrid">
         @foreach (var product in productList)
         {
             var isDiscountActive = product.MaGiamGiaNavigation != null
@@ -727,6 +756,11 @@
                  data-sales="@(product.SlbanTrongNgay ?? 0)"
                  data-discount="@discountPct"
                  data-category="@categoryName">
+                <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                    <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </button>
                 <div class="product-image-wrapper">
                     <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
                          onerror="this.src='/images/logo.jpg'" loading="lazy" />
@@ -749,7 +783,6 @@
                         <div class="product-price-block">
                             <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
                             <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
-                            
                         </div>
                     }
                     else
@@ -761,7 +794,12 @@
                         <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
                     }
                     <div class="product-card-divider"></div>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
+                    <button class="btn-buy"
+                            data-ma-sp="@product.MaSp"
+                            data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
+                            aria-label="Thêm @product.TenSp vào giỏ hàng">
+                        🛒 Thêm vào giỏ hàng
+                    </button>
                 </div>
             </div>
         }
@@ -783,14 +821,28 @@
                 @foreach (var suggestedProduct in suggestedProducts)
                 {
                     var sCat = suggestedProduct.MaDmNavigation?.TenDm ?? "";
+                    var isSuggestedDiscountActive = suggestedProduct.MaGiamGiaNavigation != null
+                        && suggestedProduct.MaGiamGiaNavigation.GiaTri > 0
+                        && suggestedProduct.MaGiamGiaNavigation.ThoiGianBatDau <= DateTime.Now
+                        && suggestedProduct.MaGiamGiaNavigation.ThoiGianKetThuc >= DateTime.Now;
+                    var suggestedDiscountPct = isSuggestedDiscountActive ? suggestedProduct.MaGiamGiaNavigation.GiaTri : 0;
+                    var suggestedDiscountPrice = isSuggestedDiscountActive
+                        ? Math.Round((decimal)suggestedProduct.GiaTien - ((decimal)suggestedProduct.GiaTien * suggestedDiscountPct / 100), 0)
+                        : (decimal)suggestedProduct.GiaTien;
+
                     <div class="product-card">
                         <div class="product-image-wrapper">
                             <img src="@Url.Content(suggestedProduct.HinhAnh1)" class="product-image" alt="@suggestedProduct.TenSp"
                                  onerror="this.src='/images/logo.jpg'" loading="lazy" />
+                            <button class="wishlist-heart-btn" data-product-id="@suggestedProduct.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                                <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
                             <div class="product-hot-badge">🔥 Bán chạy</div>
-                            @if (!string.IsNullOrEmpty(sCat))
+                            @if (isSuggestedDiscountActive)
                             {
-                                <span class="product-category-tag">@sCat</span>
+                                <div class="discount-badge">-@suggestedDiscountPct.ToString("0.##")%</div>
                             }
                             <div class="product-overlay">
                                 <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
@@ -798,13 +850,34 @@
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">@suggestedProduct.TenSp</h3>
-                            <p class="product-price">@suggestedProduct.GiaTien.ToString("N0") đ</p>
+                            @if (isSuggestedDiscountActive)
+                            {
+                                <div class="product-price-block">
+                                    <span class="product-price-sale">@suggestedDiscountPrice.ToString("N0") đ</span>
+                                    <span class="product-price-original">@String.Format("{0:0,0} đ", suggestedProduct.GiaTien)</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="product-price">@suggestedDiscountPrice.ToString("N0") đ</p>
+                            }
                             @if (!string.IsNullOrEmpty(suggestedProduct.ThanhPhan))
                             {
                                 <p class="product-ingredient"><strong>Nguyên liệu:</strong> @suggestedProduct.ThanhPhan</p>
                             }
+                            @if (isSuggestedDiscountActive)
+                            {
+                                <p class="product-ingredient" style="color:#e74c3c;">
+                                    <strong>⏰ Kết thúc:</strong> @suggestedProduct.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
+                                </p>
+                            }
                             <div class="product-card-divider"></div>
-                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = suggestedProduct.MaSp })" class="btn-buy">🛒 Mua Ngay</a>
+                            <button class="btn-buy"
+                                    data-ma-sp="@suggestedProduct.MaSp"
+                                    data-img="@(suggestedProduct.HinhAnh1 ?? suggestedProduct.HinhAnh2 ?? "/images/logo.jpg")"
+                                    aria-label="Thêm @suggestedProduct.TenSp vào giỏ hàng">
+                                🛒 Thêm vào giỏ hàng
+                            </button>
                         </div>
                     </div>
                 }
@@ -815,6 +888,262 @@
 
 <script src="~/js/foodfast-catalog.js" asp-append-version="true"></script>
 <script src="~/js/review-overlay.js" asp-append-version="true"></script>
+
+<script>
+(function () {
+    // Load wishlist states khi trang load
+    async function loadWishlistStates() {
+        const btns = document.querySelectorAll('.wishlist-heart-btn');
+        btns.forEach(async (btn) => {
+            const pid = btn.dataset.productId;
+            try {
+                const res = await fetch(`/Wishlist/Check/${pid}`);
+                const data = await res.json();
+                if (data.isWishlisted) btn.classList.add('active');
+            } catch (_) { /* guest – ignore */ }
+        });
+    }
+
+    // Toggle wishlist khi click
+    document.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const pid = this.dataset.productId;
+            try {
+                const res = await fetch(`/Wishlist/Toggle/${pid}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.requireLogin) { window.location.href = '/User/Login'; return; }
+                if (data.success) {
+                    this.classList.toggle('active', data.isWishlisted);
+                    this.classList.add('pop');
+                    this.addEventListener('animationend', () => this.classList.remove('pop'), { once: true });
+                    // Cập nhật badge wishlist trên navbar
+                    const counter = document.querySelector('.wishlist-count, #wishlist-count');
+                    if (counter && data.count !== undefined) {
+                        counter.textContent = data.count;
+                        counter.style.display = data.count > 0 ? '' : 'none';
+                    }
+                }
+            } catch (err) { console.error('Wishlist error:', err); }
+        });
+    });
+
+    loadWishlistStates();
+})();
+</script>
+
+<!-- ===== Branch Filter Script (chỉ dành cho TrangChu) ===== -->
+<script>
+(function () {
+    'use strict';
+
+    const API_BRANCH_PRODUCTS = '/ChiNhanh/GetSanPhamTheoChiNhanh';
+    const LS_KEY  = 'selectedBranchId';
+    const LS_NAME = 'selectedBranchName';
+
+    // DOM elements
+    const grid         = document.getElementById('productsGrid');
+    const infoBar      = document.getElementById('branchInfoBar');
+    const infoName     = document.getElementById('branchInfoName');
+    const clearBtn     = document.getElementById('branchInfoClearBtn');
+    const sectionTitle = document.getElementById('productSectionTitle');
+    const sectionSub   = document.getElementById('productSectionSubtitle');
+
+    // Backup toàn bộ HTML sản phẩm gốc (từ server render)
+    const originalGridHTML = grid ? grid.innerHTML : '';
+
+    // ---- Hiển thị info bar ----
+    function showInfoBar(name) {
+        if (!infoBar || !infoName) return;
+        infoName.textContent = name;
+        infoBar.style.display = 'flex';
+    }
+
+    function hideInfoBar() {
+        if (!infoBar) return;
+        infoBar.style.display = 'none';
+    }
+
+    // ---- Render card HTML từ JSON ----
+    function buildProductCard(sp) {
+        const hasDiscount = sp.discountPercent > 0;
+        const priceHtml = hasDiscount
+            ? `<div class="product-price-block">
+                <span class="product-price-sale">${Number(sp.giaSauGiamGia).toLocaleString('vi-VN')} đ</span>
+                <span class="product-price-original">${Number(sp.giaTien).toLocaleString('vi-VN')} đ</span>
+               </div>`
+            : `<p class="product-price">${Number(sp.giaSauGiamGia).toLocaleString('vi-VN')} đ</p>`;
+
+        const discountBadge = hasDiscount
+            ? `<div class="discount-badge">-${sp.discountPercent}%</div>`
+            : '';
+
+        const catTag = sp.tenDanhMuc
+            ? `<span class="product-category-tag">${escHtml(sp.tenDanhMuc)}</span>`
+            : '';
+
+        const ingredient = sp.thanhPhan
+            ? `<p class="product-ingredient"><strong>Nguyên liệu:</strong> ${escHtml(sp.thanhPhan)}</p>`
+            : '';
+
+        const imgSrc = sp.hinhAnh1 || '/images/logo.jpg';
+        const detailUrl = sp.detailUrl || '#';
+
+        return `
+        <div class="product-card"
+             data-ma-sp="${sp.maSp}"
+             data-price="${sp.giaTien}"
+             data-name="${escHtml(sp.tenSp)}"
+             data-sales="${sp.slbanTrongNgay}"
+             data-discount="${sp.discountPercent}"
+             data-category="${escHtml(sp.tenDanhMuc)}">
+            <button class="wishlist-heart-btn" data-product-id="${sp.maSp}" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </button>
+            <div class="product-image-wrapper">
+                <img src="${imgSrc}" class="product-image" alt="${escHtml(sp.tenSp)}"
+                     onerror="this.src='/images/logo.jpg'" loading="lazy" />
+                ${discountBadge}
+                ${catTag}
+                <div class="product-overlay">
+                    <a href="${detailUrl}" class="btn-view-detail">Xem Chi Tiết</a>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">${escHtml(sp.tenSp)}</h3>
+                ${priceHtml}
+                ${ingredient}
+                <div class="product-card-divider"></div>
+                <button class="btn-buy" data-ma-sp="${sp.maSp}" data-img="${imgSrc}" aria-label="Thêm ${escHtml(sp.tenSp)} vào giỏ hàng">🛒 Thêm vào giỏ hàng</button>
+            </div>
+        </div>`;
+    }
+
+    // ---- Attach wishlist events cho các card mới ----
+    function attachWishlistEvents() {
+        document.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+            btn.addEventListener('click', async function (e) {
+                e.preventDefault(); e.stopPropagation();
+                const pid = this.dataset.productId;
+                try {
+                    const res  = await fetch(`/Wishlist/Toggle/${pid}`, { method: 'POST' });
+                    const data = await res.json();
+                    if (data.requireLogin) { window.location.href = '/User/Login'; return; }
+                    if (data.success) {
+                        this.classList.toggle('active', data.isWishlisted);
+                        this.classList.add('pop');
+                        this.addEventListener('animationend', () => this.classList.remove('pop'), { once: true });
+                    }
+                } catch (_) {}
+            });
+        });
+    }
+
+    // ---- Filter sản phẩm theo chi nhánh ----
+    async function filterByBranch(branchId, branchName) {
+        if (!grid) return;
+
+        // Loading state
+        grid.innerHTML = `
+        <div style="grid-column:1/-1; text-align:center; padding:48px 0; color:#bbb;">
+            <div style="font-size:32px; margin-bottom:12px; animation: spin 1s linear infinite; display:inline-block;">⏳</div>
+            <p style="font-size:14px;">Đang tải sản phẩm tại chi nhánh...</p>
+        </div>`;
+
+        try {
+            const res  = await fetch(`${API_BRANCH_PRODUCTS}?maChiNhanh=${branchId}`);
+            const data = await res.json();
+
+            if (!data.success) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:48px 0; color:#bbb;">
+                    <p style="font-size:32px;">🏪</p>
+                    <p style="font-size:14px; margin-top:8px;">Không thể tải sản phẩm. Vui lòng thử lại.</p>
+                </div>`;
+                return;
+            }
+
+            if (data.sanPhams.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:48px 0; color:#bbb;">
+                    <p style="font-size:40px;">🍽️</p>
+                    <p style="font-size:15px; font-weight:600; color:#666; margin-top:12px;">Chưa có sản phẩm tại chi nhánh này</p>
+                    <p style="font-size:13px; margin-top:6px;">Chi nhánh đang cập nhật thực đơn</p>
+                </div>`;
+            } else {
+                grid.innerHTML = data.sanPhams.map(buildProductCard).join('');
+                attachWishlistEvents();
+                // Load wishlist states cho các card mới
+                grid.querySelectorAll('.wishlist-heart-btn').forEach(async btn => {
+                    try {
+                        const r = await fetch(`/Wishlist/Check/${btn.dataset.productId}`);
+                        const d = await r.json();
+                        if (d.isWishlisted) btn.classList.add('active');
+                    } catch (_) {}
+                });
+            }
+
+            // Cập nhật section header
+            if (sectionTitle) sectionTitle.textContent = `Sản Phẩm Tại ${branchName}`;
+            if (sectionSub)   sectionSub.textContent = `${data.total} sản phẩm có tại chi nhánh này`;
+
+            showInfoBar(branchName);
+
+        } catch (err) {
+            console.error('Branch filter error:', err);
+            grid.innerHTML = originalGridHTML; // Fallback
+        }
+    }
+
+    // ---- Restore all products ----
+    function restoreAllProducts() {
+        if (!grid) return;
+        grid.innerHTML = originalGridHTML;
+        attachWishlistEvents();
+        if (sectionTitle) sectionTitle.textContent = 'Danh Sách Sản Phẩm Nổi Bật';
+        if (sectionSub)   sectionSub.textContent = 'Những món ăn được yêu thích nhất của chúng tôi';
+        hideInfoBar();
+    }
+
+    // ---- Helper ----
+    function escHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ---- Clear btn ----
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+            localStorage.removeItem(LS_KEY);
+            localStorage.removeItem(LS_NAME);
+            // Thông báo cho layout picker reset
+            document.dispatchEvent(new CustomEvent('branchChanged', { detail: { id: null, name: null } }));
+            restoreAllProducts();
+        });
+    }
+
+    // ---- Lắng nghe event từ Branch Picker (layout) ----
+    document.addEventListener('branchChanged', function (e) {
+        const { id, name } = e.detail;
+        if (id) {
+            filterByBranch(id, name);
+        } else {
+            restoreAllProducts();
+        }
+    });
+
+    // ---- Auto-filter khi page load (nếu đã có chi nhánh trong localStorage) ----
+    window.addEventListener('DOMContentLoaded', function () {
+        const savedId   = localStorage.getItem(LS_KEY);
+        const savedName = localStorage.getItem(LS_NAME);
+        if (savedId && savedName) {
+            filterByBranch(parseInt(savedId, 10), savedName);
+        }
+    });
+
+})();
+</script>
 
 @if (!string.IsNullOrWhiteSpace(reviewOrderId) && !string.IsNullOrWhiteSpace(reviewProductId))
 {

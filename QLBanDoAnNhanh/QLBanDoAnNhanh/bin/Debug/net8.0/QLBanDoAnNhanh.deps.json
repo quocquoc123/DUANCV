@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "QLBanDoAnNhanh/1.0.0": {
         "dependencies": {
+          "CloudinaryDotNet": "1.26.2",
           "DinkToPdf": "1.0.8",
           "Google.Apis.Auth": "1.68.0",
           "Google.Apis.Gmail.v1": "1.68.0.3427",
@@ -77,13 +78,26 @@
           }
         }
       },
+      "CloudinaryDotNet/1.26.2": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "System.Net.Http": "4.3.4",
+          "System.Text.RegularExpressions": "4.3.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/CloudinaryDotNet.dll": {
+            "assemblyVersion": "1.26.2.0",
+            "fileVersion": "1.26.2.0"
+          }
+        }
+      },
       "DinkToPdf/1.0.8": {
         "dependencies": {
           "NETStandard.Library": "1.6.0",
           "System.Collections.Concurrent": "4.3.0",
           "System.Globalization": "4.3.0",
           "System.Reflection.TypeExtensions": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.InteropServices": "4.3.0",
           "System.Threading.Thread": "4.3.0"
         },
@@ -1870,7 +1884,7 @@
         }
       },
       "Microsoft.NETCore.Platforms/5.0.0": {},
-      "Microsoft.NETCore.Targets/1.1.0": {},
+      "Microsoft.NETCore.Targets/1.1.3": {},
       "Microsoft.SqlServer.Server/1.0.0": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.SqlServer.Server.dll": {
@@ -1971,8 +1985,8 @@
       "Microsoft.Win32.Primitives/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "Microsoft.Win32.Registry/4.5.0": {
@@ -2041,7 +2055,7 @@
           "System.IO.FileSystem.Primitives": "4.3.0",
           "System.Linq": "4.3.0",
           "System.Linq.Expressions": "4.1.0",
-          "System.Net.Http": "4.3.0",
+          "System.Net.Http": "4.3.4",
           "System.Net.Primitives": "4.3.0",
           "System.Net.Sockets": "4.1.0",
           "System.ObjectModel": "4.0.12",
@@ -2049,7 +2063,7 @@
           "System.Reflection.Extensions": "4.0.1",
           "System.Reflection.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -2061,7 +2075,7 @@
           "System.Security.Cryptography.X509Certificates": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "System.Text.Encoding.Extensions": "4.3.0",
-          "System.Text.RegularExpressions": "4.3.0",
+          "System.Text.RegularExpressions": "4.3.1",
           "System.Threading": "4.3.0",
           "System.Threading.Tasks": "4.3.0",
           "System.Threading.Timer": "4.0.1",
@@ -2294,25 +2308,25 @@
           }
         }
       },
-      "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.native.System/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0"
+          "Microsoft.NETCore.Targets": "1.1.3"
         }
       },
       "runtime.native.System.IO.Compression/4.1.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0"
+          "Microsoft.NETCore.Targets": "1.1.3"
         }
       },
       "runtime.native.System.Net.Http/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0"
+          "Microsoft.NETCore.Targets": "1.1.3"
         }
       },
       "runtime.native.System.Security.Cryptography.Apple/4.3.0": {
@@ -2320,31 +2334,31 @@
           "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.Apple": "4.3.0"
         }
       },
-      "runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+      "runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
         "dependencies": {
-          "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0",
-          "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2",
+          "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
-      "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.Apple/4.3.0": {},
-      "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
-      "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
+      "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "System.AppContext/4.1.0": {
         "dependencies": {
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Buffers/4.5.0": {},
@@ -2359,8 +2373,8 @@
       "System.Collections/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Collections.Concurrent/4.3.0": {
@@ -2371,7 +2385,7 @@
           "System.Globalization": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
@@ -2383,7 +2397,7 @@
           "System.Diagnostics.Debug": "4.3.0",
           "System.Globalization": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0"
         }
@@ -2394,7 +2408,7 @@
           "System.Globalization": "4.3.0",
           "System.Globalization.Extensions": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0"
         }
@@ -2475,9 +2489,9 @@
       "System.Console/4.0.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.IO": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Text.Encoding": "4.3.0"
         }
       },
@@ -2485,8 +2499,8 @@
       "System.Diagnostics.Debug/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
@@ -2507,7 +2521,7 @@
           "System.IO.FileSystem": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -2523,8 +2537,8 @@
       "System.Diagnostics.Tools/4.0.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Diagnostics.TraceSource/4.3.0": {
@@ -2534,7 +2548,7 @@
           "System.Diagnostics.Debug": "4.3.0",
           "System.Globalization": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0",
           "runtime.native.System": "4.3.0"
@@ -2543,8 +2557,8 @@
       "System.Diagnostics.Tracing/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Drawing.Common/7.0.0": {
@@ -2570,16 +2584,16 @@
       "System.Globalization/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Globalization.Calendars/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.Globalization": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Globalization.Extensions/4.3.0": {
@@ -2587,7 +2601,7 @@
           "Microsoft.NETCore.Platforms": "5.0.0",
           "System.Globalization": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0"
         }
@@ -2607,8 +2621,8 @@
       "System.IO/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1",
           "System.Text.Encoding": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
         }
@@ -2620,7 +2634,7 @@
           "System.Diagnostics.Debug": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -2639,7 +2653,7 @@
           "System.IO.FileSystem": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Text.Encoding": "4.3.0"
         }
@@ -2647,10 +2661,10 @@
       "System.IO.FileSystem/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.IO": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Handles": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
@@ -2664,7 +2678,7 @@
       },
       "System.IO.FileSystem.Primitives/4.3.0": {
         "dependencies": {
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.IO.Pipelines/7.0.0": {},
@@ -2673,7 +2687,7 @@
           "System.Collections": "4.3.0",
           "System.Diagnostics.Debug": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0"
         }
       },
@@ -2693,7 +2707,7 @@
           "System.Reflection.Primitives": "4.3.0",
           "System.Reflection.TypeExtensions": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Threading": "4.3.0"
         }
@@ -2730,7 +2744,7 @@
           }
         }
       },
-      "System.Net.Http/4.3.0": {
+      "System.Net.Http/4.3.4": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
           "System.Collections": "4.3.0",
@@ -2743,7 +2757,7 @@
           "System.IO.FileSystem": "4.3.0",
           "System.Net.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -2757,14 +2771,14 @@
           "System.Threading.Tasks": "4.3.0",
           "runtime.native.System": "4.3.0",
           "runtime.native.System.Net.Http": "4.3.0",
-          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
       "System.Net.Primitives/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Handles": "4.3.0"
         }
       },
@@ -2776,11 +2790,11 @@
           "System.Diagnostics.Tracing": "4.3.0",
           "System.Globalization": "4.3.0",
           "System.IO": "4.3.0",
-          "System.Net.Http": "4.3.0",
+          "System.Net.Http": "4.3.4",
           "System.Net.Primitives": "4.3.0",
           "System.Net.WebHeaderCollection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Threading": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
         }
@@ -2788,10 +2802,10 @@
       "System.Net.Sockets/4.1.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.IO": "4.3.0",
           "System.Net.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Threading.Tasks": "4.3.0"
         }
       },
@@ -2799,7 +2813,7 @@
         "dependencies": {
           "System.Collections": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0"
         }
       },
@@ -2817,17 +2831,17 @@
           "System.Collections": "4.3.0",
           "System.Diagnostics.Debug": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Threading": "4.3.0"
         }
       },
       "System.Reflection/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.IO": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.Emit/4.3.0": {
@@ -2836,14 +2850,14 @@
           "System.Reflection": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.Emit.ILGeneration/4.3.0": {
         "dependencies": {
           "System.Reflection": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.Emit.Lightweight/4.0.1": {
@@ -2851,15 +2865,15 @@
           "System.Reflection": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.Extensions/4.0.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.Reflection": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.Metadata/7.0.0": {
@@ -2882,29 +2896,29 @@
       "System.Reflection.Primitives/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Reflection.TypeExtensions/4.3.0": {
         "dependencies": {
           "System.Reflection": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Resources.ResourceManager/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.Globalization": "4.3.0",
           "System.Reflection": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
-      "System.Runtime/4.3.0": {
+      "System.Runtime/4.3.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0"
+          "Microsoft.NETCore.Targets": "1.1.3"
         }
       },
       "System.Runtime.Caching/6.0.0": {
@@ -2930,24 +2944,24 @@
       "System.Runtime.Extensions/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Runtime.Handles/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Runtime.InteropServices/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
           "System.Reflection": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Handles": "4.3.0"
         }
       },
@@ -2956,7 +2970,7 @@
           "Microsoft.NETCore.Platforms": "5.0.0",
           "System.Reflection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.InteropServices": "4.3.0",
           "System.Threading": "4.3.0",
           "runtime.native.System": "4.3.0"
@@ -2966,14 +2980,14 @@
         "dependencies": {
           "System.IO": "4.3.0",
           "System.Reflection": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Runtime.Numerics/4.3.0": {
         "dependencies": {
           "System.Globalization": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0"
         }
       },
@@ -2982,14 +2996,14 @@
           "System.Collections": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Serialization.Primitives": "4.3.0"
         }
       },
       "System.Runtime.Serialization.Primitives/4.3.0": {
         "dependencies": {
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Security.AccessControl/5.0.0": {
@@ -3004,7 +3018,7 @@
           "System.Collections": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -3013,7 +3027,7 @@
           "System.Security.Cryptography.Primitives": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "runtime.native.System.Security.Cryptography.Apple": "4.3.0",
-          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
       "System.Security.Cryptography.Cng/5.0.0": {
@@ -3027,7 +3041,7 @@
           "System.IO": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -3045,13 +3059,13 @@
           "System.Collections.Concurrent": "4.3.0",
           "System.Linq": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
           "System.Security.Cryptography.Primitives": "4.3.0",
           "System.Text.Encoding": "4.3.0",
-          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
       "System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -3059,7 +3073,7 @@
           "System.Collections": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -3068,7 +3082,7 @@
           "System.Security.Cryptography.Encoding": "4.3.0",
           "System.Security.Cryptography.Primitives": "4.3.0",
           "System.Text.Encoding": "4.3.0",
-          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
       "System.Security.Cryptography.Pkcs/8.0.0": {
@@ -3082,7 +3096,7 @@
           "System.Globalization": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Threading": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
         }
@@ -3114,7 +3128,7 @@
           "System.IO.FileSystem": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.Handles": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
@@ -3129,7 +3143,7 @@
           "System.Threading": "4.3.0",
           "runtime.native.System": "4.3.0",
           "runtime.native.System.Net.Http": "4.3.0",
-          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
+          "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
         }
       },
       "System.Security.Cryptography.Xml/4.5.0": {
@@ -3153,8 +3167,8 @@
       "System.Text.Encoding/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Text.Encoding.CodePages/6.0.0": {
@@ -3165,8 +3179,8 @@
       "System.Text.Encoding.Extensions/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0",
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1",
           "System.Text.Encoding": "4.3.0"
         }
       },
@@ -3176,14 +3190,14 @@
           "System.Text.Encodings.Web": "7.0.0"
         }
       },
-      "System.Text.RegularExpressions/4.3.0": {
+      "System.Text.RegularExpressions/4.3.1": {
         "dependencies": {
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Threading/4.3.0": {
         "dependencies": {
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Threading.Tasks": "4.3.0"
         }
       },
@@ -3191,28 +3205,28 @@
       "System.Threading.Tasks/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Threading.Tasks.Dataflow/7.0.0": {},
       "System.Threading.Tasks.Extensions/4.5.4": {},
       "System.Threading.Thread/4.3.0": {
         "dependencies": {
-          "System.Runtime": "4.3.0"
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Threading.ThreadPool/4.3.0": {
         "dependencies": {
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Handles": "4.3.0"
         }
       },
       "System.Threading.Timer/4.0.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
+          "Microsoft.NETCore.Targets": "1.1.3",
+          "System.Runtime": "4.3.1"
         }
       },
       "System.Windows.Extensions/7.0.0": {
@@ -3243,12 +3257,12 @@
           "System.IO.FileSystem": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "System.Text.Encoding.Extensions": "4.3.0",
-          "System.Text.RegularExpressions": "4.3.0",
+          "System.Text.RegularExpressions": "4.3.1",
           "System.Threading.Tasks": "4.3.0",
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
@@ -3262,7 +3276,7 @@
           "System.IO": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "System.Threading": "4.3.0",
@@ -3276,7 +3290,7 @@
           "System.Globalization": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
+          "System.Runtime": "4.3.1",
           "System.Runtime.Extensions": "4.3.0",
           "System.Text.Encoding": "4.3.0",
           "System.Threading": "4.3.0",
@@ -3311,6 +3325,13 @@
       "sha512": "sha512-SwXsAV3sMvAU/Nn31pbjhWurYSjJ+/giI/0n6tCrYoupEK34iIHCuk3STAd9fx8yudM85KkLSVdn951vTng/vQ==",
       "path": "bouncycastle.cryptography/2.4.0",
       "hashPath": "bouncycastle.cryptography.2.4.0.nupkg.sha512"
+    },
+    "CloudinaryDotNet/1.26.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JUDOUKa7T+h0nmMhBdBxCkCldN4/DIZLOlh5p30KrcBX6Spral6vxTWhzk6OH2pGd8MGL5R379EsK7tJr/IQpw==",
+      "path": "cloudinarydotnet/1.26.2",
+      "hashPath": "cloudinarydotnet.1.26.2.nupkg.sha512"
     },
     "DinkToPdf/1.0.8": {
       "type": "package",
@@ -4320,12 +4341,12 @@
       "path": "microsoft.netcore.platforms/5.0.0",
       "hashPath": "microsoft.netcore.platforms.5.0.0.nupkg.sha512"
     },
-    "Microsoft.NETCore.Targets/1.1.0": {
+    "Microsoft.NETCore.Targets/1.1.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-aOZA3BWfz9RXjpzt0sRJJMjAscAUm3Hoa4UWAfceV9UTYxgwZ1lZt5nO2myFf+/jetYQo4uTP7zS8sJY67BBxg==",
-      "path": "microsoft.netcore.targets/1.1.0",
-      "hashPath": "microsoft.netcore.targets.1.1.0.nupkg.sha512"
+      "sha512": "sha512-3Wrmi0kJDzClwAC+iBdUBpEKmEle8FQNsCs77fkiOIw/9oYA07bL1EZNX0kQ2OMN3xpwvl0vAtOCYY3ndDNlhQ==",
+      "path": "microsoft.netcore.targets/1.1.3",
+      "hashPath": "microsoft.netcore.targets.1.1.3.nupkg.sha512"
     },
     "Microsoft.SqlServer.Server/1.0.0": {
       "type": "package",
@@ -4579,26 +4600,26 @@
       "path": "restsharp/112.1.0",
       "hashPath": "restsharp.112.1.0.nupkg.sha512"
     },
-    "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-HdSSp5MnJSsg08KMfZThpuLPJpPwE5hBXvHwoKWosyHHfe8Mh5WKT0ylEOf6yNzX6Ngjxe4Whkafh5q7Ymac4Q==",
-      "path": "runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-7VSGO0URRKoMEAq0Sc9cRz8mb6zbyx/BZDEWhgPdzzpmFhkam3fJ1DAGWFXBI4nGlma+uPKpfuMQP5LXRnOH5g==",
+      "path": "runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+yH1a49wJMy8Zt4yx5RhJrxO/DBDByAiCzNwiETI+1S4mPdCu0OY4djdciC7Vssk0l22wQaDLrXxXkp+3+7bVA==",
-      "path": "runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-0oAaTAm6e2oVH+/Zttt0cuhGaePQYKII1dY8iaqP7CvOpVKgLybKRFvQjXR2LtxXOXTVPNv14j0ot8uV+HrUmw==",
+      "path": "runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-c3YNH1GQJbfIPJeCnr4avseugSqPrxwIqzthYyZDN6EuOyNOzq+y2KSUfRcXauya1sF4foESTgwM5e1A8arAKw==",
-      "path": "runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-G24ibsCNi5Kbz0oXWynBoRgtGvsw5ZSVEWjv13/KiCAM8C6wz9zzcCniMeQFIkJ2tasjo2kXlvlBZhplL51kGg==",
+      "path": "runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
     "runtime.native.System/4.3.0": {
       "type": "package",
@@ -4628,26 +4649,26 @@
       "path": "runtime.native.system.security.cryptography.apple/4.3.0",
       "hashPath": "runtime.native.system.security.cryptography.apple.4.3.0.nupkg.sha512"
     },
-    "runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NS1U+700m4KFRHR5o4vo9DSlTmlCKu/u7dtE5sUHVIPB+xpXxYQvgBgA6wEIeCz6Yfn0Z52/72WYsToCEPJnrw==",
-      "path": "runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-QR1OwtwehHxSeQvZKXe+iSd+d3XZNkEcuWMFYa2i0aG1l+lR739HPicKMlTbJst3spmeekDVBUS7SeS26s4U/g==",
+      "path": "runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-b3pthNgxxFcD+Pc0WSEoC0+md3MyhRS6aCEeenvNE3Fdw1HyJ18ZhRFVJJzIeR/O/jpxPboB805Ho0T3Ul7w8A==",
-      "path": "runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-I+GNKGg2xCHueRd1m9PzeEW7WLbNNLznmTuEi8/vZX71HudUbx1UTwlGkiwMri7JLl8hGaIAWnA/GONhu+LOyQ==",
+      "path": "runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.opensuse.13.2-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KeLz4HClKf+nFS7p/6Fi/CqyLXh81FpiGzcmuS8DGi9lUqSnZ6Es23/gv2O+1XVGfrbNmviF7CckBpavkBoIFQ==",
-      "path": "runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-1Z3TAq1ytS1IBRtPXJvEUZdVsfWfeNEhBkbiOCGEl9wwAfsjP2lz3ZFDx5tq8p60/EqbS0HItG5piHuB71RjoA==",
+      "path": "runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.opensuse.42.1-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
     "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.Apple/4.3.0": {
       "type": "package",
@@ -4656,40 +4677,40 @@
       "path": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.apple/4.3.0",
       "hashPath": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.apple.4.3.0.nupkg.sha512"
     },
-    "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-X7IdhILzr4ROXd8mI1BUCQMSHSQwelUlBjF1JyTKCjXaOGn2fB4EKBxQbCK2VjO3WaWIdlXZL3W6TiIVnrhX4g==",
-      "path": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-6mU/cVmmHtQiDXhnzUImxIcDL48GbTk+TsptXyJA+MIOG9LRjPoAQC/qBFB7X+UNyK86bmvGwC8t+M66wsYC8w==",
+      "path": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.osx.10.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nyFNiCk/r+VOiIqreLix8yN+q3Wga9+SE8BCgkf+2BwEKiNx6DyvFjCgkfV743/grxv8jHJ8gUK4XEQw7yzRYg==",
-      "path": "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-vjwG0GGcTW/PPg6KVud8F9GLWYuAV1rrw1BKAqY0oh4jcUqg15oYF1+qkGR2x2ZHM4DQnWKQ7cJgYbfncz/lYg==",
+      "path": "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.rhel.7-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ytoewC6wGorL7KoCAvRfsgoJPJbNq+64k2SqW6JcOAebWsFUvCCYgfzQMrnpvPiEl4OrblUlhF2ji+Q1+SVLrQ==",
-      "path": "runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-7KMFpTkHC/zoExs+PwP8jDCWcrK9H6L7soowT80CUx3e+nxP/AFnq0AQAW5W76z2WYbLAYCRyPfwYFG6zkvQRw==",
+      "path": "runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-I8bKw2I8k58Wx7fMKQJn2R8lamboCAiHfHeV/pS65ScKWMMI0+wJkLYlEKvgW1D/XvSl/221clBoR2q9QNNM7A==",
-      "path": "runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-xrlmRCnKZJLHxyyLIqkZjNXqgxnKdZxfItrPkjI+6pkRo5lHX8YvSZlWrSI5AVwLMi4HbNWP7064hcAWeZKp5w==",
+      "path": "runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
-    "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
+    "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg==",
-      "path": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
-      "hashPath": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+      "sha512": "sha512-leXiwfiIkW7Gmn7cgnNcdtNAU70SjmKW3jxGj1iKHOvdn0zRWsgv/l2OJUO5zdGdiv2VRFnAsxxhDgMzofPdWg==",
+      "path": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
+      "hashPath": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
     },
     "System.AppContext/4.1.0": {
       "type": "package",
@@ -4985,12 +5006,12 @@
       "path": "system.memory.data/1.0.2",
       "hashPath": "system.memory.data.1.0.2.nupkg.sha512"
     },
-    "System.Net.Http/4.3.0": {
+    "System.Net.Http/4.3.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sYg+FtILtRQuYWSIAuNOELwVuVsxVyJGWQyOnlAzhV4xvhyFnON1bAzYYC+jjRW8JREM45R0R5Dgi8MTC5sEwA==",
-      "path": "system.net.http/4.3.0",
-      "hashPath": "system.net.http.4.3.0.nupkg.sha512"
+      "sha512": "sha512-aOa2d51SEbmM+H+Csw7yJOuNZoHkrP2XnAurye5HWYgGVVU54YZDvsLUYRv6h18X3sPnjNCANmN7ZhIPiqMcjA==",
+      "path": "system.net.http/4.3.4",
+      "hashPath": "system.net.http.4.3.4.nupkg.sha512"
     },
     "System.Net.Primitives/4.3.0": {
       "type": "package",
@@ -5111,12 +5132,12 @@
       "path": "system.resources.resourcemanager/4.3.0",
       "hashPath": "system.resources.resourcemanager.4.3.0.nupkg.sha512"
     },
-    "System.Runtime/4.3.0": {
+    "System.Runtime/4.3.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-JufQi0vPQ0xGnAczR13AUFglDyVYt4Kqnz1AZaiKZ5+GICq0/1MH/mO/eAJHt/mHW1zjKBJd7kV26SrxddAhiw==",
-      "path": "system.runtime/4.3.0",
-      "hashPath": "system.runtime.4.3.0.nupkg.sha512"
+      "sha512": "sha512-abhfv1dTK6NXOmu4bgHIONxHyEqFjW8HwXPmpY9gmll+ix9UNo4XDcmzJn6oLooftxNssVHdJC1pGT9jkSynQg==",
+      "path": "system.runtime/4.3.1",
+      "hashPath": "system.runtime.4.3.1.nupkg.sha512"
     },
     "System.Runtime.Caching/6.0.0": {
       "type": "package",
@@ -5314,12 +5335,12 @@
       "path": "system.text.json/7.0.3",
       "hashPath": "system.text.json.7.0.3.nupkg.sha512"
     },
-    "System.Text.RegularExpressions/4.3.0": {
+    "System.Text.RegularExpressions/4.3.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-RpT2DA+L660cBt1FssIE9CAGpLFdFPuheB7pLpKpn6ZXNby7jDERe8Ua/Ne2xGiwLVG2JOqziiaVCGDon5sKFA==",
-      "path": "system.text.regularexpressions/4.3.0",
-      "hashPath": "system.text.regularexpressions.4.3.0.nupkg.sha512"
+      "sha512": "sha512-N0kNRrWe4+nXOWlpLT4LAY5brb8caNFlUuIRpraCVMDLYutKkol1aV079rQjLuSxKMJT2SpBQsYX9xbcTMmzwg==",
+      "path": "system.text.regularexpressions/4.3.1",
+      "hashPath": "system.text.regularexpressions.4.3.1.nupkg.sha512"
     },
     "System.Threading/4.3.0": {
       "type": "package",

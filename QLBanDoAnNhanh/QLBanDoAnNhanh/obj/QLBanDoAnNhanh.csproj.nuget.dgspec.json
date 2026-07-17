@@ -50,6 +50,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.26.2, )"
+            },
             "DinkToPdf": {
               "target": "Package",
               "version": "[1.0.8, )"

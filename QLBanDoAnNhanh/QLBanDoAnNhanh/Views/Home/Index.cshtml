@@ -1,4 +1,4 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
 
 @{
     ViewData["Title"] = "Trang Chủ";
@@ -68,12 +68,25 @@
     <div class="products-grid">
         @foreach (var product in Model)
         {
-            <div class="product-card">
+            <div class="product-card" data-product-card>
+                <!-- Wishlist heart button – outside image-wrapper to avoid overflow:hidden clipping -->
+                <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                    <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </button>
                 <div class="product-image-wrapper">
                     <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp" />
                     <div class="product-overlay">
                         <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
                     </div>
+                    @{
+                        var homeCatName = product.MaDmNavigation?.TenDm ?? "";
+                    }
+                    @if (!string.IsNullOrEmpty(homeCatName))
+                    {
+                        <span class="product-category-tag">@homeCatName</span>
+                    }
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">@product.TenSp</h3>
@@ -82,9 +95,82 @@
                         <p><strong>Thành phần:</strong> @product.ThanhPhan</p>
                         <p><strong>Bán:</strong> @product.SlbanTrongNgay</p>
                     </div>
-                    <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-buy">Mua Ngay</a>
+                    <button class="btn-buy"
+                            data-ma-sp="@product.MaSp"
+                            data-img="@Url.Content(product.HinhAnh1)"
+                            aria-label="Thêm @product.TenSp vào giỏ hàng">
+                        🛒 Thêm vào giỏ hàng
+                    </button>
                 </div>
             </div>
         }
     </div>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    // Load wishlist states on page load
+    async function loadWishlistStates() {
+        const btns = document.querySelectorAll('.wishlist-heart-btn');
+        btns.forEach(async (btn) => {
+            const pid = btn.dataset.productId;
+            try {
+                const res = await fetch(`/Wishlist/Check/${pid}`);
+                const data = await res.json();
+                if (data.isWishlisted) {
+                    btn.classList.add('active');
+                }
+            } catch (_) { /* guest user – ignore */ }
+        });
+    }
+
+    // Toggle wishlist on click
+    document.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const pid = this.dataset.productId;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+
+            try {
+                const res = await fetch(`/Wishlist/Toggle/${pid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'RequestVerificationToken': token.value } : {})
+                    }
+                });
+                const data = await res.json();
+
+                if (data.requireLogin) {
+                    // Redirect to login
+                    window.location.href = '/User/Login';
+                    return;
+                }
+
+                if (data.success) {
+                    // Toggle active class
+                    this.classList.toggle('active', data.isWishlisted);
+                    // Pop animation
+                    this.classList.add('pop');
+                    this.addEventListener('animationend', () => this.classList.remove('pop'), { once: true });
+
+                    // Update wishlist counter in navbar if it exists
+                    const counter = document.querySelector('.wishlist-count, #wishlist-count');
+                    if (counter && data.count !== undefined) {
+                        counter.textContent = data.count;
+                        counter.style.display = data.count > 0 ? '' : 'none';
+                    }
+                }
+            } catch (err) {
+                console.error('Wishlist toggle error:', err);
+            }
+        });
+    });
+
+    loadWishlistStates();
+})();
+</script>
+}

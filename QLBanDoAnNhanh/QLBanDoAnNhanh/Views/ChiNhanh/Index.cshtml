@@ -1,0 +1,467 @@
+@model List<QLBanDoAnNhanh.Models.ChiNhanhViewModel>
+
+@{
+    ViewData["Title"] = "Chi Nhánh Cửa Hàng – Food Fast";
+    var search    = ViewBag.Search    as string ?? "";
+    var trangThai = ViewBag.TrangThai as string ?? "";
+    var tongCN    = (int)(ViewBag.TongChiNhanh ?? 0);
+    var soMoCua   = Model.Count(cn => cn.IsOpen);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/chinhanh.css" asp-append-version="true" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Font Awesome icons (dùng từ admin hoặc CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<!-- ===== HERO BANNER ===== -->
+<div class="cn-hero">
+    <span class="cn-hero-icon">🏪</span>
+    <h1>Hệ Thống Chi Nhánh</h1>
+    <p>Tìm chi nhánh Food Fast gần bạn nhất – giao hàng nhanh trong 30 phút!</p>
+    <div class="cn-hero-stats">
+        <div class="cn-stat">
+            <span class="cn-stat-number" id="cn-total-count">@tongCN</span>
+            <div class="cn-stat-label">Chi nhánh</div>
+        </div>
+        <div class="cn-stat">
+            <span class="cn-stat-number" id="cn-open-count">@soMoCua</span>
+            <div class="cn-stat-label">Đang mở</div>
+        </div>
+        <div class="cn-stat">
+            <span class="cn-stat-number">30'</span>
+            <div class="cn-stat-label">Giao hàng tối đa</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOOLBAR ===== -->
+<div class="cn-toolbar">
+    <div class="cn-toolbar-inner">
+        <!-- Ô tìm kiếm real-time (client-side) -->
+        <div class="cn-search-wrap">
+            <i class="fa fa-search cn-search-icon"></i>
+            <input type="text"
+                   id="cn-search-input"
+                   class="cn-search-input"
+                   placeholder="Tìm theo tên hoặc địa chỉ chi nhánh..."
+                   value="@search"
+                   autocomplete="off"
+                   aria-label="Tìm kiếm chi nhánh" />
+        </div>
+
+        <!-- Bộ lọc -->
+        <div class="cn-filter-group" role="group" aria-label="Bộ lọc trạng thái">
+            <button type="button"
+                    id="filter-all"
+                    class="cn-filter-btn @(trangThai != "dangmo" ? "active" : "")"
+                    data-filter="all"
+                    aria-pressed="@(trangThai != "dangmo" ? "true" : "false")">
+                <i class="fa fa-list"></i> Tất cả
+            </button>
+            <button type="button"
+                    id="filter-open"
+                    class="cn-filter-btn @(trangThai == "dangmo" ? "active" : "")"
+                    data-filter="dangmo"
+                    aria-pressed="@(trangThai == "dangmo" ? "true" : "false")">
+                <i class="fa fa-circle" style="color:@(trangThai == "dangmo" ? "#fff" : "#22c55e"); font-size:9px;"></i> Đang mở
+            </button>
+        </div>
+
+        <!-- Số kết quả -->
+        <div class="cn-result-count" id="cn-result-label">
+            Hiển thị <strong id="cn-visible-count">@Model.Count</strong> / @tongCN chi nhánh
+        </div>
+    </div>
+</div>
+
+<!-- ===== DANH SÁCH CHI NHÁNH ===== -->
+<section class="cn-section">
+    <div class="cn-grid-wrap">
+        <div class="cn-grid" id="cn-card-grid">
+
+            @if (!Model.Any())
+            {
+                <!-- Empty state từ server (search/filter phía server không có kết quả) -->
+                <div class="cn-empty">
+                    <div class="cn-empty-icon">🔍</div>
+                    <h3>Không tìm thấy chi nhánh</h3>
+                    <p>Hãy thử tìm kiếm với từ khóa khác hoặc xem tất cả chi nhánh.</p>
+                    <a href="@Url.Action("Index", "ChiNhanh")" class="cn-empty-btn">
+                        <i class="fa fa-store"></i> Xem tất cả chi nhánh
+                    </a>
+                </div>
+            }
+            else
+            {
+                @foreach (var cn in Model)
+                {
+                    <!-- Tọa độ và tên lưu vào data-* để JS dùng -->
+                    <div class="cn-card"
+                         data-id="@cn.Id"
+                         data-name="@cn.TenChiNhanh.ToLower()"
+                         data-addr="@cn.DiaChi.ToLower()"
+                         data-quan="@cn.Quan.ToLower()"
+                         data-isopen="@cn.IsOpen.ToString().ToLower()"
+                         data-lat="@cn.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                         data-lng="@cn.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+
+                        <!-- Image -->
+                        <div class="cn-card-img-wrap">
+                            @if (!string.IsNullOrEmpty(cn.HinhAnh))
+                            {
+                                <img class="cn-card-img"
+                                     src="@cn.HinhAnh"
+                                     alt="Ảnh chi nhánh @cn.TenChiNhanh"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                <div class="cn-card-img-placeholder" style="display:none;">🏪</div>
+                            }
+                            else
+                            {
+                                <div class="cn-card-img-placeholder">🏪</div>
+                            }
+
+                            <!-- Ribbon số thứ tự -->
+                            <div class="cn-card-ribbon">@cn.Id</div>
+
+                            <!-- Badge trạng thái -->
+                            @if (cn.IsOpen)
+                            {
+                                <div class="cn-status-badge open">
+                                    <span class="cn-status-dot"></span>
+                                    Đang mở
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="cn-status-badge closed">
+                                    <span class="cn-status-dot"></span>
+                                    Đóng cửa
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="cn-card-body">
+                            <h2 class="cn-card-title">@cn.TenChiNhanh</h2>
+                            <div class="cn-card-info">
+
+                                <!-- Địa chỉ -->
+                                <div class="cn-info-row">
+                                    <span class="cn-info-icon">📍</span>
+                                    <span class="cn-info-text">@cn.DiaChi</span>
+                                </div>
+
+                                <!-- Số điện thoại -->
+                                <div class="cn-info-row">
+                                    <span class="cn-info-icon">📞</span>
+                                    <span class="cn-info-text">
+                                        <a href="tel:@cn.SoDienThoai.Replace(" ", "")">@cn.SoDienThoai</a>
+                                    </span>
+                                </div>
+
+                                <!-- Giờ mở cửa -->
+                                <div class="cn-info-row">
+                                    <span class="cn-info-icon">🕐</span>
+                                    <span class="cn-info-text">
+                                        <div class="cn-hours-wrap">
+                                            <span class="cn-hours-text">@cn.GioMoCua – @cn.GioDongCua</span>
+                                        </div>
+                                    </span>
+                                </div>
+
+                                <!-- Khoảng cách (tính client-side qua Geolocation API) -->
+                                <div class="cn-info-row cn-distance-row" id="cn-dist-@cn.Id" style="display:none;">
+                                    <span class="cn-info-icon">🚗</span>
+                                    <span class="cn-info-text cn-dist-text">Đang tính...</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Card Footer – Buttons -->
+                        <div class="cn-card-footer">
+                            <button type="button"
+                                    class="cn-btn cn-btn-map"
+                                    id="btn-map-@cn.Id"
+                                    onclick="openMapModal(@cn.Id, '@Html.Raw(cn.TenChiNhanh)', '@Html.Raw(cn.DiaChi)', @cn.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture), @cn.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                                    aria-label="Xem bản đồ @cn.TenChiNhanh">
+                                <i class="fa fa-map-location-dot"></i> Xem bản đồ
+                            </button>
+                            <a class="cn-btn cn-btn-directions"
+                               href="https://www.google.com/maps/dir/?api=1&destination=@cn.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture),@cn.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               aria-label="Chỉ đường đến @cn.TenChiNhanh">
+                                <i class="fa fa-diamond-turn-right"></i> Chỉ đường
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+
+            <!-- Empty state client-side (khi search JS không có kết quả) -->
+            <div class="cn-empty" id="cn-no-result" style="display:none;">
+                <div class="cn-empty-icon">🔍</div>
+                <h3>Không tìm thấy chi nhánh</h3>
+                <p>Không có chi nhánh phù hợp với từ khóa "<span id="cn-no-result-kw"></span>"</p>
+                <button type="button" class="cn-empty-btn" onclick="clearSearch()">
+                    <i class="fa fa-rotate-left"></i> Xóa tìm kiếm
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== MAP MODAL ===== -->
+<div class="cn-map-modal-overlay" id="cn-map-overlay" role="dialog" aria-modal="true" aria-labelledby="cn-modal-title">
+    <div class="cn-map-modal">
+        <!-- Header -->
+        <div class="cn-map-modal-header">
+            <div>
+                <h2 class="cn-map-modal-title" id="cn-modal-title">Chi nhánh</h2>
+                <div class="cn-map-modal-addr" id="cn-modal-addr"></div>
+            </div>
+            <button type="button" class="cn-map-close-btn" onclick="closeMapModal()" aria-label="Đóng bản đồ">✕</button>
+        </div>
+
+        <!-- Map container -->
+        <div class="cn-map-container">
+            <div id="cn-leaflet-map"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="cn-map-modal-footer">
+            <button type="button" class="cn-map-close-link" onclick="closeMapModal()">
+                <i class="fa fa-xmark"></i> Đóng
+            </button>
+            <a id="cn-modal-dir-btn"
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="cn-map-dir-btn">
+                <i class="fa fa-diamond-turn-right"></i> Chỉ đường Google Maps
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLEk="
+            crossorigin=""></script>
+
+    <script>
+    // ================================================================
+    //  MAP MODAL
+    // ================================================================
+    let leafletMap   = null;
+    let leafletMarker = null;
+
+    function openMapModal(id, name, addr, lat, lng) {
+        // Cập nhật nội dung modal
+        document.getElementById('cn-modal-title').textContent = name;
+        document.getElementById('cn-modal-addr').textContent  = addr;
+        document.getElementById('cn-modal-dir-btn').href =
+            `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+        // Hiển thị overlay
+        const overlay = document.getElementById('cn-map-overlay');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Khởi tạo hoặc cập nhật bản đồ Leaflet (delay nhỏ cho DOM render)
+        setTimeout(() => {
+            if (!leafletMap) {
+                leafletMap = L.map('cn-leaflet-map').setView([lat, lng], 16);
+
+                // Tile layer OpenStreetMap (miễn phí, không cần API key)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19
+                }).addTo(leafletMap);
+
+                // Custom icon màu cam đồng bộ website
+                const customIcon = L.divIcon({
+                    className: '',
+                    html: `<div style="
+                        width:42px; height:42px;
+                        background: linear-gradient(135deg, #ff9800, #d67b00);
+                        border-radius: 50% 50% 50% 0;
+                        transform: rotate(-45deg);
+                        border: 3px solid #fff;
+                        box-shadow: 0 6px 20px rgba(214,123,0,0.5);
+                        display:flex; align-items:center; justify-content:center;">
+                        <span style="transform:rotate(45deg); font-size:18px; display:block; margin-top:4px; margin-left:0;">🏪</span>
+                    </div>`,
+                    iconSize:   [42, 42],
+                    iconAnchor: [21, 42],
+                    popupAnchor:[0, -46]
+                });
+
+                leafletMarker = L.marker([lat, lng], { icon: customIcon })
+                    .addTo(leafletMap)
+                    .bindPopup(`<strong>${name}</strong><br>${addr}`, { maxWidth: 240 })
+                    .openPopup();
+            } else {
+                // Di chuyển map đến vị trí mới
+                leafletMap.setView([lat, lng], 16);
+                if (leafletMarker) {
+                    leafletMarker.setLatLng([lat, lng]);
+                    leafletMarker
+                        .setPopupContent(`<strong>${name}</strong><br>${addr}`)
+                        .openPopup();
+                }
+            }
+            leafletMap.invalidateSize();
+        }, 120);
+    }
+
+    function closeMapModal() {
+        document.getElementById('cn-map-overlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Đóng modal khi click vào overlay (ngoài card)
+    document.getElementById('cn-map-overlay').addEventListener('click', function (e) {
+        if (e.target === this) closeMapModal();
+    });
+
+    // Đóng modal khi nhấn Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeMapModal();
+    });
+
+    // ================================================================
+    //  CLIENT-SIDE SEARCH & FILTER
+    // ================================================================
+    const searchInput  = document.getElementById('cn-search-input');
+    const filterAll    = document.getElementById('filter-all');
+    const filterOpen   = document.getElementById('filter-open');
+    const noResult     = document.getElementById('cn-no-result');
+    const noResultKw   = document.getElementById('cn-no-result-kw');
+    const visibleCount = document.getElementById('cn-visible-count');
+
+    let currentFilter = '@trangThai' === 'dangmo' ? 'dangmo' : 'all';
+
+    function applyFilters() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const cards   = document.querySelectorAll('.cn-card[data-id]');
+        let   shown   = 0;
+
+        cards.forEach(card => {
+            const name   = card.dataset.name   || '';
+            const addr   = card.dataset.addr   || '';
+            const quan   = card.dataset.quan   || '';
+            const isOpen = card.dataset.isopen === 'true';
+
+            const matchKw = !keyword ||
+                name.includes(keyword) ||
+                addr.includes(keyword) ||
+                quan.includes(keyword);
+
+            const matchFilter = currentFilter !== 'dangmo' || isOpen;
+
+            if (matchKw && matchFilter) {
+                card.style.display = '';
+                shown++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Cập nhật số kết quả
+        if (visibleCount) visibleCount.textContent = shown;
+
+        // Hiện/ẩn empty state
+        if (noResult) {
+            if (shown === 0) {
+                noResult.style.display = '';
+                if (noResultKw) noResultKw.textContent = keyword || 'bộ lọc hiện tại';
+            } else {
+                noResult.style.display = 'none';
+            }
+        }
+    }
+
+    // Search với debounce 200ms
+    let searchTimer;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilters, 200);
+    });
+
+    // Filter buttons
+    filterAll.addEventListener('click', function () {
+        currentFilter = 'all';
+        filterAll.classList.add('active');
+        filterOpen.classList.remove('active');
+        filterAll.setAttribute('aria-pressed', 'true');
+        filterOpen.setAttribute('aria-pressed', 'false');
+        applyFilters();
+    });
+
+    filterOpen.addEventListener('click', function () {
+        currentFilter = 'dangmo';
+        filterOpen.classList.add('active');
+        filterAll.classList.remove('active');
+        filterOpen.setAttribute('aria-pressed', 'true');
+        filterAll.setAttribute('aria-pressed', 'false');
+        applyFilters();
+    });
+
+    // ================================================================
+    //  GEOLOCATION – tính khoảng cách đến từng chi nhánh
+    // ================================================================
+    function haversine(lat1, lon1, lat2, lon2) {
+        const R   = 6371; // km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a   = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function loadDistances() {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const userLat = pos.coords.latitude;
+                const userLng = pos.coords.longitude;
+                document.querySelectorAll('.cn-card[data-id]').forEach(card => {
+                    const lat  = parseFloat(card.dataset.lat);
+                    const lng  = parseFloat(card.dataset.lng);
+                    const id   = card.dataset.id;
+                    const dist = haversine(userLat, userLng, lat, lng);
+                    const row  = document.getElementById(`cn-dist-${id}`);
+                    if (row) {
+                        const txt  = row.querySelector('.cn-dist-text');
+                        if (txt) {
+                            txt.textContent = dist < 1
+                                ? `${Math.round(dist * 1000)} m`
+                                : `${dist.toFixed(1)} km`;
+                        }
+                        row.style.display = '';
+                    }
+                });
+            },
+            _err => { /* Người dùng từ chối – bỏ qua */ },
+            { timeout: 8000 }
+        );
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        applyFilters();
+    }
+
+    // Khởi động
+    loadDistances();
+    applyFilters(); // Apply trạng thái filter ban đầu
+    </script>
+}

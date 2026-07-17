@@ -166,6 +166,343 @@ a.account-link.account-trigger {
   box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
+/* ========== BRANCH PICKER (kiểu GrabFood/ShopeeFood) ========== */
+
+/* Wrapper */
+.branch-picker {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger button */
+.branch-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px 7px 10px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 152, 0, 0.3);
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ff-brown);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(214, 123, 0, 0.1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-family: inherit;
+  outline: none;
+  max-width: 200px;
+}
+
+.branch-trigger:hover {
+  background: rgba(255, 152, 0, 0.12);
+  border-color: var(--ff-orange-1);
+  color: var(--ff-orange-2);
+  box-shadow: 0 4px 16px rgba(214, 123, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.branch-picker.open .branch-trigger {
+  background: rgba(255, 152, 0, 0.15);
+  border-color: var(--ff-orange-1);
+  box-shadow: 0 4px 20px rgba(214, 123, 0, 0.25);
+}
+
+/* Location icon */
+.branch-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Label text – truncate if long */
+.branch-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
+  line-height: 1;
+}
+
+/* Chevron arrow */
+.branch-chevron {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.branch-picker.open .branch-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.branch-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 300px;
+  max-width: 340px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 500;
+  overflow: hidden;
+  animation: branchDropIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.branch-picker.open .branch-dropdown {
+  display: block;
+}
+
+@keyframes branchDropIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Dropdown header */
+.branch-dropdown-header {
+  padding: 16px 18px 10px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.branch-dropdown-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Search input inside dropdown */
+.branch-search-wrap {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.branch-search-input {
+  width: 100%;
+  padding: 9px 14px 9px 34px;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  font-size: 13px;
+  color: #333;
+  background: #f8f8f8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23aaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 12px center / 14px no-repeat;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.branch-search-input:focus {
+  border-color: var(--ff-orange-1);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+/* Branch list */
+.branch-list {
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.branch-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.branch-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.branch-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 152, 0, 0.35);
+  border-radius: 99px;
+}
+
+/* Each branch item */
+.branch-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.branch-item:last-child {
+  border-bottom: none;
+}
+
+.branch-item:hover {
+  background: rgba(255, 152, 0, 0.07);
+}
+
+.branch-item.active {
+  background: rgba(255, 152, 0, 0.1);
+}
+
+.branch-item-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.branch-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.branch-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+  line-height: 1.3;
+  transition: color 0.18s;
+}
+
+.branch-item:hover .branch-item-name,
+.branch-item.active .branch-item-name {
+  color: var(--ff-orange-2);
+}
+
+.branch-item-address {
+  font-size: 12px;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branch-item-hours {
+  font-size: 11.5px;
+  color: #aaa;
+  margin-top: 3px;
+}
+
+/* Open/Closed badge */
+.branch-status-badge {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.branch-status-badge.open {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.branch-status-badge.closed {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+/* Active check mark */
+.branch-item-check {
+  display: none;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: var(--ff-orange-1);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  align-self: center;
+}
+
+.branch-item.active .branch-item-check {
+  display: block;
+}
+
+/* "Tất cả chi nhánh" reset option */
+.branch-item-reset {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #777;
+  transition: background 0.18s, color 0.18s;
+}
+
+.branch-item-reset:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #333;
+}
+
+/* Loading skeleton */
+.branch-list-loading {
+  padding: 20px;
+  text-align: center;
+  color: #bbb;
+  font-size: 13px;
+}
+
+/* Empty state */
+.branch-list-empty {
+  padding: 24px 18px;
+  text-align: center;
+  color: #bbb;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Responsive: on small screens, dropdown aligned left */
+@media (max-width: 480px) {
+  .branch-dropdown {
+    left: 0;
+    transform: translateX(0);
+    min-width: 260px;
+  }
+
+  @keyframes branchDropIn {
+    from {
+      opacity: 0;
+      transform: translateX(0) translateY(-8px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) translateY(0) scale(1);
+    }
+  }
+
+  .branch-trigger {
+    padding: 6px 10px;
+    font-size: 12px;
+    max-width: 140px;
+  }
+}
+
+
 .order-history {
   display: none;
   position: absolute;

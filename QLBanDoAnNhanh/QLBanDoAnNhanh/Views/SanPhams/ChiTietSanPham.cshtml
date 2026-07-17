@@ -1,4 +1,4 @@
-﻿@model QLBanDoAnNhanh.Models.SanPham
+@model QLBanDoAnNhanh.Models.SanPham
 
 @{
     ViewData["Title"] = "Chi Tiết Sản Phẩm";
@@ -27,8 +27,19 @@
 
     <div class="product-container">
         <div class="col-5 product-image-card">
-            <div class="product-image-wrapper">
-                <img class="product-image" src="@Url.Content(Model.HinhAnh1)" alt="@Model.TenSp" />
+            <div class="product-image-wrapper product-img-hover-wrap">
+                @{
+                    var img2 = string.IsNullOrEmpty(Model.HinhAnh2) ? Model.HinhAnh1 : Model.HinhAnh2;
+                }
+                <!-- Ảnh 1: hiển thị mặc định -->
+                <img class="product-image product-img-primary" id="ff-detail-product-img"
+                     src="@Url.Content(Model.HinhAnh1)" alt="@Model.TenSp"
+                     onerror="this.src='/images/logo.jpg'" />
+                <!-- Ảnh 2: hiện khi hover -->
+                <img class="product-image product-img-secondary"
+                     src="@Url.Content(img2)" alt="@Model.TenSp - ảnh 2"
+                     onerror="this.src='/images/logo.jpg'" aria-hidden="true" />
+
             </div>
             <div class="product-image-meta">
                 <h2 class="product-card-title">@Model.TenSp</h2>
@@ -82,16 +93,18 @@
                 </div>
             </div>
 
-            <form method="post" action="@Url.Action("AddToCart", "GioHangs")" id="muaNgayForm">
-                <input type="hidden" name="MaSp" value="@Model.MaSp" />
+            <div id="muaNgayForm">
                 <label for="quantity">Số Lượng:</label>
                 <div class="qty-stepper">
                     <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng" onclick="var q=document.getElementById('quantity');var v=parseInt(q.value)||1;if(v>1)q.value=v-1;">−</button>
                     <input type="number" id="quantity" name="quantity" min="1" value="1" />
                     <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng" onclick="document.getElementById('quantity').stepUp();">+</button>
                 </div>
-                <button type="submit" id="muaNgayButton" class="btn btn-primary">Mua Ngay</button>
-            </form>
+                <button type="button" id="muaNgayButton" class="btn btn-primary"
+                        onclick="chiTietAddToCart()">
+                    🛒 Thêm vào giỏ hàng
+                </button>
+            </div>
         </div>
     </div>
 
@@ -331,4 +344,16 @@
             wrap.setAttribute('data-ff-ready', 'true');
         }
     });
+
+    // ---- AJAX Add to Cart cho trang Chi Tiết ----
+    function chiTietAddToCart() {
+        var maSp    = @Model.MaSp;
+        var qty     = parseInt(document.getElementById('quantity').value, 10) || 1;
+        var imgEl   = document.getElementById('ff-detail-product-img');
+        var btnEl   = document.getElementById('muaNgayButton');
+
+        if (window.FoodFast && FoodFast.addToCart) {
+            FoodFast.addToCart(maSp, qty, imgEl, btnEl);
+        }
+    }
 </script>

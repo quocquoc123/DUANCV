@@ -1,4 +1,4 @@
-﻿using QLBanDoAnNhanh.Models;
+using QLBanDoAnNhanh.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +30,9 @@ builder.Services.AddScoped<IProductDiscountRepository, ProductDiscountRepository
 builder.Services.AddScoped<IProductDiscountService, ProductDiscountService>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<CloudinaryService>();
 builder.Services.AddHttpClient();
 // Thêm dịch vụ SignalR cho chat
 builder.Services.AddSignalR();

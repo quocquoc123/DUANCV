@@ -58,12 +58,101 @@
   transform: translateY(-4px);
 }
 
-.product-image-wrapper {
+
+/* ========== DUAL IMAGE HOVER (crossfade) ========== */
+.product-img-hover-wrap {
+  position: relative;
   padding: 24px 24px 0;
   overflow: hidden;
 }
 
-.product-image {
+.product-img-hover-wrap .product-image {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+  margin: 0;
+  /* each image stacked, handled per-class */
+}
+
+/* Primary image (always visible) */
+.product-img-primary {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Secondary image (hidden, absolute on top) */
+.product-img-secondary {
+  position: absolute;
+  top: 24px; left: 24px;
+  width: calc(100% - 48px);
+  height: 340px;
+  object-fit: cover;
+  border-radius: 18px;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Hover: fade in img2, fade out img1 */
+.product-img-hover-wrap:hover .product-img-primary {
+  opacity: 0;
+  transform: scale(1.04);
+}
+
+.product-img-hover-wrap:hover .product-img-secondary {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hint badge “Xem ảnh khác” */
+.img-swap-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 1;
+}
+
+.img-swap-hint span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(6px);
+  color: #f57c00;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,152,0,0.25);
+  box-shadow: 0 4px 16px rgba(255,152,0,0.18);
+  letter-spacing: 0.3px;
+}
+
+/* Hide hint on hover (img2 is showing) */
+.product-img-hover-wrap:hover .img-swap-hint {
+  opacity: 0;
+  transform: translateX(-50%) translateY(6px);
+}
+
+/* Legacy (non-hover-wrap) fallback */
+.product-image-wrapper:not(.product-img-hover-wrap) {
+  padding: 24px 24px 0;
+  overflow: hidden;
+}
+
+.product-image-wrapper:not(.product-img-hover-wrap) .product-image {
   width: 100%;
   height: 340px;
   object-fit: cover;
@@ -73,8 +162,8 @@
   margin: 0;
 }
 
-.product-image-card:hover .product-image {
-  transform: scale(1.04);
+.product-image-card:hover .product-img-hover-wrap .product-img-primary {
+  /* scale handled by crossfade, skip the card-level scale */
 }
 
 .product-image-meta {

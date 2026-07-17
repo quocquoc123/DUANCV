@@ -1,0 +1,250 @@
+@model QLBanDoAnNhanh.ViewModels.WishlistPageViewModel
+@{
+    ViewData["Title"] = "Danh sách yêu thích";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/wishlist.css" asp-append-version="true"/>
+}
+
+
+<div class="wishlist-page">
+    @Html.AntiForgeryToken()
+    <!-- Page Header -->
+    <div class="wishlist-page-header">
+        <span style="font-size:32px;">❤️</span>
+        <h1>Sản Phẩm Yêu Thích</h1>
+        @if (Model.TotalCount > 0)
+        {
+            <span class="wishlist-count-badge">@Model.TotalCount sản phẩm</span>
+        }
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Items.Count == 0)
+    {
+        <!-- Empty State -->
+        <div class="wishlist-empty">
+            <div class="wishlist-empty-icon">🤍</div>
+            <h2>Danh sách yêu thích đang trống</h2>
+            <p>Hãy khám phá các món ăn và thêm những sản phẩm bạn yêu thích vào đây!</p>
+            <a href="@Url.Action("TrangChu", "SanPhams")" class="wishlist-empty-btn">
+                🛍️ Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Wishlist Grid -->
+        <div class="wishlist-grid" id="wishlistGrid">
+            @foreach (var item in Model.Items)
+            {
+                <div class="wl-card" id="wl-card-@item.MaSp" data-maSp="@item.MaSp">
+                    <!-- Image -->
+                    <div class="wl-card-image-wrap">
+                        <img src="@Url.Content(item.HinhAnh1)" class="wl-card-image" id="wl-img-@item.MaSp" alt="@item.TenSp"
+                             onerror="this.src='/images/logo.jpg'" loading="lazy" />
+
+                        @if (item.IsDiscount)
+                        {
+                            <div class="wl-discount-badge">-@item.DiscountPercent.ToString("0.##")%</div>
+                        }
+                        @if (!string.IsNullOrEmpty(item.TenDanhMuc))
+                        {
+                            <span class="wl-category-tag">@item.TenDanhMuc</span>
+                        }
+
+                        <!-- Nút xóa khỏi wishlist -->
+                        <button class="wl-card-remove" title="Xóa khỏi yêu thích"
+                                onclick="removeFromWishlist(@item.MaSp)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="wl-card-body">
+                        <h3 class="wl-card-name">@item.TenSp</h3>
+
+                        <!-- Giá -->
+                        @if (item.IsDiscount && item.GiaSauGiam.HasValue)
+                        {
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <span class="wl-price-sale">@item.GiaSauGiam.Value.ToString("N0") đ</span>
+                                <span class="wl-price-original">@item.GiaTien.ToString("N0") đ</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="wl-price-normal">@item.GiaTien.ToString("N0") đ</span>
+                        }
+
+                        <!-- Rating -->
+                        @if (item.SoLuotDanhGia > 0)
+                        {
+                            <div class="wl-stars">
+                                @{
+                                    var fullStars = (int)Math.Floor(item.DiemDanhGia);
+                                    var hasHalf = (item.DiemDanhGia - fullStars) >= 0.5;
+                                }
+                                @for (int s = 1; s <= 5; s++)
+                                {
+                                    if (s <= fullStars)
+                                    {
+                                        <span>★</span>
+                                    }
+                                    else if (s == fullStars + 1 && hasHalf)
+                                    {
+                                        <span style="opacity:0.6">★</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#ddd">★</span>
+                                    }
+                                }
+                                <span>@item.DiemDanhGia.ToString("0.0") (@item.SoLuotDanhGia)</span>
+                            </div>
+                        }
+
+                        <div class="wl-card-divider"></div>
+
+                        <!-- Buttons -->
+                        <div class="wl-card-actions">
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = item.MaSp })"
+                               class="wl-btn-detail">
+                                <i class="fas fa-eye"></i> Xem
+                            </a>
+                            <button class="wl-btn-cart" id="wl-cart-btn-@item.MaSp"
+                                    onclick="addToCartFromWishlist(@item.MaSp, '@item.TenSp')">
+                                <i class="fas fa-shopping-cart"></i> Thêm giỏ
+                            </button>
+                        </div>
+
+                        <small style="color:#bbb; font-size:11px; margin-top:4px;">
+                            Đã thêm: @item.NgayThem.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Continue Shopping -->
+        <div style="text-align:center; margin-top:40px;">
+            <a href="@Url.Action("TrangChu", "SanPhams")" class="wishlist-empty-btn"
+               style="font-size:14px; padding:11px 28px;">
+                ← Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Toast Notification -->
+<div id="wishlistToast" class="wishlist-toast toast-success" role="alert">
+    <span id="wishlistToastIcon">❤️</span>
+    <span id="wishlistToastMsg"></span>
+</div>
+
+@section Scripts {
+<script>
+    // ---- Xóa sản phẩm khỏi wishlist ----
+    function removeFromWishlist(maSp) {
+        if (!confirm('Bỏ sản phẩm này khỏi danh sách yêu thích?')) return;
+
+        fetch('/Wishlist/Remove/' + maSp, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? ''
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                // Xóa card khỏi DOM với animation
+                const card = document.getElementById('wl-card-' + maSp);
+                if (card) {
+                    card.style.transition = 'opacity 0.35s, transform 0.35s';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        card.remove();
+                        // Cập nhật count
+                        updateWishlistBadge(data.count);
+                        // Kiểm tra nếu rỗng
+                        const grid = document.getElementById('wishlistGrid');
+                        if (grid && grid.querySelectorAll('.wl-card').length === 0) {
+                            location.reload();
+                        }
+                    }, 360);
+                }
+                showWishlistToast('❤️', data.message, 'toast-success');
+            }
+        })
+        .catch(() => showWishlistToast('⚠️', 'Có lỗi xảy ra', 'toast-error'));
+    }
+
+    // ---- Thêm vào giỏ từ trang wishlist (dùng FoodFast.addToCart chung) ----
+    function addToCartFromWishlist(maSp, tenSp) {
+        var imgEl = document.getElementById('wl-img-' + maSp);
+        var btnEl = document.getElementById('wl-cart-btn-' + maSp);
+
+        // Nếu FoodFast module đã load -> dùng hàm chung có animation
+        if (window.FoodFast && FoodFast.addToCart) {
+            FoodFast.addToCart(maSp, 1, imgEl, btnEl);
+            return;
+        }
+
+        // Fallback: AJAX thần thuần nếu chưa load
+        fetch('/GioHangs/AddToCartAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'MaSp=' + maSp + '&quantity=1'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showWishlistToast('🛒', '"' + tenSp + '" đã được thêm vào giỏ hàng', 'toast-info');
+                updateCartCount();
+            } else {
+                showWishlistToast('⚠️', data.message || 'Không thể thêm vào giỏ hàng', 'toast-error');
+            }
+        })
+        .catch(() => showWishlistToast('⚠️', 'Có lỗi xảy ra', 'toast-error'));
+    }
+
+    // ---- Toast notification ----
+    let toastTimer;
+    function showWishlistToast(icon, msg, type) {
+        const toast = document.getElementById('wishlistToast');
+        toast.className = 'wishlist-toast ' + type;
+        document.getElementById('wishlistToastIcon').textContent = icon;
+        document.getElementById('wishlistToastMsg').textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    // ---- Cập nhật badge wishlist & cart ----
+    function updateWishlistBadge(count) {
+        const badge = document.getElementById('wishlist-count-badge');
+        if (badge) badge.textContent = count > 0 ? count : '';
+    }
+
+    function updateCartCount() {
+        fetch('/GioHangs/GetCartItemCount')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.querySelector('.cart-count');
+                if (el) el.textContent = data;
+            });
+    }
+</script>
+@Html.AntiForgeryToken()
+}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace QLBanDoAnNhanh.Models;
@@ -34,4 +34,6 @@ public partial class NguoiDung
     public virtual ICollection<PhanHoiBaoCao> PhanHoiBaoCaos { get; set; } = new List<PhanHoiBaoCao>();
 
     public virtual PhanQuyen Role { get; set; }
+
+    public virtual ICollection<SanPhamYeuThich> SanPhamYeuThichs { get; set; } = new List<SanPhamYeuThich>();
 }

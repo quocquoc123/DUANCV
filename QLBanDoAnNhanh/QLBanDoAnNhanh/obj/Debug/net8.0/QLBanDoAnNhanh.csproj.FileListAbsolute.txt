@@ -2833,3 +2833,4 @@ C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.deps.json
 C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.runtimeconfig.json
 C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.dll
 C:\Users\Admin\Desktop\DangTrienKhai\build-check\QLBanDoAnNhanh.pdb
+C:\Users\Admin\Desktop\DangTrienKhai\QLBanDoAnNhanh\QLBanDoAnNhanh\bin\Debug\net8.0\CloudinaryDotNet.dll
