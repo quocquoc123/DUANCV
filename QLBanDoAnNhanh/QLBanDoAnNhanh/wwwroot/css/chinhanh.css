@@ -97,7 +97,7 @@
   border-bottom: 1px solid rgba(0,0,0,0.06);
   padding: 20px 0;
   position: sticky;
-  top: 68px; /* chiều cao header */
+  top: 138px; /* chiều cao header bao gồm cả Navigation Tabs */
   z-index: 50;
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
@@ -639,6 +639,13 @@
 /* =====================================================
    RESPONSIVE
    ===================================================== */
+@media (max-width: 992px) {
+  .cn-toolbar {
+    position: relative;
+    top: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .cn-hero { padding: 48px 16px 36px; }
   .cn-hero-stats { gap: 24px; }
