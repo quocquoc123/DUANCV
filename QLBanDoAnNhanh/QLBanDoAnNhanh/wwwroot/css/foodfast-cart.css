@@ -508,6 +508,83 @@
   line-height: 1.45;
 }
 
+/* ========== BRANCH INFO PREVIEW ========== */
+.branch-info-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border-left: 3px solid var(--cart-gold);
+  animation: cartFadeIn 0.3s ease;
+}
+
+.branch-info-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.branch-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.branch-info-text strong {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+}
+
+.branch-info-text small {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* ========== BRANCH STOCK ALERT ========== */
+.branch-stock-alert {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(198, 40, 40, 0.18);
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  border-radius: 12px;
+  color: #ffcdd2;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.45;
+  animation: cartFadeIn 0.3s ease;
+}
+
+/* Disable state for checkout button when out of stock */
+.checkout-form .btn-checkout:disabled,
+.checkout-form .btn-checkout[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ========== BRANCH AUTO-SELECT BADGE ========== */
+.branch-auto-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: rgba(217, 164, 65, 0.18);
+  border: 1px solid rgba(217, 164, 65, 0.45);
+  border-radius: 999px;
+  color: var(--cart-gold-light);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  animation: cartFadeIn 0.4s ease;
+  white-space: nowrap;
+}
+
 .checkout-form .btn-checkout {
   width: 100%;
   height: 55px;

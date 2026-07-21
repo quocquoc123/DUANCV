@@ -11,6 +11,7 @@
     using PayPalCheckoutSdk.Core;
     using PayPalCheckoutSdk.Orders;
     using QLBanDoAnNhanh.Services;
+    using QLBanDoAnNhanh.DTOs;
 namespace QLBanDoAnNhanh.Controllers
     {
     public class GioHangsController : Controller
@@ -163,6 +164,199 @@ namespace QLBanDoAnNhanh.Controllers
             int count = HttpContext.Session.GetInt32("CartItemCount") ?? 0;
             return Json(count);
         }
+
+        // ============================================================
+        // GET /GioHangs/GetChiNhanhs – Trả về danh sách chi nhánh đang hoạt động
+        //   (bao gồm lat/lon để client tính khoảng cách)
+        // ============================================================
+        [HttpGet]
+        public IActionResult GetChiNhanhs()
+        {
+            var chiNhanhs = _context.ChiNhanhs
+                .AsNoTracking()
+                .Where(cn => cn.TrangThai)
+                .OrderBy(cn => cn.TenChiNhanh)
+                .Select(cn => new
+                {
+                    maChiNhanh  = cn.MaChiNhanh,
+                    tenChiNhanh = cn.TenChiNhanh,
+                    diaChi      = cn.DiaChi,
+                    latitude    = cn.Latitude,
+                    longitude   = cn.Longitude
+                })
+                .ToList();
+
+            return Json(chiNhanhs);
+        }
+
+        // ============================================================
+        // POST /GioHangs/CheckStockByBranch – Kiểm tra tồn kho theo chi nhánh
+        // ============================================================
+        [HttpPost]
+        public IActionResult CheckStockByBranch([FromBody] int maChiNhanh)
+        {
+            var gioHang = GetGioHangFromSession();
+            if (!gioHang.ChiTietGioHangs.Any())
+                return Json(new { outOfStock = false, items = new object[0] });
+
+            var cartMaSpList = gioHang.ChiTietGioHangs.Select(ct => (int)ct.MaSp).ToList();
+
+            // Lấy các sản phẩm trong chi nhánh đã chọn (dựa theo bảng SanPhamChiNhanh)
+            var spTrongChiNhanh = _context.SanPhamChiNhanhs
+                .AsNoTracking()
+                .Where(spcn => spcn.MaChiNhanh == maChiNhanh && cartMaSpList.Contains(spcn.MaSp))
+                .Select(spcn => spcn.MaSp)
+                .ToHashSet();
+
+            var outOfStockItems = _context.SanPhams
+                .AsNoTracking()
+                .Where(sp => !spTrongChiNhanh.Contains(sp.MaSp) && cartMaSpList.Contains(sp.MaSp))
+                .Select(sp => new { maSp = sp.MaSp, tenSp = sp.TenSp })
+                .ToList();
+
+            return Json(new
+            {
+                outOfStock = outOfStockItems.Any(),
+                items      = outOfStockItems
+            });
+        }
+
+        // ============================================================
+        // POST /GioHangs/GetSuggestedBranch
+        //   Body: { "latitude": double, "longitude": double }
+        //   Logic:
+        //     1. Lấy tất cả sản phẩm trong giỏ hàng.
+        //     2. Tìm chi nhánh có ĐỦ TẤT CẢ sản phẩm (theo SanPhamChiNhanh).
+        //        Nếu không có chi nhánh nào có đủ → trả về chi nhánh có nhiều sản phẩm nhất.
+        //     3. Trong số những chi nhánh hợp lệ, chọn chi nhánh gần người dùng nhất
+        //        (dùng tọa độ lat/lon gửi lên). Nếu người dùng không có tọa độ → chọn đầu tiên.
+        // ============================================================
+        [HttpPost]
+        public IActionResult GetSuggestedBranch([FromBody] UserLocationDto location)
+        {
+            var gioHang = GetGioHangFromSession();
+            if (!gioHang.ChiTietGioHangs.Any())
+                return Json(new { success = false, message = "Giỏ hàng trống." });
+
+            var cartMaSpList = gioHang.ChiTietGioHangs
+                .Select(ct => (int)ct.MaSp)
+                .Distinct()
+                .ToList();
+            int cartItemCount = cartMaSpList.Count;
+
+            // Lấy tất cả chi nhánh đang hoạt động kèm thông tin tọa độ
+            var chiNhanhs = _context.ChiNhanhs
+                .AsNoTracking()
+                .Where(cn => cn.TrangThai)
+                .Select(cn => new
+                {
+                    cn.MaChiNhanh,
+                    cn.TenChiNhanh,
+                    cn.DiaChi,
+                    cn.Latitude,
+                    cn.Longitude
+                })
+                .ToList();
+
+            if (!chiNhanhs.Any())
+                return Json(new { success = false, message = "Không có chi nhánh hoạt động." });
+
+            // Lấy bảng ánh xạ sản phẩm ↔ chi nhánh cho giỏ hàng hiện tại
+            var mappings = _context.SanPhamChiNhanhs
+                .AsNoTracking()
+                .Where(spcn => cartMaSpList.Contains(spcn.MaSp))
+                .Select(spcn => new { spcn.MaSp, spcn.MaChiNhanh })
+                .ToList();
+
+            // Đếm số sản phẩm trong giỏ có mặt tại từng chi nhánh
+            var coverageByBranch = mappings
+                .GroupBy(m => m.MaChiNhanh)
+                .ToDictionary(g => g.Key, g => g.Select(m => m.MaSp).Distinct().Count());
+
+            // Tìm chi nhánh có ĐỦ tất cả sản phẩm
+            var fullCoverageBranches = chiNhanhs
+                .Where(cn => coverageByBranch.TryGetValue(cn.MaChiNhanh, out var cnt) && cnt >= cartItemCount)
+                .ToList();
+
+            // Nếu không có chi nhánh nào đủ → dùng chi nhánh có nhiều sản phẩm nhất (fallback)
+            var candidateBranches = fullCoverageBranches.Any()
+                ? fullCoverageBranches
+                : chiNhanhs
+                    .Where(cn => coverageByBranch.ContainsKey(cn.MaChiNhanh))
+                    .OrderByDescending(cn => coverageByBranch[cn.MaChiNhanh])
+                    .Take(3)
+                    .ToList();
+
+            // Nếu vẫn không có → trả về chi nhánh đầu tiên
+            if (!candidateBranches.Any())
+                candidateBranches = chiNhanhs.Take(1).ToList();
+
+            // Chọn chi nhánh gần nhất (nếu có tọa độ người dùng và chi nhánh)
+            object bestBranch;
+            bool hasUserLocation = location != null
+                && location.Latitude.HasValue
+                && location.Longitude.HasValue;
+
+            if (hasUserLocation && candidateBranches.Any(cn => cn.Latitude.HasValue && cn.Longitude.HasValue))
+            {
+                double userLat = location.Latitude!.Value;
+                double userLon = location.Longitude!.Value;
+
+                bestBranch = candidateBranches
+                    .OrderBy(cn =>
+                    {
+                        if (!cn.Latitude.HasValue || !cn.Longitude.HasValue) return double.MaxValue;
+                        return HaversineDistance(userLat, userLon, cn.Latitude.Value, cn.Longitude.Value);
+                    })
+                    .Select(cn => new
+                    {
+                        maChiNhanh       = cn.MaChiNhanh,
+                        tenChiNhanh      = cn.TenChiNhanh,
+                        diaChi           = cn.DiaChi,
+                        latitude         = cn.Latitude,
+                        longitude        = cn.Longitude,
+                        hasFullCoverage  = fullCoverageBranches.Any(f => f.MaChiNhanh == cn.MaChiNhanh),
+                        distanceKm       = cn.Latitude.HasValue && cn.Longitude.HasValue
+                            ? Math.Round(HaversineDistance(userLat, userLon, cn.Latitude.Value, cn.Longitude.Value), 2)
+                            : (double?)null
+                    })
+                    .First();
+            }
+            else
+            {
+                // Không có tọa độ → lấy chi nhánh đầu tiên trong danh sách ứng viên
+                var cn0 = candidateBranches.First();
+                bestBranch = new
+                {
+                    maChiNhanh      = cn0.MaChiNhanh,
+                    tenChiNhanh     = cn0.TenChiNhanh,
+                    diaChi          = cn0.DiaChi,
+                    latitude        = cn0.Latitude,
+                    longitude       = cn0.Longitude,
+                    hasFullCoverage = fullCoverageBranches.Any(f => f.MaChiNhanh == cn0.MaChiNhanh),
+                    distanceKm      = (double?)null
+                };
+            }
+
+            return Json(new { success = true, branch = bestBranch });
+        }
+
+        /// <summary>
+        /// Tính khoảng cách (km) giữa hai điểm theo công thức Haversine.
+        /// </summary>
+        private static double HaversineDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371.0; // Bán kính Trái Đất (km)
+            double dLat = ToRad(lat2 - lat1);
+            double dLon = ToRad(lon2 - lon1);
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+                     + Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2))
+                     * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+
+        private static double ToRad(double deg) => deg * Math.PI / 180.0;
 
         private static ChiTietGioHang NewMethod(int MaSp, int quantity, SanPham sanPham, decimal effectivePrice)
         {

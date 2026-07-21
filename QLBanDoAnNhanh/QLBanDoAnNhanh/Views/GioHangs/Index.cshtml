@@ -1,4 +1,4 @@
-﻿@model QLBanDoAnNhanh.Models.GioHang
+@model QLBanDoAnNhanh.Models.GioHang
 
 @{
     ViewData["Title"] = "Giỏ Hàng";
@@ -135,6 +135,31 @@
                     <div class="checkout-card">
                         <h2 class="checkout-card-title">Thông Tin Thanh Toán</h2>
                         <form asp-action="Checkout" method="post" class="checkout-form" id="checkoutForm" data-initial-address="@prefillAddress">
+
+                            @* Chi nhánh giao hàng *@
+                            <div class="form-group" id="branchFormGroup">
+                                <label for="chiNhanhSelect">Chi nhánh giao hàng</label>
+                                <div class="checkout-select-wrap">
+                                    
+                                    <select id="chiNhanhSelect" class="checkout-select" aria-label="Chi nhánh giao hàng">
+                                        <option value="">Chọn chi nhánh giao hàng</option>
+                                    </select>
+                                </div>
+                                @* Thông tin chi nhánh đã chọn *@
+                                <div id="branchInfo" class="branch-info-preview" hidden>
+                                    <span class="branch-info-icon">🏪</span>
+                                    <div class="branch-info-text">
+                                        <strong id="branchInfoName"></strong>
+                                        <small id="branchInfoAddress"></small>
+                                    </div>
+                                </div>
+                                @* Cảnh báo hết hàng *@
+                                <div id="branchStockAlert" class="branch-stock-alert" hidden role="alert">
+                                    ⚠️ Một số sản phẩm không còn hàng tại chi nhánh này.
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedChiNhanh" name="maChiNhanh" value="" />
+
                             <div class="form-group">
                                 <label for="username">Họ tên</label>
                                 <div class="checkout-input-wrap">
@@ -245,4 +270,5 @@
     <script src="~/js/cart-address.js" asp-append-version="true"></script>
     <script src="~/js/voucher.js" asp-append-version="true"></script>
     <script src="~/js/momo-payment.js" asp-append-version="true"></script>
+    <script src="~/js/chi-nhanh-giao-hang.js" asp-append-version="true"></script>
 }

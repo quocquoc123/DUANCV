@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ZG5IhYmfbNGXARoEg8B7G5yCnxs2lhPqwrUIvFjwRlQ=",
+  "Hash": "kcKqI1iMibiK0QqwZGNyHnOSlEe8o7ehwCpV56+XjSw=",
   "Source": "QLBanDoAnNhanh",
   "BasePath": "_content/QLBanDoAnNhanh",
   "Mode": "Default",
@@ -35813,6 +35813,25 @@
       "OriginalItemSpec": "wwwroot\\images\\post_8 (3).webp"
     },
     {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Rice-Flava.jpg",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "images/Rice-Flava.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\Rice-Flava.jpg"
+    },
+    {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\Sausage-Pasta-COB.jpg",
       "SourceId": "QLBanDoAnNhanh",
       "SourceType": "Discovered",
@@ -36058,6 +36077,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\cart-address.js"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\chi-nhanh-giao-hang.js",
+      "SourceId": "QLBanDoAnNhanh",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\",
+      "BasePath": "_content/QLBanDoAnNhanh",
+      "RelativePath": "js/chi-nhanh-giao-hang.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\chi-nhanh-giao-hang.js"
     },
     {
       "Identity": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\foodfast-catalog.js",
