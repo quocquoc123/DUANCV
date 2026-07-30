@@ -29,6 +29,7 @@ public class ProductDiscountRepository : IProductDiscountRepository
             .AsNoTracking()
             .Include(p => p.MaGiamGiaNavigation)
             .Where(p =>
+                p.TrangThai &&
                 p.MaGiamGiaNavigation.GiaTri > 0 &&
                 p.MaGiamGiaNavigation.ThoiGianBatDau <= now &&
                 p.MaGiamGiaNavigation.ThoiGianKetThuc >= now)

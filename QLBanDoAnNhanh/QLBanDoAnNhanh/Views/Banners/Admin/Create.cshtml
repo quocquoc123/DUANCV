@@ -1,0 +1,94 @@
+@model QLBanDoAnNhanh.Models.Banner
+
+@{
+    ViewData["Title"] = "Thêm Banner";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+}
+
+<div class="container-fluid mt-4" style="max-width:720px;">
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <a asp-action="AdminIndex" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <h1 class="mb-0"><i class="fas fa-plus-circle text-success"></i> Thêm Banner</h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="TieuDe" class="form-label fw-semibold"></label>
+                    <input asp-for="TieuDe" class="form-control" placeholder="VD: Banner trang chủ trái" />
+                    <span asp-validation-for="TieuDe" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Phạm vi hiển thị</label>
+                        <select asp-for="MaDm" class="form-select" asp-items="ViewBag.DanhMucList">
+                            <option value="">Trang chủ</option>
+                        </select>
+                        <div class="form-text">Chọn "Trang chủ" hoặc một danh mục cụ thể.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ViTri" class="form-label fw-semibold"></label>
+                        <select asp-for="ViTri" class="form-select">
+                            <option value="Left">Bên trái</option>
+                            <option value="Right">Bên phải</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ThuTu" class="form-label fw-semibold"></label>
+                        <input asp-for="ThuTu" type="number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="TrangThai" class="form-check-input" type="checkbox" id="trangThaiSwitch" />
+                            <label class="form-check-label fw-semibold" for="trangThaiSwitch">Đang hiển thị</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Hình ảnh banner <span class="text-danger">*</span></label>
+                    <img id="imgPreview" src="#" alt="Preview" class="rounded mb-2 d-block"
+                         style="max-height:200px;display:none!important;" />
+                    <input type="file" name="hinhAnhFile" class="form-control" accept="image/*"
+                           onchange="previewImg(this)" required />
+                    <span asp-validation-for="HinhAnh" class="text-danger small"></span>
+                    <div class="form-text">Ảnh sẽ hiển thị ở hero trái/phải. Nên dùng ảnh món ăn rõ nét.</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Lưu banner
+                    </button>
+                    <a asp-action="AdminIndex" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function previewImg(input) {
+            const preview = document.getElementById('imgPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.setProperty('display', 'block', 'important');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

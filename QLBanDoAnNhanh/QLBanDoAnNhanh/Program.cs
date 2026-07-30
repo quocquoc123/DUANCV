@@ -41,7 +41,12 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<Common>();
 
 // Cấu hình MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
 // Cấu hình dịch vụ lưu trữ session
 builder.Services.AddDistributedMemoryCache(); // Lưu session vào bộ nhớ tạm
@@ -56,6 +61,38 @@ builder.Services.AddSession(options =>
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
+
+// Đảm bảo cột TrangThai trong bảng SanPham và Latitude, Longitude trong ChiNhanh tồn tại
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<QlbanDoAnNhanh3Context>();
+    try
+    {
+        context.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('SanPham') AND name = 'TrangThai') " +
+            "ALTER TABLE SanPham ADD TrangThai BIT NOT NULL DEFAULT 1; " +
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('ChiNhanh') AND name = 'Latitude') " +
+            "ALTER TABLE ChiNhanh ADD Latitude FLOAT NULL; " +
+            "IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('ChiNhanh') AND name = 'Longitude') " +
+            "ALTER TABLE ChiNhanh ADD Longitude FLOAT NULL; " +
+            "IF OBJECT_ID('Banner', 'U') IS NULL " +
+            "CREATE TABLE Banner (" +
+            "  MaBanner INT IDENTITY(1,1) NOT NULL PRIMARY KEY," +
+            "  TieuDe NVARCHAR(200) NOT NULL," +
+            "  HinhAnh NVARCHAR(500) NULL," +
+            "  ViTri NVARCHAR(20) NOT NULL CONSTRAINT DF_Banner_ViTri DEFAULT N'Left'," +
+            "  MaDm INT NULL," +
+            "  ThuTu INT NOT NULL CONSTRAINT DF_Banner_ThuTu DEFAULT 0," +
+            "  TrangThai BIT NOT NULL CONSTRAINT DF_Banner_TrangThai DEFAULT 1," +
+            "  NgayCapNhat DATETIME NULL," +
+            "  CONSTRAINT FK_Banner_DanhMuc FOREIGN KEY (MaDm) REFERENCES DanhMuc(maDM) ON DELETE SET NULL" +
+            ");");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Lỗi cập nhật CSDL: " + ex.Message);
+    }
+}
 
 // Cấu hình pipeline xử lý request
 if (!app.Environment.IsDevelopment())

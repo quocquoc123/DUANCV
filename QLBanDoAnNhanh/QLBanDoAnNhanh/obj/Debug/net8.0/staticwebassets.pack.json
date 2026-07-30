@@ -7425,6 +7425,10 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\trangchu.css",
+      "PackagePath": "staticwebassets\\css\\trangchu.css"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\css\\voucher.css",
       "PackagePath": "staticwebassets\\css\\voucher.css"
     },
@@ -7565,8 +7569,20 @@
       "PackagePath": "staticwebassets\\images\\appstore.jpg"
     },
     {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\avatars\\huy.jpg",
+      "PackagePath": "staticwebassets\\images\\avatars\\huy.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\avatars\\truong.jpg",
+      "PackagePath": "staticwebassets\\images\\avatars\\truong.jpg"
+    },
+    {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\banhmi.jpg",
       "PackagePath": "staticwebassets\\images\\banhmi.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\banner\\f680e7f86dfb4139a98df2d34d29fc72.jpg",
+      "PackagePath": "staticwebassets\\images\\banner\\f680e7f86dfb4139a98df2d34d29fc72.jpg"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\images\\chat.png",
@@ -7671,6 +7687,10 @@
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
+    },
+    {
+      "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\tinh-phi-giao-hang.js",
+      "PackagePath": "staticwebassets\\js\\tinh-phi-giao-hang.js"
     },
     {
       "Id": "C:\\Users\\Admin\\Desktop\\DangTrienKhai\\QLBanDoAnNhanh\\QLBanDoAnNhanh\\wwwroot\\js\\voucher.js",

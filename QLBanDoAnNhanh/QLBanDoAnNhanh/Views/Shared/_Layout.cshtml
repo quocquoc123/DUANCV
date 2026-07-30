@@ -1,3 +1,6 @@
+@{
+    var headerAvatarUrl = Context.Session.GetString("avatarUrl") ?? "/images/acount.png";
+}
 <!DOCTYPE html>
 
 <html>
@@ -96,7 +99,7 @@
                     </div>
                     <div class="dropdown account-dropdown">
                         <a href="@Url.Action("Profile", "User")" class="account-trigger account-link" aria-label="Thông tin cá nhân">
-                            <img src="/images/acount.png" alt="Tài khoản" width="30" height="30">
+                            <img src="@headerAvatarUrl" alt="Tài khoản" width="30" height="30">
                         </a>
                         <div class="order-history" role="menu">
                             <a href="@Url.Action("Profile", "User")" role="menuitem">Thông Tin Cá Nhân</a>
@@ -148,74 +151,80 @@
     </div>
     @await Html.PartialAsync("_ChatPopup")
     <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <!-- Danh Mục Món Ăn -->
-                <div class="col-md-3">
-                    <h5>Danh Mục Món Ăn</h5>
-                    <ul>
-                        <li><a href="#">Ưu Đãi</a></li>
-                        <li><a href="#">Món Mới</a></li>
-                        <li><a href="#">Combo 1 Người</a></li>
-                        <li><a href="#">Combo Nhóm</a></li>
-                        <li><a href="#">Gà Rán - Gà Quay</a></li>
-                        <li><a href="#">Burger - Cơm - Mì Ý</a></li>
-                        <li><a href="#">Thức Ăn Nhẹ</a></li>
-                        <li><a href="#">Thức Uống & Tráng Miệng</a></li>
-                    </ul>
-                </div>
-
-                <!-- Về Chúng Tôi -->
-                <div class="col-md-3">
-                    <h5>Về Chúng Tôi</h5>
-                    <ul>
-                        <li><a href="#">Câu Chuyện Của Chúng Tôi</a></li>
-                        <li><a href="#">Tin Khuyến Mãi</a></li>
-                        <li><a href="#">Tin tức</a></li>
-                        <li><a href="#">Tuyển dụng</a></li>
-                        <li><a href="#">Đặt tiệc Sinh nhật</a></li>
-                    </ul>
-                </div>
-
-                <!-- Liên hệ -->
-                <div class="col-md-3">
-                    <h5>Liên Hệ</h5>
-                    <ul>
-                        <li><a href="#">Theo dõi đơn hàng</a></li>
-                        <li><a href="@Url.Action("Index", "ChiNhanh")">Hệ Thống Nhà Hàng</a></li>
-                        <li><a href="#">Liên hệ</a></li>
-                    </ul>
-                </div>
-
-                <!-- Chính sách -->
-                <div class="col-md-3">
-                    <h5>Chính Sách</h5>
-                    <ul>
-                        <li><a href="#">Chính sách hoạt động</a></li>
-                        <li><a href="#">Chính sách và quy định</a></li>
-                        <li><a href="#">Chính sách bảo mật thông tin</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <a asp-controller="SanPhams" asp-action="StoreLocation">
-                        <img src="~/images/map.jpg" alt="Xem vị trí cửa hàng" style="width: 100px; height: 100px;" />
+        <div class="container footer-container">
+            <div class="footer-top">
+                <div class="footer-brand-card">
+                    <a href="@Url.Action("TrangChu", "SanPhams")" class="footer-brand">
+                        <img src="~/images/logo.jpg" alt="Food Fast Logo" class="footer-brand-logo">
+                        <div>
+                            <div class="footer-brand-title">Food Fast</div>
+                            <div class="footer-brand-subtitle">An nhanh - Giao gon</div>
+                        </div>
                     </a>
-
-
+                    <p class="footer-brand-text">
+                        Thuc an ngon, giao nhanh, dat mon tien loi moi ngay. Ket noi ban voi nhung mon an yeu thich chi trong vai buoc cham.
+                    </p>
+                    <div class="footer-contact-list">
+                        <span>Zalo 0123244566</span>
+                        <span>Giao nhanh 30 phut</span>
+                        <span>Ho tro dat hang moi ngay</span>
+                    </div>
                 </div>
-                <div class="col-md-6 text-right">
-                    
-                    <a href="#"><i class="fab fa-facebook-f"></i><img src="~/images/fb.png" alt="facebook" class="store-logo"></a>
-                    <a href="#"><i class="fab fa-instagram"></i><img src="~/images/ig.jpg" alt="instagram" class="store-logo"></a>
-                    <a href="#"><i class="fab fa-youtube"></i><img style="height:40px;" src="~/images/Youtube.png" alt="youtube" class="store-logo"></a>
-                    <a href="#"><i class="fab fa-twitter"></i><img src="~/images/tw.png" alt="twitter" class="store-logo"></a>
+
+                <div class="footer-links-grid">
+                    <div class="footer-column">
+                        <h5>Danh Muc</h5>
+                        <ul>
+                            <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "THUCDON" }, null)">Thuc don</a></li>
+                            <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "NUOCUONG" }, null)">Nuoc uong</a></li>
+                            <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "KHUYENMAI" }, null)">Khuyen mai</a></li>
+                            <li><a href="@Url.Action("SanPhamTheoTenDanhMuc", "SanPhams", new { TenHang = "DOANCAY" }, null)">Do an cay</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h5>Kham Pha</h5>
+                        <ul>
+                            <li><a href="@Url.Action("TrangChu", "SanPhams")">Trang chu</a></li>
+                            <li><a href="@Url.Action("Index", "ChiNhanh")">He thong chi nhanh</a></li>
+                            <li><a href="@Url.Action("Index", "GioHangs")">Gio hang</a></li>
+                            <li><a href="@Url.Action("Index", "Wishlist")">Yeu thich</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h5>Ho Tro</h5>
+                        <ul>
+                            <li><a href="@Url.Action("Profile", "User")">Tai khoan cua toi</a></li>
+                            <li><a href="@Url.Action("OrderHistory", "GioHangs")">Lich su don hang</a></li>
+                            <li><a asp-controller="SanPhams" asp-action="StoreLocation">Xem vi tri cua hang</a></li>
+                            <li><a href="@Url.Action("Index", "ChiNhanh")">Lien he chi nhanh</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-     
+            <div class="footer-bottom">
+                <a asp-controller="SanPhams" asp-action="StoreLocation" class="footer-map-card">
+                    <img src="~/images/map.jpg" alt="Xem vi tri cua hang" class="footer-map-image" />
+                    <div>
+                        <strong>Xem vi tri cua hang</strong>
+                        <span>Tim chi nhanh gan ban nhanh hon</span>
+                    </div>
+                </a>
+
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook"><img src="~/images/fb.png" alt="facebook" class="store-logo"></a>
+                    <a href="#" aria-label="Instagram"><img src="~/images/ig.jpg" alt="instagram" class="store-logo"></a>
+                    <a href="#" aria-label="YouTube"><img src="~/images/Youtube.png" alt="youtube" class="store-logo footer-youtube-logo"></a>
+                    <a href="#" aria-label="Twitter"><img src="~/images/tw.png" alt="twitter" class="store-logo"></a>
+                </div>
+            </div>
+
+            <div class="footer-copyright">
+                <span>&copy; 2026 Food Fast. Thiet ke lai footer theo phong cach hien dai.</span>
+                <span>Nhanh hon. Gon hon. De dat hon.</span>
+            </div>
         </div>
     </footer>
 

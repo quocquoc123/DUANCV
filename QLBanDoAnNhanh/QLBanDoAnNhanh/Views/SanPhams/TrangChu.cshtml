@@ -10,556 +10,18 @@
     var reviewProductId = TempData["ReviewProductId"]?.ToString();
     var reviewProductName = TempData["ReviewProductName"]?.ToString();
     var reviewProductImage = TempData["ReviewProductImage"]?.ToString();
+    var heroLeftImage = ViewBag.HeroLeftImage as string ?? "/images/Burger-Zinger.jpg";
+    var heroLeftAlt = ViewBag.HeroLeftAlt as string ?? "Burger Zinger";
+    var heroRightImage = ViewBag.HeroRightImage as string ?? "/images/Burger-Flava.jpg";
+    var heroRightAlt = ViewBag.HeroRightAlt as string ?? "Burger Flava";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/review-overlay.css" asp-append-version="true" />
-    <style>
-        /* ===== UPGRADED PRODUCT CARDS ===== */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 24px;
-            padding: 10px 0 20px;
-        }
-
-        .product-card {
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
-            transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-        .product-card:hover {
-            transform: translateY(-7px);
-            box-shadow: 0 18px 48px rgba(0,0,0,0.15);
-        }
-
-        .product-image-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 68%;
-            overflow: hidden;
-            background: linear-gradient(135deg, #fef3e2, #fde8c0);
-        }
-        .product-image {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.55s cubic-bezier(.25,.8,.25,1);
-        }
-        .product-card:hover .product-image { transform: scale(1.09); }
-
-        .product-overlay {
-            position: absolute; inset: 0;
-            background: rgba(0,0,0,0.42);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 5;
-            backdrop-filter: blur(3px);
-        }
-        .product-card:hover .product-overlay { opacity: 1; }
-
-        .btn-view-detail {
-            padding: 11px 28px;
-            background: white;
-            color: #ff9800;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.22);
-            transition: all 0.25s;
-            letter-spacing: 0.3px;
-        }
-        .btn-view-detail:hover {
-            background: #ff9800;
-            color: white;
-            transform: scale(1.06);
-        }
-
-        .discount-badge {
-            position: absolute;
-            top: 0; left: 0;
-            background: linear-gradient(135deg, #ff4444, #ff6b6b);
-            color: white;
-            font-weight: 800;
-            font-size: 13px;
-            padding: 6px 14px 6px 12px;
-            border-radius: 0 0 16px 0;
-            z-index: 6;
-            box-shadow: 2px 2px 10px rgba(255,68,68,0.4);
-            letter-spacing: 0.5px;
-        }
-
-        .product-category-tag {
-            position: absolute;
-            bottom: 10px; right: 10px;
-            background: rgba(255,255,255,0.92);
-            color: #ff9800;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
-            z-index: 6;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,152,0,0.25);
-        }
-
-        .product-hot-badge {
-            position: absolute;
-            bottom: 10px; right: 10px;
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-            color: white;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 20px;
-            z-index: 7;
-            box-shadow: 0 3px 8px rgba(255,152,0,0.5);
-            letter-spacing: 0.5px;
-            animation: hotPulse 2s ease-in-out infinite;
-        }
-        @@keyframes hotPulse {
-            0%,100% { box-shadow: 0 3px 8px rgba(255,152,0,0.5); }
-            50%      { box-shadow: 0 3px 18px rgba(255,152,0,0.85); }
-        }
-
-        .product-info {
-            padding: 16px 18px 18px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            gap: 0;
-        }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin: 0 0 6px;
-            line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: color 0.25s;
-        }
-        .product-card:hover .product-name { color: #ff9800; }
-
-        .product-price-block {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        .product-price-original {
-            font-size: 13px;
-            color: #bbb;
-            text-decoration: line-through;
-            font-weight: 500;
-        }
-        .product-price-sale {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ff4444;
-        }
-        .product-price {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ff9800;
-            margin: 0 0 8px;
-        }
-
-        .product-ingredient {
-            font-size: 12.5px;
-            color: #888;
-            margin: 0 0 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.5;
-        }
-        .product-ingredient strong { color: #555; }
-
-        .product-card-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #f0e6d3, transparent);
-            margin: 10px 0;
-        }
-
-        .btn-buy {
-            display: block;
-            width: 100%;
-            padding: 12px 0;
-            background: linear-gradient(135deg, #ff9800, #ff6d00);
-            color: white;
-            text-align: center;
-            font-weight: 800;
-            font-size: 14.5px;
-            border-radius: 12px;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-            transition: all 0.25s;
-            box-shadow: 0 6px 20px rgba(255,152,0,0.30);
-            margin-top: auto;
-        }
-        .btn-buy:hover {
-            background: linear-gradient(135deg, #ff6d00, #ff9800);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 28px rgba(255,152,0,0.45);
-            color: white;
-            text-decoration: none;
-        }
-        .btn-buy:active { transform: translateY(0); }
-
-        .section-header h2 {
-            background: linear-gradient(135deg, #ff9800, #e65100);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .discount-featured-section {
-            background: linear-gradient(135deg, #fff8ee, #fff3e0);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: inset 0 0 0 1px rgba(255,152,0,0.15);
-        }
-
-        .product-image-wrapper::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
-            background-size: 200% 100%;
-            z-index: 1;
-            animation: shimmer 2.5s infinite;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .product-card:hover .product-image-wrapper::before { opacity: 1; }
-        @@keyframes shimmer {
-            0%   { background-position: -200% 0; }
-            100% { background-position:  200% 0; }
-        }
-
-        .products-grid .product-card { animation: cardIn 0.5s ease-out both; }
-        @@keyframes cardIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        .products-grid .product-card:nth-child(1)  { animation-delay:.05s }
-        .products-grid .product-card:nth-child(2)  { animation-delay:.10s }
-        .products-grid .product-card:nth-child(3)  { animation-delay:.15s }
-        .products-grid .product-card:nth-child(4)  { animation-delay:.20s }
-        .products-grid .product-card:nth-child(5)  { animation-delay:.25s }
-        .products-grid .product-card:nth-child(6)  { animation-delay:.30s }
-        .products-grid .product-card:nth-child(7)  { animation-delay:.35s }
-        .products-grid .product-card:nth-child(8)  { animation-delay:.40s }
-        .products-grid .product-card:nth-child(9)  { animation-delay:.45s }
-        .products-grid .product-card:nth-child(10) { animation-delay:.50s }
-        .products-grid .product-card:nth-child(11) { animation-delay:.55s }
-        .products-grid .product-card:nth-child(12) { animation-delay:.60s }
-
-        @@media (max-width: 600px) {
-            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-            .product-name { font-size: 14px; }
-            .product-price-sale, .product-price { font-size: 17px; }
-            .btn-buy { font-size: 13px; padding: 10px 0; }
-            .discount-featured-section { padding: 24px 14px; border-radius: 16px; }
-        }
-        @@media (max-width: 380px) {
-            .products-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/trangchu.css" asp-append-version="true" />
 }
-<style>
-        .product-card {
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
-            transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-        .product-card:hover {
-            transform: translateY(-7px);
-            box-shadow: 0 18px 48px rgba(0,0,0,0.15);
-        }
-
-        /* Image */
-        .product-image-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 68%;
-            overflow: hidden;
-            background: linear-gradient(135deg, #fef3e2, #fde8c0);
-        }
-        .product-image {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.55s cubic-bezier(.25,.8,.25,1);
-        }
-        .product-card:hover .product-image { transform: scale(1.09); }
-
-        /* Overlay */
-        .product-overlay {
-            position: absolute; inset: 0;
-            background: rgba(0,0,0,0.42);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 5;
-            backdrop-filter: blur(3px);
-        }
-        .product-card:hover .product-overlay { opacity: 1; }
-
-        .btn-view-detail {
-            padding: 11px 28px;
-            background: white;
-            color: #ff9800;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.22);
-            transition: all 0.25s;
-            letter-spacing: 0.3px;
-        }
-        .btn-view-detail:hover {
-            background: #ff9800;
-            color: white;
-            transform: scale(1.06);
-        }
-
-        /* Discount ribbon */
-        .discount-badge {
-            position: absolute;
-            top: 0; left: 0;
-            background: linear-gradient(135deg, #ff4444, #ff6b6b);
-            color: white;
-            font-weight: 800;
-            font-size: 13px;
-            padding: 6px 14px 6px 12px;
-            border-radius: 0 0 16px 0;
-            z-index: 6;
-            box-shadow: 2px 2px 10px rgba(255,68,68,0.4);
-            letter-spacing: 0.5px;
-        }
-
-        /* Category tag */
-        .product-category-tag {
-            position: absolute;
-            bottom: 10px; right: 10px;
-            background: rgba(255,255,255,0.92);
-            color: #ff9800;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
-            z-index: 6;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,152,0,0.25);
-        }
-
-        /* HOT badge */
-        .product-hot-badge {
-            position: absolute;
-            bottom: 10px; right: 10px;
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-            color: white;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 20px;
-            z-index: 7;
-            box-shadow: 0 3px 8px rgba(255,152,0,0.5);
-            letter-spacing: 0.5px;
-            animation: hotPulse 2s ease-in-out infinite;
-        }
-        @@keyframes hotPulse {
-            0%,100% { box-shadow: 0 3px 8px rgba(255,152,0,0.5); }
-            50%      { box-shadow: 0 3px 18px rgba(255,152,0,0.85); }
-        }
-
-        /* Card body */
-        .product-info {
-            padding: 16px 18px 18px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            gap: 0;
-        }
-
-        .product-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin: 0 0 6px;
-            line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: color 0.25s;
-        }
-        .product-card:hover .product-name { color: #ff9800; }
-
-        .product-price-block {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        .product-price-original {
-            font-size: 13px;
-            color: #bbb;
-            text-decoration: line-through;
-            font-weight: 500;
-        }
-        .product-price-sale {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ff4444;
-        }
-        .product-price {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ff9800;
-            margin: 0 0 8px;
-        }
-
-        /* Ingredient short */
-        .product-ingredient {
-            font-size: 12.5px;
-            color: #888;
-            margin: 0 0 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.5;
-        }
-        .product-ingredient strong { color: #555; }
-
-        /* Divider */
-        .product-card-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #f0e6d3, transparent);
-            margin: 10px 0;
-        }
-
-        /* Buy button */
-        .btn-buy {
-            display: block;
-            width: 100%;
-            padding: 12px 0;
-            background: linear-gradient(135deg, #ff9800, #ff6d00);
-            color: white;
-            text-align: center;
-            font-weight: 800;
-            font-size: 14.5px;
-            border-radius: 12px;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-            transition: all 0.25s;
-            box-shadow: 0 6px 20px rgba(255,152,0,0.30);
-            margin-top: auto;
-        }
-        .btn-buy:hover {
-            background: linear-gradient(135deg, #ff6d00, #ff9800);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 28px rgba(255,152,0,0.45);
-            color: white;
-            text-decoration: none;
-        }
-        .btn-buy:active { transform: translateY(0); }
-
-        /* Section header tweak */
-        .section-header h2 {
-            background: linear-gradient(135deg, #ff9800, #e65100);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Discount section special */
-        .discount-featured-section {
-            background: linear-gradient(135deg, #fff8ee, #fff3e0);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: inset 0 0 0 1px rgba(255,152,0,0.15);
-        }
-
-        /* Shimmer loading on image */
-        .product-image-wrapper::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
-            background-size: 200% 100%;
-            z-index: 1;
-            animation: shimmer 2.5s infinite;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .product-card:hover .product-image-wrapper::before { opacity: 1; }
-        @@keyframes shimmer {
-            0%   { background-position: -200% 0; }
-            100% { background-position:  200% 0; }
-        }
-
-        /* Animation stagger */
-        .products-grid .product-card {
-            animation: cardIn 0.5s ease-out both;
-        }
-        @@keyframes cardIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        .products-grid .product-card:nth-child(1)  { animation-delay:.05s }
-        .products-grid .product-card:nth-child(2)  { animation-delay:.10s }
-        .products-grid .product-card:nth-child(3)  { animation-delay:.15s }
-        .products-grid .product-card:nth-child(4)  { animation-delay:.20s }
-        .products-grid .product-card:nth-child(5)  { animation-delay:.25s }
-        .products-grid .product-card:nth-child(6)  { animation-delay:.30s }
-        .products-grid .product-card:nth-child(7)  { animation-delay:.35s }
-        .products-grid .product-card:nth-child(8)  { animation-delay:.40s }
-        .products-grid .product-card:nth-child(9)  { animation-delay:.45s }
-        .products-grid .product-card:nth-child(10) { animation-delay:.50s }
-        .products-grid .product-card:nth-child(11) { animation-delay:.55s }
-        .products-grid .product-card:nth-child(12) { animation-delay:.60s }
-
-        @@media (max-width: 600px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 14px;
-            }
-            .product-name { font-size: 14px; }
-            .product-price-sale, .product-price { font-size: 17px; }
-            .btn-buy { font-size: 13px; padding: 10px 0; }
-            .discount-featured-section { padding: 24px 14px; border-radius: 16px; }
-        }
-        @@media (max-width: 380px) {
-            .products-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-
 
 <script type="application/json" id="ff-products-data">
 @Html.Raw(JsonSerializer.Serialize(productList.Select(p => new {
@@ -601,29 +63,38 @@
 
 <!-- Hero Section -->
 <div class="home-hero-band">
-<div class="hero-section">
+  <div class="hero-section">
+
+    <!-- Ambient glow -->
     <div class="hero-background"></div>
 
+    <!-- Decorative line-art background -->
+    <partial name="_HeroDecorPartial" />
+
+    <!-- Ảnh món ăn bên trái -->
     <div class="hero-visual hero-visual-left">
-        <img src="@Url.Content("~/images/Burger-Flava.jpg")" alt="" class="hero-food-img hero-img-1">
-        <img src="@Url.Content("~/images/D-CBO-Bucket-2.jpg")" alt="" class="hero-food-img hero-img-2">
-        <img src="@Url.Content("~/images/P4-OR.jpg")" alt="" class="hero-food-img hero-img-3">
+      <img src="@heroLeftImage" class="hero-food-img" alt="@heroLeftAlt" />
     </div>
 
+    <!-- Nội dung chính -->
     <div class="hero-content">
-        <h1 class="hero-title">Chào mừng bạn đến với</h1>
-        <h2 class="hero-subtitle">Food Fast</h2>
-        <p class="hero-description">Thực phẩm tươi ngon, chất lượng cao, giao hàng nhanh chóng</p>
-        <a href="#products-section" class="hero-btn">Khám Phá Ngay</a>
+      <h1 class="hero-title">Chào mừng bạn đến với</h1>
+      <h2 class="hero-subtitle">Food Fast</h2>
+      <p class="hero-description">Thực phẩm tươi ngon, giao nhanh và tiện lợi mỗi ngày.</p>
+
+      <a href="#products-section" class="hero-btn">
+        Khám Phá Ngay <span class="hero-btn-arrow">→</span>
+      </a>
     </div>
 
+    <!-- Ảnh món ăn bên phải -->
     <div class="hero-visual hero-visual-right">
-        <img src="@Url.Content("~/images/MI-Y-GA-VIEN.jpg")" alt="" class="hero-food-img hero-img-4">
-        <img src="@Url.Content("~/images/COM.jpg")" alt="" class="hero-food-img hero-img-5">
-        <img src="@Url.Content("~/images/MON AN NHE.jpg")" alt="" class="hero-food-img hero-img-6">
+      <img src="@heroRightImage" class="hero-food-img" alt="@heroRightAlt" />
     </div>
+
+  </div>
 </div>
-</div>
+
 
 <!-- Promo Section -->
 <div class="promo-section">
@@ -649,67 +120,7 @@
     </div>
 </div>
 
-@if (discountProducts.Count > 0)
-{
-    <div class="products-container discount-featured-section">
-        <div class="section-header">
-            <h2>Sản Phẩm Giảm Giá Nổi Bật</h2>
-            <p>Ưu đãi đang áp dụng trong thời gian giới hạn</p>
-        </div>
-
-        <div class="products-grid">
-            @foreach (var product in discountProducts)
-            {
-                var discountPercent = product.MaGiamGiaNavigation?.GiaTri ?? 0;
-                var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
-                var catName = product.MaDmNavigation?.TenDm ?? "";
-                <div class="product-card product-card-discount">
-                    <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
-                        <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </button>
-                    <div class="product-image-wrapper">
-                        <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
-                             onerror="this.src='/images/logo.jpg'" loading="lazy" />
-                        <div class="discount-badge">-@discountPercent.ToString("0.##")%</div>
-                        @if (!string.IsNullOrEmpty(catName))
-                        {
-                            <span class="product-category-tag">@catName</span>
-                        }
-                        <div class="product-overlay">
-                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">@product.TenSp</h3>
-                        <div class="product-price-block">
-                            
-                            <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
-                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
-                        </div>
-                        @if (!string.IsNullOrEmpty(product.ThanhPhan))
-                        {
-                            <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
-                        }
-                        <p class="product-ingredient" style="color:#e74c3c;">
-                            <strong>⏰ Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
-                        </p>
-                        <div class="product-card-divider"></div>
-                        <button class="btn-buy"
-                                data-ma-sp="@product.MaSp"
-                                data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
-                                aria-label="Thêm @product.TenSp vào giỏ hàng">
-                            🛒 Thêm vào giỏ hàng
-                        </button>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-}
-
-<!-- Products Section -->
+<!-- Products Section (đặt trên khối giảm giá nổi bật) -->
 <div id="products-section" class="products-container" data-ff-catalog data-ff-search-term="@searchKeyword">
     <div class="section-header">
         <h2 id="productSectionTitle">@(string.IsNullOrEmpty(searchKeyword) ? "Danh Sách Sản Phẩm Nổi Bật" : "Kết Quả Tìm Kiếm")</h2>
@@ -717,20 +128,13 @@
     </div>
 
     <!-- Branch Filter Info Bar (ẩn mặc định, hiện khi đã chọn chi nhánh) -->
-    <div id="branchInfoBar" style="display:none; align-items:center; gap:10px; margin-bottom:18px;
-         background:linear-gradient(135deg,#fff8ef,#fff3e0); border-radius:14px;
-         padding:12px 20px; border:1px solid rgba(255,152,0,0.2); box-shadow:0 2px 12px rgba(255,152,0,0.1);">
-        <span style="font-size:18px;">📍</span>
-        <div style="flex:1;">
-            <span style="font-size:13px; color:#888; font-weight:600;">Đang xem sản phẩm tại</span>
-            <strong id="branchInfoName" style="font-size:14px; color:#d67b00; margin-left:6px;"></strong>
+    <div id="branchInfoBar" class="branch-info-bar">
+        <span class="branch-info-bar__icon">📍</span>
+        <div class="branch-info-bar__body">
+            <span class="branch-info-bar__label">Đang xem sản phẩm tại</span>
+            <strong id="branchInfoName" class="branch-info-bar__name"></strong>
         </div>
-        <button id="branchInfoClearBtn"
-                style="border:none; background:none; color:#aaa; cursor:pointer; font-size:12px;
-                       padding:4px 10px; border-radius:999px; transition:all 0.2s;
-                       font-weight:600; font-family:inherit;"
-                onmouseover="this.style.background='rgba(0,0,0,0.06)';this.style.color='#333'"
-                onmouseout="this.style.background='none';this.style.color='#aaa'">
+        <button id="branchInfoClearBtn" class="branch-info-bar__clear-btn">
             ✕ Bỏ lọc
         </button>
     </div>
@@ -806,12 +210,72 @@
     </div>
 </div>
 
+@if (discountProducts.Count > 0)
+{
+    <div class="products-container discount-featured-section">
+        <div class="section-header">
+            <h2>Sản Phẩm Giảm Giá Nổi Bật</h2>
+            <p>Ưu đãi đang áp dụng trong thời gian giới hạn</p>
+        </div>
+
+        <div class="products-grid">
+            @foreach (var product in discountProducts)
+            {
+                var discountPercent = product.MaGiamGiaNavigation?.GiaTri ?? 0;
+                var discountPrice = Math.Round((decimal)product.GiaTien - ((decimal)product.GiaTien * discountPercent / 100), 0);
+                var catName = product.MaDmNavigation?.TenDm ?? "";
+                <div class="product-card product-card-discount">
+                    <button class="wishlist-heart-btn" data-product-id="@product.MaSp" title="Thêm vào yêu thích" aria-label="Yêu thích">
+                        <svg class="heart-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
+                    <div class="product-image-wrapper">
+                        <img src="@Url.Content(product.HinhAnh1)" class="product-image" alt="@product.TenSp"
+                             onerror="this.src='/images/logo.jpg'" loading="lazy" />
+                        <div class="discount-badge">-@discountPercent.ToString("0.##")%</div>
+                        @if (!string.IsNullOrEmpty(catName))
+                        {
+                            <span class="product-category-tag">@catName</span>
+                        }
+                        <div class="product-overlay">
+                            <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">@product.TenSp</h3>
+                        <div class="product-price-block">
+                            
+                            <span class="product-price-sale">@discountPrice.ToString("N0") đ</span>
+                            <span class="product-price-original">@String.Format("{0:0,0} đ", product.GiaTien)</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(product.ThanhPhan))
+                        {
+                            <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
+                        }
+                        <p class="product-ingredient product-ingredient--deadline">
+                            <strong>⏰ Kết thúc:</strong> @product.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
+                        </p>
+                        <div class="product-card-divider"></div>
+                        <button class="btn-buy"
+                                data-ma-sp="@product.MaSp"
+                                data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
+                                aria-label="Thêm @product.TenSp vào giỏ hàng">
+                            🛒 Thêm vào giỏ hàng
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
 <!-- Suggested Products Section -->
 @{
     var suggestedProducts = ViewBag.SuggestedProducts ?? new List<QLBanDoAnNhanh.Models.SanPham>();
     if (suggestedProducts.Count > 0)
     {
-        <div class="products-container" style="margin-top: 60px;">
+        <div class="products-container suggested-products-section">
             <div class="section-header">
                 <h2>Sản Phẩm Gợi Ý</h2>
                 <p>Những sản phẩm bán chạy nhất</p>
@@ -867,7 +331,7 @@
                             }
                             @if (isSuggestedDiscountActive)
                             {
-                                <p class="product-ingredient" style="color:#e74c3c;">
+                                <p class="product-ingredient product-ingredient--deadline">
                                     <strong>⏰ Kết thúc:</strong> @suggestedProduct.MaGiamGiaNavigation?.ThoiGianKetThuc.ToString("dd/MM/yyyy")
                                 </p>
                             }
@@ -1201,777 +665,3 @@
     </div>
 }
 
-@* <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* HERO SECTION */
-    .home-hero-band {
-        width: 100%;
-        background: linear-gradient(135deg, #ff9800 0%, #d67b00 100%);
-        margin-bottom: 48px;
-    }
-
-    .hero-section {
-        position: relative;
-        min-height: 520px;
-        max-width: 1400px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background: transparent;
-        padding: 48px 20px 36px;
-    }
-
-    .hero-background {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        background:
-            radial-gradient(circle at 18% 85%, rgba(255,255,255,0.12), transparent 40%),
-            radial-gradient(circle at 82% 75%, rgba(255,255,255,0.1), transparent 38%),
-            radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 50%);
-        z-index: 1;
-        pointer-events: none;
-    }
-
-    .hero-visual {
-        position: absolute;
-        bottom: 0;
-        display: flex;
-        align-items: flex-end;
-        gap: 10px;
-        z-index: 2;
-        pointer-events: none;
-    }
-
-    .hero-visual-left {
-        left: 8px;
-        padding-bottom: 8px;
-    }
-
-    .hero-visual-right {
-        right: 0;
-        padding-bottom: 0;
-        align-items: flex-end;
-    }
-
-    .hero-food-img {
-        object-fit: cover;
-        border-radius: 22px;
-        box-shadow: 0 22px 45px rgba(0, 0, 0, 0.28);
-        animation: floating 5s ease-in-out infinite;
-        transition: transform 0.35s ease;
-    }
-
-    .hero-food-img:hover {
-        transform: scale(1.04) translateY(-4px);
-    }
-
-    .hero-img-1 {
-        width: 150px;
-        height: 150px;
-    }
-
-    .hero-img-2 {
-        width: 118px;
-        height: 118px;
-        margin-bottom: 28px;
-        animation-delay: 0.4s;
-    }
-
-    .hero-img-3 {
-        width: 132px;
-        height: 132px;
-        animation-delay: 0.8s;
-    }
-
-    .hero-img-4 {
-        width: 200px;
-        height: 160px;
-        border-radius: 24px 24px 0 0;
-        animation-delay: 0.2s;
-    }
-
-    .hero-img-5 {
-        width: 140px;
-        height: 140px;
-        margin-bottom: 12px;
-        animation-delay: 0.6s;
-    }
-
-    .hero-img-6 {
-        width: 120px;
-        height: 120px;
-        margin-bottom: 24px;
-        animation-delay: 1s;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 4;
-        text-align: center;
-        color: white;
-        animation: slideInUp 0.8s ease-out;
-        max-width: 560px;
-        padding: 0 20px;
-    }
-
-    .hero-title {
-        font-size: 28px;
-        font-weight: 400;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-        animation: fadeInDown 0.8s ease-out 0.2s backwards;
-    }
-
-    .hero-subtitle {
-        font-size: 96px;
-        font-family: "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
-        font-weight: 400;
-        line-height: 0.95;
-        margin-bottom: 14px;
-        text-shadow: 0 0 24px rgba(255,255,255,0.35), 0 12px 32px rgba(0,0,0,0.2);
-        animation: fadeInDown 0.8s ease-out 0.4s backwards;
-    }
-
-    .hero-description {
-        font-size: 16px;
-        margin-bottom: 32px;
-        opacity: 0.95;
-        line-height: 1.7;
-        animation: fadeInDown 0.8s ease-out 0.6s backwards;
-    }
-
-    .hero-btn {
-        display: inline-block;
-        padding: 14px 42px;
-        background: #fffdf9;
-        color: #7d4307;
-        text-decoration: none;
-        border-radius: 999px;
-        font-weight: 800;
-        transition: all 0.3s ease;
-        animation: fadeInUp 0.8s ease-out 0.8s backwards;
-        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
-    }
-
-    .hero-btn:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 20px 36px rgba(0, 0, 0, 0.26);
-        background: #fff;
-    }
-
-    @@keyframes floating {
-        0%, 100% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-8px);
-        }
-    }
-
-    /* PROMO SECTION */
-    .promo-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 40px 20px;
-        max-width: 1400px;
-        margin: 0 auto 50px;
-    }
-
-    .promo-box {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    .promo-box:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    .promo-box .icon {
-        font-size: 48px;
-        display: block;
-        margin-bottom: 15px;
-        animation: pulse 2s infinite;
-    }
-
-    .promo-box h3 {
-        font-size: 18px;
-        margin-bottom: 8px;
-        color: #333;
-    }
-
-    .promo-box p {
-        color: #888;
-        font-size: 14px;
-    }
-
-    /* PRODUCTS SECTION */
-    .products-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 40px 20px;
-    }
-
-    .section-header {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .section-header h2 {
-        font-size: 36px;
-        color: #333;
-        margin-bottom: 10px;
-        font-weight: 700;
-        position: relative;
-        display: inline-block;
-    }
-
-    .section-header h2::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, #f2b633, #ff9800);
-        border-radius: 2px;
-    }
-
-    .section-header p {
-        color: #888;
-        font-size: 16px;
-        margin-top: 20px;
-    }
-
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 28px;
-        padding: 15px 0;
-    }
-
-    /* PRODUCT CARD */
-    .product-card {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        box-shadow: 0 10px 25px rgba(17, 24, 39, 0.06);
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        will-change: transform, opacity;
-        animation: productIn 0.65s ease-out both;
-    }
-
-    .product-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 55px rgba(0, 0, 0, 0.16);
-    }
-
-    .product-image-wrapper {
-        position: relative;
-        width: 100%;
-        padding-bottom: 70%;
-        overflow: hidden;
-        background: linear-gradient(180deg, #f9fafb, #f3f4f6);
-    }
-
-    .product-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.6s ease;
-    }
-
-    .product-card:hover .product-image {
-        transform: scale(1.08);
-    }
-
-    .discount-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        background: linear-gradient(135deg, #ff6b6b, #ff5252);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 14px;
-        z-index: 2;
-        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-    }
-
-    .product-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(242, 182, 51, 0.92);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.35s ease;
-        z-index: 10;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-    }
-
-    .product-card:hover .product-overlay {
-        opacity: 1;
-    }
-
-    .product-card:focus-within .product-overlay {
-        opacity: 1;
-    }
-
-    .btn-view-detail {
-        padding: 12px 30px;
-        background: white;
-        color: #f2b633;
-        text-decoration: none;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-view-detail:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .product-info {
-        padding: 18px;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .product-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 8px;
-        transition: color 0.3s ease;
-    }
-
-    .product-card:hover .product-name {
-        color: #f2b633;
-    }
-
-    .product-price {
-        font-size: 22px;
-        font-weight: 700;
-        color: #ff4d4f;
-        margin-bottom: 12px;
-    }
-
-    .product-description {
-        font-size: 13px;
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 15px;
-        flex-grow: 1;
-    }
-
-    .product-description p {
-        margin: 4px 0;
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-    }
-
-    .btn-buy {
-        padding: 12px 20px;
-        background: linear-gradient(135deg, #f2b633, #ff9800);
-        color: white;
-        text-decoration: none;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 14px;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-        display: block;
-        width: 100%;
-        box-shadow: 0 12px 24px rgba(242, 182, 51, 0.22);
-        margin-top: 12px;
-    }
-
-    .btn-buy:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(242, 182, 51, 0.3);
-        background: linear-gradient(135deg, #ff9800, #f2b633);
-    }
-
-    .btn-buy:active {
-        transform: translateY(0);
-    }
-
-    /* ANIMATIONS */
-    @@keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    @@keyframes productIn {
-        from {
-            opacity: 0;
-            transform: translateY(18px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .products-grid > .product-card:nth-child(1) { animation-delay: 0.05s; }
-    .products-grid > .product-card:nth-child(2) { animation-delay: 0.10s; }
-    .products-grid > .product-card:nth-child(3) { animation-delay: 0.15s; }
-    .products-grid > .product-card:nth-child(4) { animation-delay: 0.20s; }
-    .products-grid > .product-card:nth-child(5) { animation-delay: 0.25s; }
-    .products-grid > .product-card:nth-child(6) { animation-delay: 0.30s; }
-    .products-grid > .product-card:nth-child(7) { animation-delay: 0.35s; }
-    .products-grid > .product-card:nth-child(8) { animation-delay: 0.40s; }
-    .products-grid > .product-card:nth-child(9) { animation-delay: 0.45s; }
-    .products-grid > .product-card:nth-child(10) { animation-delay: 0.50s; }
-    .products-grid > .product-card:nth-child(11) { animation-delay: 0.55s; }
-    .products-grid > .product-card:nth-child(12) { animation-delay: 0.60s; }
-
-    @@keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-
-    /* RESPONSIVE DESIGN */
-    @@media (max-width: 1024px) {
-        .hero-section {
-            min-height: 460px;
-        }
-
-        .hero-subtitle {
-            font-size: 72px;
-        }
-
-        .hero-img-1 { width: 120px; height: 120px; }
-        .hero-img-2 { width: 96px; height: 96px; }
-        .hero-img-3 { width: 108px; height: 108px; }
-        .hero-img-4 { width: 160px; height: 130px; }
-        .hero-img-5 { width: 110px; height: 110px; }
-        .hero-img-6 { width: 96px; height: 96px; }
-
-        .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .home-hero-band {
-            margin-bottom: 30px;
-        }
-
-        .hero-section {
-            min-height: 400px;
-            padding: 40px 16px 24px;
-        }
-
-        .hero-visual {
-            opacity: 0.45;
-            transform: scale(0.85);
-        }
-
-        .hero-visual-left {
-            left: -10px;
-        }
-
-        .hero-visual-right {
-            right: -10px;
-        }
-
-        .hero-title {
-            font-size: 22px;
-        }
-
-        .hero-subtitle {
-            font-size: 58px;
-            margin-bottom: 12px;
-        }
-
-        .hero-description {
-            font-size: 14px;
-        }
-
-        .hero-btn {
-            padding: 12px 30px;
-            font-size: 14px;
-        }
-
-        .promo-section {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 30px 15px;
-            margin-bottom: 40px;
-        }
-
-        .promo-box {
-            padding: 20px;
-        }
-
-        .promo-box .icon {
-            font-size: 36px;
-        }
-
-        .promo-box h3 {
-            font-size: 16px;
-        }
-
-        .section-header h2 {
-            font-size: 28px;
-        }
-
-        .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 15px 0;
-        }
-
-        .product-name {
-            font-size: 16px;
-        }
-
-        .product-price {
-            font-size: 18px;
-        }
-
-        .product-info {
-            padding: 15px;
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .hero-section {
-            min-height: 360px;
-        }
-
-        .hero-visual {
-            display: none;
-        }
-
-        .hero-title {
-            font-size: 18px;
-        }
-
-        .hero-subtitle {
-            font-size: 48px;
-        }
-
-        .hero-description {
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .promo-section {
-            grid-template-columns: 1fr;
-            gap: 12px;
-            padding: 20px 10px;
-            margin-bottom: 30px;
-        }
-
-        .promo-box {
-            padding: 15px;
-        }
-
-        .promo-box h3 {
-            font-size: 14px;
-        }
-
-        .promo-box p {
-            font-size: 12px;
-        }
-
-        .section-header {
-            margin-bottom: 30px;
-        }
-
-        .section-header h2 {
-            font-size: 24px;
-        }
-
-        .products-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .product-card {
-            height: auto;
-        }
-
-        .product-image-wrapper {
-            padding-bottom: 70%;
-        }
-
-        .product-info {
-            padding: 14px;
-        }
-
-        .product-name {
-            font-size: 15px;
-            margin-bottom: 6px;
-        }
-
-        .product-price {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .product-description {
-            font-size: 12px;
-            margin-bottom: 12px;
-        }
-
-        .btn-buy {
-            padding: 12px 14px;
-            font-size: 13px;
-            border-radius: 12px;
-        }
-    }
-
-    /* SMOOTH SCROLLING */
-    html {
-        scroll-behavior: smooth;
-    }
-
-    /* FINAL PREMIUM HERO */
-    .home-hero-band {
-        display: block;
-        background: linear-gradient(135deg, #ff9800 0%, #d67b00 100%);
-        margin-bottom: 48px;
-        border-radius: 0 0 34px 34px;
-        overflow: hidden;
-        box-shadow: 0 28px 52px rgba(74, 44, 15, 0.2);
-    }
-
-    .hero-section {
-        min-height: 600px;
-        max-width: 1440px;
-        padding: 70px 20px 44px;
-    }
-
-    .hero-background {
-        background:
-            radial-gradient(circle at 16% 88%, rgba(255,255,255,0.16), transparent 38%),
-            radial-gradient(circle at 82% 80%, rgba(255,255,255,0.14), transparent 40%),
-            radial-gradient(circle at 50% 20%, rgba(255,255,255,0.12), transparent 52%);
-        filter: blur(0.3px);
-    }
-
-    .hero-content {
-        max-width: 680px;
-        padding: 28px 30px;
-        border-radius: 30px;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 24px 50px rgba(74, 44, 15, 0.18);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .hero-subtitle {
-        font-size: clamp(82px, 10vw, 132px);
-    }
-
-    .hero-btn {
-        min-width: 220px;
-    }
-
-    .hero-food-img {
-        border-radius: 26px;
-        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
-    }
-
-    .hero-img-1 { width: 168px; height: 168px; }
-    .hero-img-2 { width: 132px; height: 132px; }
-    .hero-img-3 { width: 146px; height: 146px; }
-    .hero-img-4 { width: 218px; height: 176px; border-radius: 26px; }
-    .hero-img-5 { width: 152px; height: 152px; }
-    .hero-img-6 { width: 132px; height: 132px; }
-
-    @@media (max-width: 768px) {
-        .hero-content {
-            padding: 20px 18px;
-            border-radius: 22px;
-        }
-
-        .hero-btn {
-            min-width: auto;
-        }
-    }
-</style> *@

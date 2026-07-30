@@ -1,0 +1,67 @@
+/* =============================================================
+   trangchu.css — Styles dành riêng cho TrangChu.cshtml
+   Các style chung (hero, promo, product card) nằm tại
+   foodfast-home.css (đã được link trong @section Styles).
+   File này chứa styles bổ sung / đặc thù của trang chủ.
+   ============================================================= */
+
+/* ----- Branch Info Bar ----- */
+.branch-info-bar {
+    display: none; /* ẩn mặc định, JS dùng style.display = 'flex' để hiện */
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, #fff8ef, #fff3e0);
+    border-radius: 14px;
+    padding: 12px 20px;
+    border: 1px solid rgba(255, 152, 0, 0.2);
+    box-shadow: 0 2px 12px rgba(255, 152, 0, 0.1);
+}
+
+.branch-info-bar__icon {
+    font-size: 18px;
+}
+
+.branch-info-bar__body {
+    flex: 1;
+}
+
+.branch-info-bar__label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+}
+
+.branch-info-bar__name {
+    font-size: 14px;
+    color: #d67b00;
+    margin-left: 6px;
+}
+
+.branch-info-bar__clear-btn {
+    border: none;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.branch-info-bar__clear-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #333;
+}
+
+/* ----- Suggested Products Section ----- */
+.suggested-products-section {
+    margin-top: 60px;
+}
+
+/* ----- Ingredient — deadline highlight ----- */
+.product-ingredient--deadline {
+    color: #e74c3c;
+}

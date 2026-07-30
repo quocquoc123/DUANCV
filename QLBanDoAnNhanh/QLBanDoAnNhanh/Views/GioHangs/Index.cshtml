@@ -113,7 +113,7 @@
                             </div>
                             <div class="cart-summary-row">
                                 <span class="label">Phí vận chuyển</span>
-                                <span class="value">Miễn phí</span>
+                                <span class="value" id="shippingFeeAmount">Chưa tính</span>
                             </div>
                             <div class="cart-summary-row">
                                 <span class="label">Giảm giá</span>
@@ -151,6 +151,7 @@
                                     <div class="branch-info-text">
                                         <strong id="branchInfoName"></strong>
                                         <small id="branchInfoAddress"></small>
+                                        <small id="branchInfoDistance" class="branch-info-distance" style="color: #2563eb; font-weight: 600; display: block; margin-top: 4px;"></small>
                                     </div>
                                 </div>
                                 @* Cảnh báo hết hàng *@
@@ -224,6 +225,10 @@
 
                                 <div class="address-preview" id="addressPreview" hidden></div>
                                 <div class="address-error" id="addressError" role="alert" hidden></div>
+
+                                <button type="button" id="btnCalcShipping" class="btn btn-sm btn-outline-primary mt-2 w-100 fw-bold">
+                                    <i class="fas fa-calculator me-1"></i> Tính phí vận chuyển theo vị trí
+                                </button>
                             </div>
 
                             <div class="payment-method-section">
@@ -243,6 +248,7 @@
                                 <span class="paypal-icon"><span class="pp-blue">Pay</span><span class="pp-light">Pal</span></span>
                             </button>
                             <input type="hidden" id="hiddenVoucherCode" name="voucherCode" value="" />
+                            <input type="hidden" id="hiddenShippingFee" name="shippingFee" value="0" />
                         </form>
                     </div>
                 </div>
@@ -271,4 +277,217 @@
     <script src="~/js/voucher.js" asp-append-version="true"></script>
     <script src="~/js/momo-payment.js" asp-append-version="true"></script>
     <script src="~/js/chi-nhanh-giao-hang.js" asp-append-version="true"></script>
+    <script src="~/js/tinh-phi-giao-hang.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var diaChiInput = document.getElementById('DiaChi');
+            var streetAddressInput = document.getElementById('streetAddress');
+            var provinceSelect = document.getElementById('province');
+            var districtSelect = document.getElementById('district');
+            var wardSelect = document.getElementById('ward');
+            var btnCalcShipping = document.getElementById('btnCalcShipping');
+            var shippingFeeElement = document.getElementById('shippingFeeAmount');
+            var totalAfterDiscountElement = document.getElementById('totalAfterDiscount');
+            var cartTotalAmountElement = document.getElementById('cartTotalAmount');
+            var discountAmountElement = document.getElementById('discountAmount');
+
+            window.currentShippingFee = 0;
+
+            // ---------------------------------------------------------------
+            // Debounce + AbortController: đảm bảo chỉ 1 request được xử lý
+            // ---------------------------------------------------------------
+            var shippingDebounceTimer = null;
+            var shippingAbortCtrl     = null;  // AbortController của request hiện tại
+            var lastShippingAddress   = '';    // Địa chỉ lần tính trước (tránh tính lại nếu không đổi)
+
+            function parseVnd(text) {
+                if (!text) return 0;
+                return parseInt(text.replace(/[^\d]/g, ''), 10) || 0;
+            }
+
+            function formatVnd(val) {
+                return val.toLocaleString('vi-VN') + ' VND';
+            }
+
+            window.recalculateCartGrandTotal = function () {
+                var subtotal = parseVnd(cartTotalAmountElement ? cartTotalAmountElement.textContent : '0');
+                var discount = parseVnd(discountAmountElement ? discountAmountElement.textContent : '0');
+                var shipping = window.currentShippingFee || 0;
+                var grandTotal = Math.max(0, subtotal - discount + shipping);
+                if (totalAfterDiscountElement) {
+                    totalAfterDiscountElement.textContent = formatVnd(grandTotal);
+                }
+            };
+
+            // Đọc trực tiếp từ dropdown + ô nhập, không phụ thuộc vào hidden #DiaChi
+            function buildAddressFromInputs() {
+                var province = provinceSelect && provinceSelect.selectedIndex > 0
+                    ? provinceSelect.options[provinceSelect.selectedIndex].text : '';
+                var district = districtSelect && districtSelect.selectedIndex > 0
+                    ? districtSelect.options[districtSelect.selectedIndex].text : '';
+                var ward = wardSelect && wardSelect.selectedIndex > 0
+                    ? wardSelect.options[wardSelect.selectedIndex].text : '';
+                var street = streetAddressInput ? streetAddressInput.value.trim() : '';
+                return { province, district, ward, street };
+            }
+
+            // Kiểm tra thiếu trường nào, trả về thông báo cụ thể
+            function getMissingFieldMessage(parts) {
+                if (!parts.province) return 'Vui lòng chọn <strong>Tỉnh/Thành phố</strong>';
+                if (!parts.district) return 'Vui lòng chọn <strong>Quận/Huyện</strong>';
+                if (!parts.ward)     return 'Vui lòng chọn <strong>Phường/Xã</strong>';
+                if (!parts.street)   return 'Vui lòng nhập <strong>Số nhà & Tên đường</strong>';
+                return '';
+            }
+
+            // Hàm thực sự gọi API — chỉ được gọi sau khi debounce
+            async function doCalculateShipping(fullAddress) {
+                // Hủy request cũ nếu đang chạy
+                if (shippingAbortCtrl) {
+                    shippingAbortCtrl.abort();
+                }
+                shippingAbortCtrl = new AbortController();
+                var signal = shippingAbortCtrl.signal;
+
+                if (shippingFeeElement) {
+                    shippingFeeElement.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Đang tính...</span>';
+                }
+
+                try {
+                    var payload = { diaChiKhachHang: fullAddress };
+                    // Nếu đã có tọa độ từ geolocation/autocomplete ở phía client thì gửi lên để backend bỏ qua bước geocode chuỗi.
+                    if (window.userLocation && window.userLocation.lat != null && window.userLocation.lng != null) {
+                        payload.latKhachHang = window.userLocation.lat;
+                        payload.lngKhachHang = window.userLocation.lng;
+                    }
+                    // Gửi chi nhánh đang chọn để backend tính km/phí theo đúng chi nhánh đó.
+                    var selectedBranchEl = document.getElementById('selectedChiNhanh');
+                    if (selectedBranchEl && selectedBranchEl.value) {
+                        var selectedBranchId = parseInt(selectedBranchEl.value, 10);
+                        if (!isNaN(selectedBranchId) && selectedBranchId > 0) {
+                            payload.MaChiNhanh = selectedBranchId;
+                        }
+                    }
+                    var response = await fetch('/SanPhams/TinhPhiGiaoHang', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: signal
+                    });
+
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    var res = await response.json();
+
+                    if (res && res.success) {
+                        window.currentShippingFee = res.phiGiaoHang;
+                        if (res.latKhachHang != null && res.lngKhachHang != null) {
+                            window.userLocation = { lat: res.latKhachHang, lng: res.lngKhachHang };
+                        }
+                        var hiddenShippingFee = document.getElementById('hiddenShippingFee');
+                        if (hiddenShippingFee) hiddenShippingFee.value = res.phiGiaoHang;
+
+                        if (shippingFeeElement) {
+                            shippingFeeElement.innerHTML =
+                                '<strong class="text-danger">' + res.phiGiaoHangFormatted + '</strong> ' +
+                                '<small class="text-muted">(' + res.khoangCachKm + ' km | ' + res.thoiGianText + ')</small>';
+                        }
+                        window.recalculateCartGrandTotal();
+
+                        // Tự động chọn chi nhánh gần nhất gợi ý
+                        if (res.chiNhanhId) {
+                            if (typeof window.updateCartBranchInfo === 'function') {
+                                window.updateCartBranchInfo(res.chiNhanhId, res.khoangCachKm, res.thoiGianText);
+                            } else {
+                                var chiNhanhSelect = document.getElementById('chiNhanhSelect');
+                                if (chiNhanhSelect) {
+                                    chiNhanhSelect.value = res.chiNhanhId;
+                                    chiNhanhSelect.dispatchEvent(new Event('change'));
+                                }
+                            }
+                        }
+                    } else {
+                        console.warn('[TinhPhiGiaoHang Warning]:', res ? res.message : 'Unknown error');
+                        window.currentShippingFee = 0;
+                        var hiddenShippingFee = document.getElementById('hiddenShippingFee');
+                        if (hiddenShippingFee) hiddenShippingFee.value = 0;
+                        window.recalculateCartGrandTotal();
+                        if (shippingFeeElement) {
+                            var msg = (res && res.message) ? res.message : 'Lỗi tính phí';
+                            shippingFeeElement.innerHTML =
+                                '<span class="text-danger" style="font-size:0.85rem;" title="' + msg + '">' +
+                                '<i class="fas fa-exclamation-triangle me-1"></i>' + msg + '</span>';
+                        }
+                    }
+                } catch (err) {
+                    if (err.name === 'AbortError') return; // Request bị hủy có chủ đích → bỏ qua
+                    console.error('[TinhPhiGiaoHang Error]:', err);
+                }
+            }
+
+            // Hàm gọi với debounce — đợi 600ms sau lần cuối cùng được gọi mới thực sự tính
+            function triggerCalculateShipping(overrideAddr) {
+                var fullAddress = '';
+
+                if (overrideAddr) {
+                    fullAddress = overrideAddr.trim();
+                } else {
+                    var parts = buildAddressFromInputs();
+                    var missing = getMissingFieldMessage(parts);
+                    if (missing) {
+                        if (shippingFeeElement) {
+                            shippingFeeElement.innerHTML = '<span class="text-warning" style="font-size:0.85rem;"><i class="fas fa-exclamation-circle me-1"></i>' + missing + '</span>';
+                        }
+                        return;
+                    }
+                    fullAddress = parts.street + ', ' + parts.ward + ', ' + parts.district + ', ' + parts.province;
+                }
+
+                if (!fullAddress || fullAddress.length < 5) return;
+
+                // Nếu địa chỉ không đổi → không cần tính lại
+                if (fullAddress === lastShippingAddress) return;
+                lastShippingAddress = fullAddress;
+
+                // Hủy timer debounce cũ (nếu có)
+                if (shippingDebounceTimer) clearTimeout(shippingDebounceTimer);
+                shippingDebounceTimer = setTimeout(function () {
+                    doCalculateShipping(fullAddress);
+                }, 600);
+            }
+
+            // Nút bấm tính phí trực tiếp → reset guard để tính lại dù địa chỉ không đổi
+            if (btnCalcShipping) {
+                btnCalcShipping.addEventListener('click', function () {
+                    lastShippingAddress = ''; // Bắt buộc tính lại
+                    triggerCalculateShipping();
+                });
+            }
+
+            // Lắng nghe sự kiện addressChanged từ cart-address.js (khi đủ 4 trường)
+            if (diaChiInput) {
+                diaChiInput.addEventListener('addressChanged', function (e) {
+                    if (e.detail && e.detail.trim().length > 5) {
+                        triggerCalculateShipping(e.detail);
+                    }
+                });
+            }
+
+            // Khi rời ô số nhà & đường → tính phí (đọc thẳng từ dropdown)
+            if (streetAddressInput) {
+                streetAddressInput.addEventListener('blur', function () {
+                    triggerCalculateShipping();
+                });
+            }
+
+            // Nếu đã có sẵn địa chỉ đầy đủ từ ban đầu (prefill)
+            setTimeout(function () {
+                var initialAddr = (diaChiInput ? diaChiInput.value : '').trim();
+                if (initialAddr && initialAddr.split(',').length >= 4) {
+                    triggerCalculateShipping(initialAddr);
+                }
+            }, 900);
+        });
+    </script>
+
 }

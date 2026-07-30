@@ -17,6 +17,47 @@
 }
 
 /* =====================================================
+   Đồng bộ header/nav với Trang Chủ trên trang Chi Nhánh
+   ===================================================== */
+.site-header .logo-search {
+  gap: 24px;
+}
+
+.site-header nav {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-header nav ul li {
+  flex: 0 0 auto;
+}
+
+.site-header nav ul {
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  overflow-x: auto !important;
+  scrollbar-width: none;
+}
+
+.site-header nav ul::-webkit-scrollbar {
+  display: none;
+}
+
+.site-header nav ul li a {
+  white-space: nowrap;
+  padding: 15px 14px !important;
+  font-size: 14px !important;
+}
+
+.site-header .ff-search-wrap {
+  margin-left: auto;
+}
+
+.site-header #searchTerm.form-control {
+  width: 220px;
+}
+
+/* =====================================================
    HERO BANNER
    ===================================================== */
 .cn-hero {

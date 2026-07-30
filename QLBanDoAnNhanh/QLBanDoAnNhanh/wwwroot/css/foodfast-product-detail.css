@@ -172,6 +172,53 @@
   margin-top: 20px;
 }
 
+.product-image-rating {
+  text-align: center;
+}
+
+.product-image-rating__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ff-brown);
+  margin-bottom: 10px;
+}
+
+.product-image-rating__score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.product-image-rating__score {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ff-orange-2);
+  line-height: 1;
+}
+
+.product-image-rating__stars {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.product-image-rating__star {
+  font-size: 1.45rem;
+  color: #e5d5c3;
+}
+
+.product-image-rating__star.is-filled {
+  color: #ff9800;
+}
+
+.product-image-rating__caption {
+  font-size: 0.88rem;
+  color: #8b7355;
+  font-weight: 600;
+}
+
 .product-card-title {
   font-size: 1.35rem;
   font-weight: 700;

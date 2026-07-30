@@ -149,6 +149,16 @@
     .btn-edit:hover   { box-shadow: 0 4px 10px rgba(246,194,62,.55); color: white; }
     .btn-detail:hover { box-shadow: 0 4px 10px rgba(78,115,223,.55);  color: white; }
 
+    .btn-toggle-show  { background: linear-gradient(135deg,#1cc88a,#17a673); color: white; }
+    .btn-toggle-hide  { background: linear-gradient(135deg,#858796,#5a5c69); color: white; }
+    .btn-toggle-show:hover { box-shadow: 0 4px 10px rgba(28,200,138,.55); color: white; }
+    .btn-toggle-hide:hover { box-shadow: 0 4px 10px rgba(133,135,150,.55); color: white; }
+
+    /* hidden row styling */
+    .product-table tbody tr.is-hidden { background: #fdfdfd !important; opacity: 0.65; }
+    .product-table tbody tr.is-hidden:hover { opacity: 0.85; }
+    .product-table tbody tr.is-hidden td { color: #858796; }
+
     /* empty state */
     .empty-row td { text-align: center; padding: 60px 20px; color: #a0aec0; }
     .empty-row i  { font-size: 3rem; display: block; margin-bottom: 12px; }
@@ -231,7 +241,7 @@
                 var thanhPhanShort = !string.IsNullOrEmpty(item.ThanhPhan) && item.ThanhPhan.Length > 40
                     ? item.ThanhPhan.Substring(0, 40) + "…"
                     : item.ThanhPhan;
-                <tr data-name="@item.TenSp.ToLower()">
+                <tr data-name="@item.TenSp.ToLower()" class="@(item.TrangThai ? "" : "is-hidden")" id="row-@item.MaSp">
                     <td class="row-idx">@idx</td>
                     <td>
                         @if (!string.IsNullOrEmpty(imgSrc))
@@ -246,10 +256,12 @@
                         }
                     </td>
                     <td class="prod-name">
-                        @item.TenSp
+                        <span>@item.TenSp</span>
+                        <span class="badge badge-danger badge-hidden-status" style="margin-left: 5px; background-color: #e74a3b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; display: @(item.TrangThai ? "none" : "inline-block")">Đang ẩn</span>
+                        <span class="badge badge-out-of-stock" id="badge-het-hang-@item.MaSp" style="margin-left: 5px; background-color: #6c757d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; display: @(item.HetHang ? "inline-block" : "none")">Hết hàng</span>
                         @if (!string.IsNullOrEmpty(thanhPhanShort))
                         {
-                            <small>@thanhPhanShort</small>
+                            <small style="display: block; margin-top: 2px;">@thanhPhanShort</small>
                         }
                     </td>
                     <td class="price-val">@item.GiaTien.ToString("N0") ₫</td>
@@ -308,12 +320,20 @@
                     </td>
                     <td>
                         <div class="action-btns">
-                            <a asp-action="Edit"    asp-route-id="@item.MaSp" class="btn-tbl btn-edit">
+                            <a asp-action="Edit"    asp-route-id="@item.MaSp" class="btn-tbl btn-edit" title="Sửa sản phẩm">
                                 <i class="fas fa-edit"></i> Sửa
                             </a>
-                            <a asp-action="Details" asp-route-id="@item.MaSp" class="btn-tbl btn-detail">
+                            <a asp-action="Details" asp-route-id="@item.MaSp" class="btn-tbl btn-detail" title="Chi tiết sản phẩm">
                                 <i class="fas fa-eye"></i>
                             </a>
+                            <button type="button" class="btn-tbl @(item.TrangThai ? "btn-toggle-hide" : "btn-toggle-show") btn-toggle-status" data-id="@item.MaSp" title="@(item.TrangThai ? "Ẩn sản phẩm" : "Hiện sản phẩm")">
+                                <i class="fas @(item.TrangThai ? "fa-eye-slash" : "fa-eye")"></i>
+                                <span>@(item.TrangThai ? "Ẩn" : "Hiện")</span>
+                            </button>
+                            <button type="button" class="btn-tbl btn-toggle-het-hang @(item.HetHang ? "btn-het-hang-active" : "btn-het-hang-inactive")" data-id="@item.MaSp" title="@(item.HetHang ? "Đánh dấu còn hàng" : "Đánh dấu hết hàng")" style="background: @(item.HetHang ? "linear-gradient(135deg,#6c757d,#495057)" : "linear-gradient(135deg,#28a745,#20c997)"); color:white; border:none; border-radius:8px; padding:6px 10px; font-size:0.78rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s;">
+                                <i class="fas @(item.HetHang ? "fa-times-circle" : "fa-check-circle")"></i>
+                                <span>@(item.HetHang ? "Hết hàng" : "Còn hàng")</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -388,6 +408,119 @@
                 input.focus();
                 input.select();
             }
+        });
+
+        // AJAX toggle status
+        document.querySelectorAll('.btn-toggle-status').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var btnEl = this;
+                var id = btnEl.getAttribute('data-id');
+                
+                // Hiển thị trạng thái đang xử lý (loading)
+                var icon = btnEl.querySelector('i');
+                var text = btnEl.querySelector('span');
+                var originalIconClass = icon.className;
+                icon.className = 'fas fa-spinner fa-spin';
+                btnEl.disabled = true;
+
+                fetch('/SanPhams/ToggleStatus/' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('Yêu cầu thất bại');
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (data.success) {
+                        var isShown = data.trangThai;
+                        var row = document.getElementById('row-' + id);
+                        var badge = row.querySelector('.badge-hidden-status');
+
+                        if (isShown) {
+                            row.classList.remove('is-hidden');
+                            badge.style.display = 'none';
+                            btnEl.className = 'btn-tbl btn-toggle-hide btn-toggle-status';
+                            icon.className = 'fas fa-eye-slash';
+                            text.textContent = 'Ẩn';
+                            btnEl.setAttribute('title', 'Ẩn sản phẩm');
+                        } else {
+                            row.classList.add('is-hidden');
+                            badge.style.display = 'inline-block';
+                            btnEl.className = 'btn-tbl btn-toggle-show btn-toggle-status';
+                            icon.className = 'fas fa-eye';
+                            text.textContent = 'Hiện';
+                            btnEl.setAttribute('title', 'Hiện sản phẩm');
+                        }
+                    } else {
+                        alert(data.message || 'Lỗi không xác định.');
+                        icon.className = originalIconClass;
+                    }
+                })
+                .catch(function (err) {
+                    alert('Lỗi kết nối hoặc xử lý yêu cầu.');
+                    icon.className = originalIconClass;
+                })
+                .finally(function () {
+                    btnEl.disabled = false;
+                });
+            });
+        });
+
+        // AJAX toggle hết hàng
+        document.querySelectorAll('.btn-toggle-het-hang').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var btnEl = this;
+                var id = btnEl.getAttribute('data-id');
+
+                var icon = btnEl.querySelector('i');
+                var text = btnEl.querySelector('span');
+                var origClass = icon.className;
+                icon.className = 'fas fa-spinner fa-spin';
+                btnEl.disabled = true;
+
+                fetch('/SanPhams/ToggleHetHang/' + id, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('Yêu cầu thất bại');
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (data.success) {
+                        var isHet = data.hetHang;
+                        var badge = document.getElementById('badge-het-hang-' + id);
+                        if (isHet) {
+                            if (badge) badge.style.display = 'inline-block';
+                            btnEl.style.background = 'linear-gradient(135deg,#6c757d,#495057)';
+                            btnEl.setAttribute('title', 'Đánh dấu còn hàng');
+                            icon.className = 'fas fa-times-circle';
+                            text.textContent = 'Hết hàng';
+                        } else {
+                            if (badge) badge.style.display = 'none';
+                            btnEl.style.background = 'linear-gradient(135deg,#28a745,#20c997)';
+                            btnEl.setAttribute('title', 'Đánh dấu hết hàng');
+                            icon.className = 'fas fa-check-circle';
+                            text.textContent = 'Còn hàng';
+                        }
+                    } else {
+                        alert(data.message || 'Lỗi không xác định.');
+                        icon.className = origClass;
+                    }
+                })
+                .catch(function () {
+                    alert('Lỗi kết nối hoặc xử lý yêu cầu.');
+                    icon.className = origClass;
+                })
+                .finally(function () {
+                    btnEl.disabled = false;
+                });
+            });
         });
     });
 </script>

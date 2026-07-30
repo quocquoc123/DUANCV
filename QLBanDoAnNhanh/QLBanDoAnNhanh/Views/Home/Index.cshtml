@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Trang Chủ";
+    var heroLeftImage = ViewBag.HeroLeftImage as string ?? "/images/Burger-Zinger.jpg";
+    var heroLeftAlt = ViewBag.HeroLeftAlt as string ?? "Burger Zinger";
+    var heroRightImage = ViewBag.HeroRightImage as string ?? "/images/Burger-Flava.jpg";
+    var heroRightAlt = ViewBag.HeroRightAlt as string ?? "Burger Flava";
 }
 
 @section Styles {
@@ -12,24 +16,26 @@
 <div class="home-hero-band">
 <div class="hero-section">
     <div class="hero-background"></div>
+    <partial name="_HeroDecorPartial" />
 
+    <!-- Ảnh món ăn bên trái -->
     <div class="hero-visual hero-visual-left">
-        <img src="@Url.Content("~/images/Burger-Flava.jpg")" alt="" class="hero-food-img hero-img-1">
-        <img src="@Url.Content("~/images/D-CBO-Bucket-2.jpg")" alt="" class="hero-food-img hero-img-2">
-        <img src="@Url.Content("~/images/P4-OR.jpg")" alt="" class="hero-food-img hero-img-3">
+        <img src="@heroLeftImage" class="hero-food-img" alt="@heroLeftAlt" />
     </div>
 
     <div class="hero-content">
         <h1 class="hero-title">Chào mừng bạn đến với</h1>
         <h2 class="hero-subtitle">Food Fast</h2>
-        <p class="hero-description">Thực phẩm tươi ngon, chất lượng cao, giao hàng nhanh chóng</p>
-        <a href="#products-section" class="hero-btn">Khám Phá Ngay</a>
+        <p class="hero-description">Thực phẩm tươi ngon, giao nhanh và tiện lợi mỗi ngày.</p>
+
+        <a href="#products-section" class="hero-btn">
+            Khám Phá Ngay <span class="hero-btn-arrow">→</span>
+        </a>
     </div>
 
+    <!-- Ảnh món ăn bên phải -->
     <div class="hero-visual hero-visual-right">
-        <img src="@Url.Content("~/images/MI-Y-GA-VIEN.jpg")" alt="" class="hero-food-img hero-img-4">
-        <img src="@Url.Content("~/images/COM.jpg")" alt="" class="hero-food-img hero-img-5">
-        <img src="@Url.Content("~/images/MON AN NHE.jpg")" alt="" class="hero-food-img hero-img-6">
+        <img src="@heroRightImage" class="hero-food-img" alt="@heroRightAlt" />
     </div>
 </div>
 </div>

@@ -78,8 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 addressPreview.textContent = '';
             }
         }
-        if (diaChiHidden && full) {
+        if (diaChiHidden) {
             diaChiHidden.value = full;
+            diaChiHidden.dispatchEvent(new CustomEvent('addressChanged', { detail: full }));
         }
     }
 

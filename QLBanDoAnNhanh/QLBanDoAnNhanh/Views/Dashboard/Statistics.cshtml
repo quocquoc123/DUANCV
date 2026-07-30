@@ -292,6 +292,18 @@
                 return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
             }
 
+            // API trả PascalCase (PropertyNamingPolicy = null) — hỗ trợ cả camelCase
+            function prop(obj, name) {
+                if (!obj) return undefined;
+                if (obj[name] !== undefined && obj[name] !== null) return obj[name];
+                var pascal = name.charAt(0).toUpperCase() + name.slice(1);
+                return obj[pascal];
+            }
+
+            function asArray(value) {
+                return Array.isArray(value) ? value : [];
+            }
+
             function getFilters() {
                 var params = new URLSearchParams();
                 var fromDate = $('#fromDate').val();
@@ -365,23 +377,26 @@
             }
 
             function renderProductRows(selector, rows) {
+                rows = asArray(rows);
                 var html = rows.length ? rows.map(function (item) {
-                    return '<tr><td>' + escapeHtml(item.productName) + '</td><td class="text-right">' + formatNumber(item.quantitySold) + '</td><td class="text-right">' + formatCurrency(item.revenue) + '</td></tr>';
+                    return '<tr><td>' + escapeHtml(prop(item, 'productName')) + '</td><td class="text-right">' + formatNumber(prop(item, 'quantitySold')) + '</td><td class="text-right">' + formatCurrency(prop(item, 'revenue')) + '</td></tr>';
                 }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
                 $(selector).html(html);
             }
 
             function renderCustomerRows(rows) {
+                rows = asArray(rows);
                 var html = rows.length ? rows.map(function (item) {
-                    var name = item.fullName || item.username || 'Khách hàng';
-                    return '<tr><td>' + escapeHtml(name) + '</td><td class="text-right">' + formatNumber(item.orderCount) + '</td><td class="text-right">' + formatCurrency(item.totalSpent) + '</td></tr>';
+                    var name = prop(item, 'fullName') || prop(item, 'username') || 'Khách hàng';
+                    return '<tr><td>' + escapeHtml(name) + '</td><td class="text-right">' + formatNumber(prop(item, 'orderCount')) + '</td><td class="text-right">' + formatCurrency(prop(item, 'totalSpent')) + '</td></tr>';
                 }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
                 $('#topCustomersBody').html(html);
             }
 
             function renderPromotionRows(rows) {
+                rows = asArray(rows);
                 var html = rows.length ? rows.map(function (item) {
-                    return '<tr><td>' + escapeHtml(item.promotionCode) + '</td><td class="text-right">' + formatNumber(item.usageCount) + '</td><td class="text-right">' + formatCurrency(item.totalDiscountAmount) + '</td></tr>';
+                    return '<tr><td>' + escapeHtml(prop(item, 'promotionCode')) + '</td><td class="text-right">' + formatNumber(prop(item, 'usageCount')) + '</td><td class="text-right">' + formatCurrency(prop(item, 'totalDiscountAmount')) + '</td></tr>';
                 }).join('') : '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>';
                 $('#promotionsBody').html(html);
             }
@@ -411,23 +426,39 @@
                     var payments = results[4];
                     var promotions = results[5];
 
-                    $('#totalRevenue').text(formatCurrency(revenue.totalRevenue));
+                    var revenueSeries = asArray(prop(revenue, 'series'));
+                    var ordersByStatus = asArray(prop(orders, 'ordersByStatus'));
+                    var topSelling = asArray(prop(products, 'topSellingProducts'));
+                    var revenueByCategory = asArray(prop(products, 'revenueByCategory'));
+                    var paymentMethods = asArray(prop(payments, 'paymentMethodUsageRate'));
+
+                    $('#totalRevenue').text(formatCurrency(prop(revenue, 'totalRevenue')));
                     // totalOrderCount = tổng mọi trạng thái; orderCount = đơn hoàn thành (tạo ra doanh thu)
-                    $('#orderCount').text(formatNumber(revenue.totalOrderCount));
-                    $('#successOrderCount').text(formatNumber(revenue.orderCount));
-                    $('#averageOrderValue').text(formatCurrency(revenue.averageOrderValue));
-                    $('#successRate').text(formatPercent(orders.successRate));
+                    $('#orderCount').text(formatNumber(prop(revenue, 'totalOrderCount')));
+                    $('#successOrderCount').text(formatNumber(prop(revenue, 'orderCount')));
+                    $('#averageOrderValue').text(formatCurrency(prop(revenue, 'averageOrderValue')));
+                    $('#successRate').text(formatPercent(prop(orders, 'successRate')));
 
-                    renderLineChart('revenue', 'revenueChart', revenue.series.map(function (x) { return x.label; }), revenue.series.map(function (x) { return x.value; }));
-                    renderPieChart('orderStatus', 'orderStatusChart', orders.ordersByStatus.map(function (x) { return x.status; }), orders.ordersByStatus.map(function (x) { return x.count; }));
-                    renderBarChart('topProduct', 'topProductChart', products.topSellingProducts.map(function (x) { return x.productName; }), products.topSellingProducts.map(function (x) { return x.quantitySold; }), false);
-                    renderBarChart('categoryRevenue', 'categoryRevenueChart', products.revenueByCategory.map(function (x) { return x.categoryName; }), products.revenueByCategory.map(function (x) { return x.revenue; }), true);
-                    renderPieChart('paymentMethod', 'paymentMethodChart', payments.paymentMethodUsageRate.map(function (x) { return x.paymentMethod; }), payments.paymentMethodUsageRate.map(function (x) { return x.paymentCount; }));
+                    renderLineChart('revenue', 'revenueChart',
+                        revenueSeries.map(function (x) { return prop(x, 'label'); }),
+                        revenueSeries.map(function (x) { return prop(x, 'value'); }));
+                    renderPieChart('orderStatus', 'orderStatusChart',
+                        ordersByStatus.map(function (x) { return prop(x, 'status'); }),
+                        ordersByStatus.map(function (x) { return prop(x, 'count'); }));
+                    renderBarChart('topProduct', 'topProductChart',
+                        topSelling.map(function (x) { return prop(x, 'productName'); }),
+                        topSelling.map(function (x) { return prop(x, 'quantitySold'); }), false);
+                    renderBarChart('categoryRevenue', 'categoryRevenueChart',
+                        revenueByCategory.map(function (x) { return prop(x, 'categoryName'); }),
+                        revenueByCategory.map(function (x) { return prop(x, 'revenue'); }), true);
+                    renderPieChart('paymentMethod', 'paymentMethodChart',
+                        paymentMethods.map(function (x) { return prop(x, 'paymentMethod'); }),
+                        paymentMethods.map(function (x) { return prop(x, 'paymentCount'); }));
 
-                    renderCustomerRows(customers.topSpendingCustomers);
-                    renderPromotionRows(promotions.promotions);
-                    renderProductRows('#topRevenueProductsBody', products.topRevenueProducts);
-                    renderProductRows('#slowProductsBody', products.slowSellingProducts);
+                    renderCustomerRows(prop(customers, 'topSpendingCustomers'));
+                    renderPromotionRows(prop(promotions, 'promotions'));
+                    renderProductRows('#topRevenueProductsBody', prop(products, 'topRevenueProducts'));
+                    renderProductRows('#slowProductsBody', prop(products, 'slowSellingProducts'));
                 }).catch(function (error) {
                     $('#statisticsAlert').removeClass('d-none').text(error.message || 'Có lỗi khi tải dữ liệu thống kê.');
                 }).finally(function () {

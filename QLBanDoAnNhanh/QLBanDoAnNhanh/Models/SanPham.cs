@@ -28,6 +28,10 @@ public partial class SanPham
 
     public string HinhAnh2 { get; set; }
 
+    public bool TrangThai { get; set; } = true;
+
+    public bool HetHang { get; set; } = false;
+
     [NotMapped]
     public decimal? DiscountPercent { get; set; }
 

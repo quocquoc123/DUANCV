@@ -3,7 +3,12 @@
 @{
     ViewData["Title"] = "Chỉnh Sửa Chi Nhánh";
     Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+
+    var initLat = Model.Latitude.HasValue ? Model.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null";
+    var initLng = Model.Longitude.HasValue ? Model.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null";
 }
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <div class="container-fluid mt-4" style="max-width:780px;">
     <div class="d-flex align-items-center mb-4 gap-3">
@@ -27,32 +32,28 @@
                     <span asp-validation-for="TenChiNhanh" class="text-danger small"></span>
                 </div>
 
-
-
-                @* Địa chỉ + tọa độ – chọn từ dropdown cascade *@
+                @* Địa chỉ + tọa độ – chọn từ dropdown cascade & Bản đồ *@
                 <div class="card border-primary mb-3">
-                    <div class="card-header bg-primary bg-opacity-10 text-primary fw-semibold">
-                        <i class="fas fa-map-marker-alt"></i> Địa chỉ chi nhánh
+                    <div class="card-header bg-primary bg-opacity-10 text-primary fw-semibold d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-map-marker-alt"></i> Địa chỉ chi nhánh & Tọa độ bản đồ</span>
+                        <span class="badge bg-primary">Chi nhánh ID: @Model.MaChiNhanh</span>
                     </div>
                     <div class="card-body">
-                        @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
-                        {
-                            <div class="alert alert-info py-2 mb-3">
-                                <i class="fas fa-info-circle"></i>
-                                Tọa độ hiện tại: <strong>Vĩ độ @Model.Latitude.Value.ToString("F6", System.Globalization.CultureInfo.InvariantCulture)</strong>
-                                | <strong>Kinh độ @Model.Longitude.Value.ToString("F6", System.Globalization.CultureInfo.InvariantCulture)</strong>
-                            </div>
-                        }
-                        <p class="text-muted small mb-2">Chọn địa chỉ mới để cập nhật. Nếu không chọn, tọa độ và địa chỉ cũ sẽ được giữ nguyên.</p>
+                        <div class="alert alert-info py-2 mb-3 small">
+                            <i class="fas fa-info-circle"></i>
+                            Địa chỉ hiện tại: <strong>@Model.DiaChi</strong>
+                        </div>
+                        <p class="text-muted small mb-2">Nếu muốn đổi địa chỉ, hãy chọn các mục dưới đây. Nếu không chọn, địa chỉ và tọa độ hiện tại sẽ được giữ nguyên.</p>
+
                         <div class="row g-2 mb-3">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">Tỉnh / Thành phố</label>
                                 <select id="selProvince" class="form-select form-select-sm">
                                     <option value="">-- Đang tải... --</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small">Quận / Huyện <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">Quận / Huyện</label>
                                 <select id="selDistrict" class="form-select form-select-sm" disabled>
                                     <option value="">-- Chọn tỉnh trước --</option>
                                 </select>
@@ -69,33 +70,51 @@
                                        placeholder="VD: 123 Lê Lợi" />
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label fw-semibold small">Địa chỉ đầy đủ</label>
+                                <label class="form-label fw-semibold small">Địa chỉ lưu trong hệ thống</label>
                                 <input asp-for="DiaChi" id="diaChiInput" class="form-control form-control-sm bg-light"
-                                       readonly placeholder="Hiện tại: @Model.DiaChi" />
+                                       placeholder="Hiện tại: @Model.DiaChi" />
                                 <span asp-validation-for="DiaChi" class="text-danger small"></span>
-                                <div class="form-text"><i class="fas fa-info-circle"></i> Địa chỉ được tự động cập nhật khi bạn chọn Quận/Huyện.</div>
                             </div>
                         </div>
 
                         <div id="geocodeStatus" class="small mb-2"></div>
-                        <div id="geocodeResult" class="d-none">
-                            <div class="alert alert-success py-2 mb-0 d-flex align-items-center gap-2">
+                        <div id="geocodeResult" class="d-none mb-3">
+                            <div class="alert alert-success py-2 mb-0 d-flex align-items-center gap-2 small">
                                 <i class="fas fa-check-circle"></i>
                                 <span id="geocodeResultText"></span>
                             </div>
                         </div>
-                        <div id="geocodeError" class="d-none">
-                            <div class="alert alert-warning py-2 mb-0">
+                        <div id="geocodeError" class="d-none mb-3">
+                            <div class="alert alert-warning py-2 mb-0 small">
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <span id="geocodeErrorText"></span>
                             </div>
                         </div>
+
+                        @* Bản đồ xem trước và chỉnh sửa vị trí *@
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small"><i class="fas fa-map"></i> Bản đồ xác định vị trí chi nhánh</label>
+                            <div id="mapPreview" style="height: 280px; width: 100%; border-radius: 8px; z-index: 1;" class="border"></div>
+                            <div class="form-text small mt-1 text-muted">
+                                <i class="fas fa-info-circle text-primary"></i> Mẹo: Bạn có thể <strong>kéo thả ghim đỏ</strong> hoặc <strong>click trực tiếp lên bản đồ</strong> để chỉnh vị trí kinh/vĩ độ chuẩn xác 100%.
+                            </div>
+                        </div>
+
+                        @* Vĩ độ & Kinh độ trực quan *@
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label asp-for="Latitude" class="form-label fw-semibold small">Vĩ độ (Latitude)</label>
+                                <input asp-for="Latitude" id="inputLatitude" class="form-control form-control-sm" placeholder="VD: 10.776889" step="any" type="number" />
+                                <span asp-validation-for="Latitude" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Longitude" class="form-label fw-semibold small">Kinh độ (Longitude)</label>
+                                <input asp-for="Longitude" id="inputLongitude" class="form-control form-control-sm" placeholder="VD: 106.700806" step="any" type="number" />
+                                <span asp-validation-for="Longitude" class="text-danger small"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                @* Hidden tọa độ – giữ giá trị cũ hoặc cập nhật mới *@
-                <input asp-for="Latitude" type="hidden" id="hiddenLatitude" />
-                <input asp-for="Longitude" type="hidden" id="hiddenLongitude" />
 
                 @* SĐT + Email *@
                 <div class="row">
@@ -124,8 +143,6 @@
                         <span asp-validation-for="GioDongCua" class="text-danger small"></span>
                     </div>
                 </div>
-
-
 
                 @* Hình ảnh hiện tại + upload mới *@
                 <div class="mb-3">
@@ -175,6 +192,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         function previewImg(input) {
             const preview = document.getElementById('imgPreview');
@@ -185,12 +203,84 @@
             }
         }
 
-        // ===== Cascade Dropdown: Tỉnh → Huyện → Xã + Auto Geocode =====
+        // ===== LEAFLET MAP INITIALIZATION =====
+        let map, marker;
+        const SERVER_LAT = @initLat;
+        const SERVER_LNG = @initLng;
+        const DEFAULT_LAT = SERVER_LAT || 10.776889;
+        const DEFAULT_LNG = SERVER_LNG || 106.700806;
+
+        function initMap(lat, lng) {
+            const initialLat = lat || DEFAULT_LAT;
+            const initialLng = lng || DEFAULT_LNG;
+
+            if (!map) {
+                map = L.map('mapPreview').setView([initialLat, initialLng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+                // Kéo ghim marker -> cập nhật ô Lat/Lng
+                marker.on('dragend', function (e) {
+                    const pos = e.target.getLatLng();
+                    setCoordinates(pos.lat, pos.lng, "✓ Đã cập nhật tọa độ theo vị trí kéo ghim trên bản đồ");
+                });
+
+                // Click trên bản đồ -> di chuyển marker & cập nhật ô Lat/Lng
+                map.on('click', function (e) {
+                    marker.setLatLng(e.latlng);
+                    setCoordinates(e.latlng.lat, e.latlng.lng, "✓ Đã chọn vị trí từ điểm click trên bản đồ");
+                });
+            } else {
+                map.setView([initialLat, initialLng], 15);
+                marker.setLatLng([initialLat, initialLng]);
+            }
+        }
+
+        function setCoordinates(lat, lng, statusMsg) {
+            const latVal = parseFloat(lat).toFixed(6);
+            const lngVal = parseFloat(lng).toFixed(6);
+            document.getElementById('inputLatitude').value = latVal;
+            document.getElementById('inputLongitude').value = lngVal;
+
+            if (map && marker) {
+                const currentPos = marker.getLatLng();
+                if (Math.abs(currentPos.lat - lat) > 0.00001 || Math.abs(currentPos.lng - lng) > 0.00001) {
+                    map.setView([lat, lng], 15);
+                    marker.setLatLng([lat, lng]);
+                }
+            }
+            if (statusMsg) {
+                showGeocodeSuccess(statusMsg);
+            }
+        }
+
+        // Lắng nghe sự thay đổi khi người dùng tự gõ vào ô Latitude/Longitude
+        document.getElementById('inputLatitude').addEventListener('change', function () {
+            const lat = parseFloat(this.value);
+            const lng = parseFloat(document.getElementById('inputLongitude').value);
+            if (!isNaN(lat) && !isNaN(lng)) initMap(lat, lng);
+        });
+        document.getElementById('inputLongitude').addEventListener('change', function () {
+            const lat = parseFloat(document.getElementById('inputLatitude').value);
+            const lng = parseFloat(this.value);
+            if (!isNaN(lat) && !isNaN(lng)) initMap(lat, lng);
+        });
+
+        // Tải bản đồ ban đầu
+        document.addEventListener("DOMContentLoaded", function () {
+            initMap(DEFAULT_LAT, DEFAULT_LNG);
+        });
+
+        // ===== Cascade Dropdown: Tỉnh → Huyện → Xã + Multi-stage Geocode =====
         const API_BASE = 'https://provinces.open-api.vn/api';
         const selProvince = document.getElementById('selProvince');
         const selDistrict = document.getElementById('selDistrict');
         const selWard     = document.getElementById('selWard');
         const statusEl    = document.getElementById('geocodeStatus');
+        let geocodeTimeout = null;
 
         // 1. Load danh sách tỉnh/thành
         (async () => {
@@ -243,7 +333,6 @@
                     selWard.innerHTML += `<option value="${w.code}">${w.name}</option>`;
                 });
                 selWard.disabled = false;
-                // Auto geocode ngay khi có quận
                 await autoGeocode();
             } catch {
                 selWard.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
@@ -255,16 +344,20 @@
             await autoGeocode();
         });
 
-        // 4b. Khi nhập số nhà / đường → cập nhật địa chỉ
+        // 4b. Khi nhập số nhà / đường → Debounce tự động Geocode sau 600ms
         document.getElementById('addrStreet').addEventListener('input', function () {
             updateDiaChiOnly();
+            clearTimeout(geocodeTimeout);
+            geocodeTimeout = setTimeout(() => {
+                autoGeocode();
+            }, 600);
         });
 
         function updateDiaChiOnly() {
             const street   = document.getElementById('addrStreet').value.trim();
-            const wardName = selWard.options[selWard.selectedIndex]?.text || '';
-            const distName = selDistrict.options[selDistrict.selectedIndex]?.text || '';
-            const provName = selProvince.options[selProvince.selectedIndex]?.text || '';
+            const wardName = (selWard.value && selWard.selectedIndex > 0) ? selWard.options[selWard.selectedIndex].text : '';
+            const distName = (selDistrict.value && selDistrict.selectedIndex > 0) ? selDistrict.options[selDistrict.selectedIndex].text : '';
+            const provName = (selProvince.value && selProvince.selectedIndex > 0) ? selProvince.options[selProvince.selectedIndex].text : '';
             const parts = [street,
                            (selWard.value ? wardName : ''),
                            (selDistrict.value ? distName : ''),
@@ -273,44 +366,50 @@
             if (parts.length) document.getElementById('diaChiInput').value = parts.join(', ');
         }
 
-        // 5. Hàm geocode tự động
+        // 5. Hàm Geocode tự động Đa tầng (Multi-stage Fallback)
         async function autoGeocode() {
             const street   = document.getElementById('addrStreet').value.trim();
-            const wardName = selWard.options[selWard.selectedIndex]?.text;
-            const distName = selDistrict.options[selDistrict.selectedIndex]?.text;
-            const provName = selProvince.options[selProvince.selectedIndex]?.text;
+            const wardName = (selWard.value && selWard.selectedIndex > 0) ? selWard.options[selWard.selectedIndex].text : '';
+            const distName = (selDistrict.value && selDistrict.selectedIndex > 0) ? selDistrict.options[selDistrict.selectedIndex].text : '';
+            const provName = (selProvince.value && selProvince.selectedIndex > 0) ? selProvince.options[selProvince.selectedIndex].text : '';
 
             if (!distName || distName.startsWith('--')) return;
 
-            const parts = [street,
-                           (selWard.value ? wardName : ''),
-                           distName, provName].filter(p => p && !p.startsWith('--'));
-            const fullAddress = parts.join(', ') + ', Việt Nam';
+            updateDiaChiOnly();
 
-            // Luôn cập nhật ô Địa Chỉ từ dữ liệu đã chọn
-            document.getElementById('diaChiInput').value = parts.join(', ');
-
-            statusEl.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin"></i> Đang lấy tọa độ...</span>';
+            statusEl.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin"></i> Đang tìm tọa độ...</span>';
             hideGeocodeResult();
 
-            try {
-                const url  = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(fullAddress)}`;
-                const res  = await fetch(url, { headers: { 'Accept-Language': 'vi' } });
-                const data = await res.json();
+            // Các truy vấn ưu tiên từ chi tiết tới tổng quan để không bao giờ bị rỗng kết quả
+            const candidateQueries = [];
+            if (street && wardName) candidateQueries.push([street, wardName, distName, provName, 'Việt Nam'].join(', '));
+            if (street) candidateQueries.push([street, distName, provName, 'Việt Nam'].join(', '));
+            if (wardName) candidateQueries.push([wardName, distName, provName, 'Việt Nam'].join(', '));
+            candidateQueries.push([distName, provName, 'Việt Nam'].join(', '));
 
-                statusEl.innerHTML = '';
-                if (data && data.length > 0) {
-                    const lat = parseFloat(data[0].lat).toFixed(6);
-                    const lon = parseFloat(data[0].lon).toFixed(6);
-                    document.getElementById('hiddenLatitude').value  = lat;
-                    document.getElementById('hiddenLongitude').value = lon;
-                    showGeocodeSuccess(`✓ Tọa độ đã cập nhật – Vĩ độ ${lat} | Kinh độ ${lon}`);
-                } else {
-                    showGeocodeError('Không tìm thấy tọa độ cho địa chỉ này.');
+            let foundData = null;
+
+            for (const query of candidateQueries) {
+                try {
+                    const url  = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
+                    const res  = await fetch(url, { headers: { 'Accept-Language': 'vi' } });
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        foundData = data[0];
+                        break;
+                    }
+                } catch (err) {
+                    console.error("Lỗi geocode:", err);
                 }
-            } catch {
-                statusEl.innerHTML = '';
-                showGeocodeError('Lỗi kết nối khi lấy tọa độ.');
+            }
+
+            statusEl.innerHTML = '';
+            if (foundData) {
+                const lat = parseFloat(foundData.lat);
+                const lon = parseFloat(foundData.lon);
+                setCoordinates(lat, lon, `✓ Đã cập nhật tọa độ: Vĩ độ ${lat.toFixed(6)} | Kinh độ ${lon.toFixed(6)}`);
+            } else {
+                showGeocodeError('Không tự động tìm thấy tọa độ. Bạn có thể kéo thả ghim trên bản đồ để chọn.');
             }
         }
 

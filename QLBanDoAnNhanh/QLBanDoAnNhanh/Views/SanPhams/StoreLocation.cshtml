@@ -1,71 +1,104 @@
-﻿@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
+@model IEnumerable<QLBanDoAnNhanh.Models.SanPham>
 @{
-    ViewData["Title"] = "Vị trí cửa hàng";
+    ViewData["Title"] = "Vị trí cửa hàng & Tính phí giao hàng";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 <style>
     #map-container {
         position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     #map {
-        height: 500px;
+        height: 480px;
         width: 100%;
     }
 
     .google-map-btn {
-    position: absolute;
-    left: 15px;
-    bottom: 20px;
-    width: 48px;
-    height: 48px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    z-index: 1000;
-    font-size: 22px;
-    transition: .2s;
-}
+        position: absolute;
+        left: 15px;
+        bottom: 20px;
+        width: 48px;
+        height: 48px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        z-index: 1000;
+        font-size: 22px;
+        color: #0d6efd;
+        transition: .2s;
+    }
 
-.google-map-btn:hover {
-    background: #f5f5f5;
-    transform: scale(1.08);
-}
+    .google-map-btn:hover {
+        background: #f5f5f5;
+        transform: scale(1.08);
+    }
+
+    .calc-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
 </style>
 
+<!-- Khối tính phí giao hàng -->
+<div class="calc-card">
+    <h4 class="mb-3 text-primary"><i class="fas fa-calculator me-2"></i> Kiểm tra Phí Giao Hàng & Chi Nhánh Phục Vụ</h4>
+    <div class="row g-3">
+        <div class="col-md-7">
+            <label class="form-label font-weight-bold">Địa chỉ giao hàng của bạn:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <input type="text" id="diaChiKhachHangInput" class="form-control" placeholder="Nhập địa chỉ đầy đủ (VD: 123 Nguyễn Huệ, Quận 1, TP.HCM)...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label font-weight-bold">Tiêu chí chọn chi nhánh:</label>
+            <select id="tieuChiSelect" class="form-select">
+                <option value="distance">Gần nhất (Km ít nhất)</option>
+                <option value="duration">Nhanh nhất (Thời gian ít nhất)</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" id="btnTinhPhiGiaoHang" class="btn btn-primary w-100 fw-bold">
+                <i class="fas fa-search-location me-1"></i> Tính phí
+            </button>
+        </div>
+    </div>
+    <div id="ketQuaGiaoHangBox" style="display:none;" class="mt-3"></div>
+</div>
+
 <div id="map-container">
-
     <div id="map"></div>
-
     <a class="google-map-btn"
        href="https://www.google.com/maps/dir/?api=1&destination=10.77603,106.66735"
        target="_blank"
        title="Chỉ đường bằng Google Maps">
-        <a class="google-map-btn"
-   href="https://www.google.com/maps/dir/?api=1&destination=10.77603,106.66735"
-   target="_blank"
-   title="Chỉ đường bằng Google Maps">
-    <i class="fas fa-location-arrow"></i>
-</a>
+        <i class="fas fa-location-arrow"></i>
     </a>
-
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="~/js/tinh-phi-giao-hang.js"></script>
 
 <script>
     var storeLocation = [10.77603, 106.66735];
 
-    var map = L.map('map').setView(storeLocation, 15);
+    var map = L.map('map').setView(storeLocation, 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'

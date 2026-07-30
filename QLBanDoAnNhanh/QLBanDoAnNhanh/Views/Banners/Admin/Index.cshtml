@@ -1,0 +1,155 @@
+@model IEnumerable<QLBanDoAnNhanh.Models.Banner>
+
+@{
+    ViewData["Title"] = "Quản Lý Banner";
+    Layout = "~/Views/Shared/_LayouAdmin.cshtml";
+    var phamVi = ViewBag.PhamVi as string ?? "";
+    var viTri = ViewBag.ViTri as string ?? "";
+    var tong = (int)(ViewBag.TongBanner ?? 0);
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <h1><i class="fas fa-images"></i> Quản Lý Banner</h1>
+            <small class="text-muted">Tổng cộng <strong>@tong</strong> banner — dùng cho ảnh hero trái/phải ở trang chủ và danh mục</small>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm Banner
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-triangle-exclamation"></i> @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body py-2">
+            <form method="get" asp-action="AdminIndex" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <select name="phamVi" class="form-select">
+                        <option value="" selected="@(phamVi == "")">-- Tất cả phạm vi --</option>
+                        <option value="trangchu" selected="@(phamVi == "trangchu")">Trang chủ</option>
+                        <option value="danhmuc" selected="@(phamVi == "danhmuc")">Theo danh mục</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="viTri" class="form-select">
+                        <option value="" selected="@(viTri == "")">-- Tất cả vị trí --</option>
+                        <option value="Left" selected="@(viTri == "Left")">Bên trái</option>
+                        <option value="Right" selected="@(viTri == "Right")">Bên phải</option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Lọc</button>
+                    <a asp-action="AdminIndex" class="btn btn-outline-secondary ms-1"><i class="fas fa-rotate-left"></i> Đặt lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-striped shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:6%">Mã</th>
+                        <th style="width:12%">Ảnh</th>
+                        <th style="width:22%">Tiêu đề</th>
+                        <th style="width:18%">Phạm vi</th>
+                        <th style="width:12%">Vị trí</th>
+                        <th style="width:8%">Thứ tự</th>
+                        <th style="width:10%; text-align:center">Trạng thái</th>
+                        <th style="width:12%; text-align:center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model)
+                    {
+                        <tr>
+                            <td>@b.MaBanner</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(b.HinhAnh))
+                                {
+                                    <img src="@b.HinhAnh" alt="@b.TieuDe"
+                                         style="width:72px;height:72px;object-fit:cover;border-radius:12px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Chưa có ảnh</span>
+                                }
+                            </td>
+                            <td class="fw-semibold">@b.TieuDe</td>
+                            <td>
+                                @if (b.MaDm == null)
+                                {
+                                    <span class="badge bg-primary">Trang chủ</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">@b.MaDmNavigation?.TenDm</span>
+                                }
+                            </td>
+                            <td>
+                                @(b.ViTri == "Right" ? "Bên phải" : "Bên trái")
+                            </td>
+                            <td>@b.ThuTu</td>
+                            <td class="text-center">
+                                @if (b.TrangThai)
+                                {
+                                    <span class="badge bg-success">Hiển thị</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Ẩn</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@b.MaBanner" class="btn btn-sm btn-warning" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form asp-action="DeleteConfirmed" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xóa banner này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@b.MaBanner" />
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-light border text-center py-5">
+            <i class="fas fa-images fa-2x text-muted mb-2"></i>
+            <p class="mb-2">Chưa có banner nào. Thêm banner để thay ảnh hero trang chủ / danh mục.</p>
+            <a asp-action="Create" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Thêm Banner</a>
+        </div>
+    }
+</div>

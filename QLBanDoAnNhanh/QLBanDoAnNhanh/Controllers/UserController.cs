@@ -11,6 +11,7 @@ using QLBanDoAnNhanh.Common;
 using Google.Apis.Services;
 using MimeKit;
 using MailKit.Security;
+using System.IO;
 namespace QLBanDoAnNhanh.Controllers
 {
     public class UserController : Controller
@@ -75,6 +76,7 @@ namespace QLBanDoAnNhanh.Controllers
                 HttpContext.Session.SetString("sdt", check.Sdt);
                 HttpContext.Session.SetString("userLogin", check.Username);
                 HttpContext.Session.SetString("UserID", check.MaNguoiDung.ToString());
+                HttpContext.Session.SetString("avatarUrl", GetAvatarUrl(check.Username));
 
                 // Kiểm tra quyền Admin
                 if (check.RoleId == 2) // RoleId = 2 nghĩa là Admin
@@ -133,12 +135,13 @@ namespace QLBanDoAnNhanh.Controllers
                 return View();
             }
 
+            ViewBag.AvatarUrl = GetAvatarUrl(user.Username);
             return View(user);
         }
        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Profile(NguoiDung model)
+        public async Task<IActionResult> Profile(NguoiDung model, IFormFile? avatarFile)
         {
             if (HttpContext.Session.GetString("userLogin") == null)
             {
@@ -155,11 +158,27 @@ namespace QLBanDoAnNhanh.Controllers
                 user.Email = model.Email;
                 user.Sdt = model.Sdt;
 
+                if (avatarFile != null && avatarFile.Length > 0)
+                {
+                    var avatarUrl = await SaveUserAvatarAsync(user.Username, avatarFile);
+                    HttpContext.Session.SetString("avatarUrl", avatarUrl);
+                    ViewBag.AvatarUrl = avatarUrl;
+                }
+                else
+                {
+                    ViewBag.AvatarUrl = GetAvatarUrl(user.Username);
+                }
+
                 // Lưu vào database
                 _context.Entry(user).State = EntityState.Modified;
                 _context.SaveChanges();
 
+                HttpContext.Session.SetString("hoTen", user.HoTen ?? "");
+                HttpContext.Session.SetString("email", user.Email ?? "");
+                HttpContext.Session.SetString("sdt", user.Sdt ?? "");
+
                 ViewBag.Message = "Cập nhật thông tin thành công!";
+                return View(user);
             }
             else
             {
@@ -167,6 +186,61 @@ namespace QLBanDoAnNhanh.Controllers
             }
 
             return View(model);
+        }
+
+        private async Task<string> SaveUserAvatarAsync(string username, IFormFile avatarFile)
+        {
+            var avatarFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "avatars");
+            Directory.CreateDirectory(avatarFolder);
+
+            var safeUsername = SanitizeFileName(username);
+            foreach (var oldFile in Directory.GetFiles(avatarFolder, safeUsername + ".*"))
+            {
+                try { System.IO.File.Delete(oldFile); } catch { }
+            }
+
+            var extension = Path.GetExtension(avatarFile.FileName);
+            if (string.IsNullOrWhiteSpace(extension) || extension.Length > 5)
+            {
+                extension = ".jpg";
+            }
+
+            var fileName = safeUsername + extension.ToLowerInvariant();
+            var filePath = Path.Combine(avatarFolder, fileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await avatarFile.CopyToAsync(stream);
+
+            return "/images/avatars/" + fileName;
+        }
+
+        private string GetAvatarUrl(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return "/images/acount.png";
+            }
+
+            var avatarFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "avatars");
+            if (!Directory.Exists(avatarFolder))
+            {
+                return "/images/acount.png";
+            }
+
+            var safeUsername = SanitizeFileName(username);
+            var existingFile = Directory.GetFiles(avatarFolder, safeUsername + ".*").FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(existingFile))
+            {
+                return "/images/acount.png";
+            }
+
+            return "/images/avatars/" + Path.GetFileName(existingFile);
+        }
+
+        private static string SanitizeFileName(string input)
+        {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var cleaned = new string(input.Where(ch => !invalidChars.Contains(ch)).ToArray());
+            return string.IsNullOrWhiteSpace(cleaned) ? "user-avatar" : cleaned;
         }
 
 

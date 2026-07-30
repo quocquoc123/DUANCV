@@ -1,133 +1,329 @@
 ﻿@model QLBanDoAnNhanh.Models.NguoiDung
 
+@{
+    ViewData["Title"] = "Thong Tin Ca Nhan";
+    var avatarUrl = ViewBag.AvatarUrl as string ?? "/images/acount.png";
+}
+
 <style>
-/* Container chính */
-.user-info-container {
-    max-width: 600px; /* Giới hạn chiều rộng */
-    margin: 20px auto; /* Căn giữa theo chiều ngang */
-    padding: 20px; /* Khoảng cách bên trong */
-    background-color: #ffffff; /* Màu nền trắng */
-    border-radius: 8px; /* Bo góc */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+.profile-page {
+    max-width: 1120px;
+    margin: 36px auto 60px;
+    padding: 0 20px;
 }
 
-/* Tiêu đề */
-.user-info-container h2 {
-    font-size: 24px; /* Kích thước chữ */
-    font-weight: bold; /* Chữ đậm */
-    margin-bottom: 20px; /* Khoảng cách phía dưới */
-    color: #333; /* Màu chữ */
+.profile-shell {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
 }
 
-/* Form thông tin */
-.user-info-form {
-    display: flex; /* Sử dụng Flexbox */
-    flex-direction: column; /* Xếp dọc */
+.profile-side,
+.profile-main {
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 18px 45px rgba(37, 24, 14, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-/* Nhóm form */
-.user-info-form .form-group {
-    margin-bottom: 15px; /* Khoảng cách giữa các nhóm */
+.profile-side {
+    padding: 28px 24px;
+    text-align: center;
+    position: sticky;
+    top: 120px;
 }
 
-/* Nhãn */
-.user-info-form .form-label {
-    font-weight: bold; /* Chữ đậm */
-    margin-bottom: 5px; /* Khoảng cách với input */
-    display: block; /* Hiển thị nhãn trên dòng riêng */
-    color: #555; /* Màu chữ nhãn */
+.profile-avatar-wrap {
+    width: 152px;
+    height: 152px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    padding: 6px;
+    background: linear-gradient(135deg, #ffb347, #ff8c00);
+    box-shadow: 0 18px 36px rgba(214, 123, 0, 0.22);
 }
 
-/* Ô nhập liệu */
-.user-info-form .form-control {
-    border: 1px solid #ced4da; /* Viền ô nhập */
-    border-radius: 4px; /* Bo góc */
-    padding: 10px; /* Khoảng cách trong ô */
-    font-size: 14px; /* Kích thước chữ */
-    color: #333; /* Màu chữ */
-    transition: border-color 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển đổi */
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #fff8ef;
 }
 
-.user-info-form .form-control:focus {
-    border-color: #007bff; /* Màu viền khi chọn */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25); /* Hiệu ứng sáng */
+.profile-side h1 {
+    font-size: 24px;
+    color: #2b1a10;
+    margin-bottom: 6px;
 }
 
-/* Nút cập nhật */
-.user-info-form .btn-primary {
-    background-color: #f2b633; /* Màu nền */
-    border: none; /* Xóa viền */
-    color: white; /* Màu chữ */
-    padding: 10px 15px; /* Khoảng cách trong nút */
-    border-radius: 50px; /* Bo tròn hoàn toàn */
-    font-size: 16px; /* Kích thước chữ */
-    font-weight: bold; /* Chữ đậm */
-    transition: background-color 0.3s; /* Hiệu ứng màu nền */
+.profile-side p {
+    color: #7b6b5d;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 18px;
 }
 
-.user-info-form .btn-primary:hover {
-    background-color: #c28500; /* Màu nền khi hover */
+.profile-meta {
+    display: grid;
+    gap: 10px;
+    text-align: left;
 }
 
-/* Cảnh báo */
-.user-info-form .alert {
-    margin-top: 20px; /* Khoảng cách phía trên */
-    padding: 10px 15px; /* Khoảng cách bên trong */
-    font-size: 14px; /* Kích thước chữ */
-    border-radius: 4px; /* Bo góc */
+.profile-meta-item {
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fffaf3, #fff4e3);
+    border: 1px solid rgba(255, 152, 0, 0.1);
 }
 
-.user-info-form .alert-success {
-    background-color: #d4edda; /* Nền xanh nhạt */
-    color: #155724; /* Chữ xanh đậm */
-    border: 1px solid #c3e6cb; /* Viền */
+.profile-meta-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b07b44;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
 }
 
-.user-info-form .alert-danger {
-    background-color: #f8d7da; /* Nền đỏ nhạt */
-    color: #721c24; /* Chữ đỏ đậm */
-    border: 1px solid #f5c6cb; /* Viền */
+.profile-meta-value {
+    color: #3a2415;
+    font-weight: 700;
+    word-break: break-word;
 }
 
-/* Responsive */
+.profile-main {
+    padding: 32px;
+}
 
+.profile-heading {
+    margin-bottom: 24px;
+}
 
+.profile-heading h2 {
+    font-size: 30px;
+    color: #2b1a10;
+    margin-bottom: 8px;
+}
+
+.profile-heading p {
+    color: #7f7064;
+    font-size: 14px;
+}
+
+.profile-form {
+    display: grid;
+    gap: 20px;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.profile-field {
+    display: grid;
+    gap: 8px;
+}
+
+.profile-field--full {
+    grid-column: 1 / -1;
+}
+
+.profile-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #5c4635;
+    letter-spacing: 0.2px;
+}
+
+.profile-input,
+.profile-file {
+    width: 100%;
+    border: 1px solid #eadfce;
+    border-radius: 16px;
+    padding: 13px 15px;
+    font-size: 14px;
+    background: #fffdf9;
+    color: #2b1a10;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.profile-input:focus,
+.profile-file:focus {
+    outline: none;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.12);
+}
+
+.profile-file-note {
+    font-size: 12.5px;
+    color: #8b7b6e;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profile-submit {
+    border: none;
+    border-radius: 999px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #ff9800, #d67b00);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(214, 123, 0, 0.22);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.profile-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(214, 123, 0, 0.28);
+}
+
+.profile-alert {
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.profile-alert--success {
+    background: #ecfdf3;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.profile-alert--error {
+    background: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+}
+
+&#64;media (max-width: 992px) {
+    .profile-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-side {
+        position: static;
+    }
+}
+
+&#64;media (max-width: 640px) {
+    .profile-page {
+        margin-top: 24px;
+        padding: 0 14px;
+    }
+
+    .profile-main,
+    .profile-side {
+        border-radius: 22px;
+        padding: 22px 18px;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-heading h2 {
+        font-size: 24px;
+    }
+
+    .profile-actions {
+        justify-content: stretch;
+    }
+
+    .profile-submit {
+        width: 100%;
+    }
+}
 </style>
 
-<div class="user-info-container">
-    <h2 class="text-center">Quản lý thông tin cá nhân</h2>
+<div class="profile-page">
+    <div class="profile-shell">
+        <aside class="profile-side">
+            <div class="profile-avatar-wrap">
+                <img src="@avatarUrl" alt="Avatar @Model.HoTen" class="profile-avatar" />
+            </div>
+            <h1>@Model.HoTen</h1>
+            <p>Cap nhat thong tin ca nhan va anh dai dien de tai khoan dong bo, de nhan dien hon tren he thong.</p>
 
-    @using (Html.BeginForm("Profile", "User", FormMethod.Post, new { @class = "user-info-form" }))
-    {
-        @Html.AntiForgeryToken()
+            <div class="profile-meta">
+                <div class="profile-meta-item">
+                    <span class="profile-meta-label">Ten dang nhap</span>
+                    <span class="profile-meta-value">@Model.Username</span>
+                </div>
+                <div class="profile-meta-item">
+                    <span class="profile-meta-label">Email hien tai</span>
+                    <span class="profile-meta-value">@Model.Email</span>
+                </div>
+                <div class="profile-meta-item">
+                    <span class="profile-meta-label">So dien thoai</span>
+                    <span class="profile-meta-value">@Model.Sdt</span>
+                </div>
+            </div>
+        </aside>
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.HoTen, new { @class = "form-label" })
-            @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control", placeholder = "Nhập họ tên" })
-        </div>
+        <section class="profile-main">
+            <div class="profile-heading">
+                <h2>Quản Lý Thông Tin Cá Nhân</h2>
+                <p>Chinh sua thong tin co ban va tai anh dai dien phu hop voi giao dien hien tai cua Food Fast.</p>
+            </div>
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Nhập email" })
-        </div>
+            @if (ViewBag.Message != null)
+            {
+                <div class="profile-alert profile-alert--success">@ViewBag.Message</div>
+            }
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.Sdt, new { @class = "form-label" })
-            @Html.TextBoxFor(m => m.Sdt, new { @class = "form-control", placeholder = "Nhập số điện thoại" })
-        </div>
+            @if (ViewBag.Error != null)
+            {
+                <div class="profile-alert profile-alert--error">@ViewBag.Error</div>
+            }
 
-        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Cập nhật</button>
+            @using (Html.BeginForm("Profile", "User", FormMethod.Post, new { @class = "profile-form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
 
-        @if (ViewBag.Message != null)
-        {
-            <div class="alert alert-success mt-3 text-center">@ViewBag.Message</div>
-        }
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <label class="profile-label" for="HoTen">Ho ten</label>
+                        @Html.TextBoxFor(m => m.HoTen, new { @class = "profile-input", placeholder = "Nhap ho ten" })
+                    </div>
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger mt-3 text-center">@ViewBag.Error</div>
-        }
-    }
+                    <div class="profile-field">
+                        <label class="profile-label" for="Email">Email</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "profile-input", placeholder = "Nhap email", type = "email" })
+                    </div>
+
+                    <div class="profile-field">
+                        <label class="profile-label" for="Sdt">So dien thoai</label>
+                        @Html.TextBoxFor(m => m.Sdt, new { @class = "profile-input", placeholder = "Nhap so dien thoai" })
+                    </div>
+
+                    <div class="profile-field">
+                        <label class="profile-label" for="usernameReadonly">Ten dang nhap</label>
+                        <input id="usernameReadonly" class="profile-input" value="@Model.Username" readonly />
+                    </div>
+
+                    <div class="profile-field profile-field--full">
+                        <label class="profile-label" for="avatarFile">Anh dai dien</label>
+                        <input id="avatarFile" name="avatarFile" type="file" class="profile-file" accept="image/*" />
+                        <div class="profile-file-note">Chap nhan anh moi de cap nhat avatar. Anh moi se thay the anh cu.</div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button type="submit" class="profile-submit">Luu Thay Doi</button>
+                </div>
+            }
+        </section>
+    </div>
 </div>
-
-

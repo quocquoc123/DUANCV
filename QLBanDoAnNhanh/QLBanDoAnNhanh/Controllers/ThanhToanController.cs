@@ -23,7 +23,7 @@ public class ThanhToanController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateMomoPayment(string DiaChi, string Phone, string voucherCode = null)
+    public async Task<IActionResult> CreateMomoPayment(string DiaChi, string Phone, string voucherCode = null, double shippingFee = 0)
     {
         var username = HttpContext.Session.GetString("userLogin");
         if (string.IsNullOrEmpty(username))
@@ -76,10 +76,15 @@ public class ThanhToanController : Controller
                 {
                     maKhuyenMaiSuDung = voucherCode;
                     double tienGiam = tongTien * (khuyenMai.GiaTri / 100.0);
-                    tongTien -= tienGiam;
+                    tongTien = Math.Max(0, tongTien - tienGiam);
                     khuyenMai.SoLuong -= 1;
                 }
             }
+        }
+
+        if (shippingFee > 0)
+        {
+            tongTien += shippingFee;
         }
 
         var expiresAt = DateTime.Now.AddMinutes(_momoSettings.PaymentTimeoutMinutes);

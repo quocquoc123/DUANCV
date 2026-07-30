@@ -278,13 +278,12 @@ namespace QLBanDoAnNhanh.Controllers
                 .Where(cn => coverageByBranch.TryGetValue(cn.MaChiNhanh, out var cnt) && cnt >= cartItemCount)
                 .ToList();
 
-            // Nếu không có chi nhánh nào đủ → dùng chi nhánh có nhiều sản phẩm nhất (fallback)
+            // Nếu không có chi nhánh nào đủ → dùng nhóm chi nhánh có độ phủ cao nhất (fallback)
+            int bestCoverage = coverageByBranch.Any() ? coverageByBranch.Max(x => x.Value) : 0;
             var candidateBranches = fullCoverageBranches.Any()
                 ? fullCoverageBranches
                 : chiNhanhs
-                    .Where(cn => coverageByBranch.ContainsKey(cn.MaChiNhanh))
-                    .OrderByDescending(cn => coverageByBranch[cn.MaChiNhanh])
-                    .Take(3)
+                    .Where(cn => coverageByBranch.TryGetValue(cn.MaChiNhanh, out var cnt) && cnt == bestCoverage)
                     .ToList();
 
             // Nếu vẫn không có → trả về chi nhánh đầu tiên
@@ -316,6 +315,8 @@ namespace QLBanDoAnNhanh.Controllers
                         latitude         = cn.Latitude,
                         longitude        = cn.Longitude,
                         hasFullCoverage  = fullCoverageBranches.Any(f => f.MaChiNhanh == cn.MaChiNhanh),
+                        coverageCount    = coverageByBranch.TryGetValue(cn.MaChiNhanh, out var cnt) ? cnt : 0,
+                        missingCount     = Math.Max(0, cartItemCount - (coverageByBranch.TryGetValue(cn.MaChiNhanh, out var cnt2) ? cnt2 : 0)),
                         distanceKm       = cn.Latitude.HasValue && cn.Longitude.HasValue
                             ? Math.Round(HaversineDistance(userLat, userLon, cn.Latitude.Value, cn.Longitude.Value), 2)
                             : (double?)null
@@ -334,6 +335,8 @@ namespace QLBanDoAnNhanh.Controllers
                     latitude        = cn0.Latitude,
                     longitude       = cn0.Longitude,
                     hasFullCoverage = fullCoverageBranches.Any(f => f.MaChiNhanh == cn0.MaChiNhanh),
+                    coverageCount   = coverageByBranch.TryGetValue(cn0.MaChiNhanh, out var cnt) ? cnt : 0,
+                    missingCount    = Math.Max(0, cartItemCount - (coverageByBranch.TryGetValue(cn0.MaChiNhanh, out var cnt2) ? cnt2 : 0)),
                     distanceKm      = (double?)null
                 };
             }
@@ -446,7 +449,7 @@ namespace QLBanDoAnNhanh.Controllers
             // Điều hướng về trang giỏ hàng
             return RedirectToAction("Index");
         }
-        public IActionResult Checkout(string DiaChi, string Phone, string voucherCode = null)
+        public IActionResult Checkout(string DiaChi, string Phone, string voucherCode = null, double shippingFee = 0)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -508,11 +511,17 @@ namespace QLBanDoAnNhanh.Controllers
                             maKhuyenMaiSuDung = voucherCode;
                             // Tính tiền giảm và trừ vào tổng tiền
                             double tienGiam = tongTien * (khuyenMai.GiaTri / 100.0);
-                            tongTien = tongTien - tienGiam;
+                            tongTien = Math.Max(0, tongTien - tienGiam);
                             // Giảm số lượng voucher
                             khuyenMai.SoLuong -= 1;
                         }
                     }
+                }
+
+                // Cộng phí giao hàng vào tổng tiền
+                if (shippingFee > 0)
+                {
+                    tongTien += shippingFee;
                 }
 
                 // Tạo đối tượng DonHang
@@ -682,7 +691,7 @@ namespace QLBanDoAnNhanh.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string Phone, string trangThai, string voucherCode = null)
+        public async Task<IActionResult> CreatePayment(decimal amount, [FromServices] PayPalService payPalService, string DiaChi, string Phone, string trangThai, string voucherCode = null, decimal shippingFee = 0)
         {
             // Kiểm tra xem người dùng đã đăng nhập hay chưa
             var username = HttpContext.Session.GetString("userLogin");
@@ -722,11 +731,17 @@ namespace QLBanDoAnNhanh.Controllers
                         maKhuyenMaiSuDung = voucherCode;
                         // Tính tiền giảm và trừ vào tổng tiền
                         decimal tienGiam = tongTien * (khuyenMai.GiaTri / 100m);
-                        tongTienThanhToan = tongTien - tienGiam;
+                        tongTienThanhToan = Math.Max(0, tongTien - tienGiam);
                         // Giảm số lượng voucher
                         khuyenMai.SoLuong -= 1;
                     }
                 }
+            }
+
+            // Cộng phí giao hàng vào tổng tiền
+            if (shippingFee > 0)
+            {
+                tongTienThanhToan += shippingFee;
             }
 
             if (!string.IsNullOrWhiteSpace(Phone))

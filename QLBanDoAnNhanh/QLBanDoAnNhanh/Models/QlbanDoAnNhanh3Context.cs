@@ -19,6 +19,8 @@ public partial class QlbanDoAnNhanh3Context : DbContext
 
     public virtual DbSet<BinhLuan> BinhLuans { get; set; }
 
+    public virtual DbSet<Banner> Banners { get; set; }
+
     public virtual DbSet<ChiNhanh> ChiNhanhs { get; set; }
 
     public virtual DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
@@ -98,6 +100,32 @@ public partial class QlbanDoAnNhanh3Context : DbContext
                 .HasForeignKey(d => d.MaSp)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BinhLuan__maSP__6A30C649");
+        });
+
+        modelBuilder.Entity<Banner>(entity =>
+        {
+            entity.HasKey(e => e.MaBanner).HasName("PK__Banner__MaBanner");
+
+            entity.ToTable("Banner");
+
+            entity.Property(e => e.TieuDe)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.HinhAnh).HasMaxLength(500);
+
+            entity.Property(e => e.ViTri)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasDefaultValue("Left");
+
+            entity.Property(e => e.TrangThai).HasDefaultValue(true);
+
+            entity.HasOne(d => d.MaDmNavigation)
+                .WithMany()
+                .HasForeignKey(d => d.MaDm)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Banner_DanhMuc");
         });
 
         modelBuilder.Entity<ChiNhanh>(entity =>
@@ -428,6 +456,12 @@ public partial class QlbanDoAnNhanh3Context : DbContext
                 .IsRequired()
                 .HasMaxLength(700)
                 .HasColumnName("thanhPhan");
+            entity.Property(e => e.TrangThai)
+                .HasDefaultValue(true)
+                .HasColumnName("TrangThai");
+            entity.Property(e => e.HetHang)
+                .HasDefaultValue(false)
+                .HasColumnName("HetHang");
 
             entity.HasOne(d => d.MaDmNavigation).WithMany(p => p.SanPhams)
                 .HasForeignKey(d => d.MaDm)

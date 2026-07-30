@@ -18,6 +18,38 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/foodfast-product-detail.css" asp-append-version="true" />
+    <style>
+        /* Badge hết hàng trên ảnh chi tiết */
+        .detail-oos-badge {
+            position: absolute;
+            bottom: 12px; left: 12px;
+            background: rgba(30,30,30,0.82);
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            z-index: 10;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+        }
+        /* Nút khi hết hàng */
+        .btn-oos-disabled {
+            background: linear-gradient(135deg, #aaa, #888) !important;
+            cursor: not-allowed !important;
+            opacity: 0.75;
+            box-shadow: none !important;
+            pointer-events: none;
+        }
+        .qty-stepper.oos-disabled button,
+        .qty-stepper.oos-disabled input {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+    </style>
 }
 
 <div class="product-detail-page">
@@ -41,19 +73,31 @@
                      onerror="this.src='/images/logo.jpg'" aria-hidden="true" />
 
             </div>
-            <div class="product-image-meta">
-                <h2 class="product-card-title">@Model.TenSp</h2>
-                @if (isDiscountActive)
-                {
-                    <div class="detail-price-stack">
-                        <span class="detail-original-price">@String.Format("{0:0,0} đ", Model.GiaTien)</span>
-                        <span class="product-card-price">@effectivePrice.ToString("N0") đ</span>
+            @if (Model.HetHang)
+            {
+                <span class="detail-oos-badge">🚫 Hết hàng</span>
+            }
+            <div class="product-image-meta product-image-rating">
+                <div class="product-image-rating__label">Đánh giá sản phẩm</div>
+                <div class="product-image-rating__score-row">
+                    <span class="product-image-rating__score">@diemTrungBinh.ToString("0.0")</span>
+                    <div class="product-image-rating__stars" aria-label="Đánh giá trung bình @diemTrungBinh.ToString("0.0") trên 5 sao">
+                        @for (int s = 1; s <= 5; s++)
+                        {
+                            <span class="product-image-rating__star @(s <= Math.Round(diemTrungBinh) ? "is-filled" : "")">&#9733;</span>
+                        }
                     </div>
-                }
-                else
-                {
-                    <p class="product-card-price">@String.Format("{0:0,0} đ", Model.GiaTien)</p>
-                }
+                </div>
+                <div class="product-image-rating__caption">
+                    @if (totalRatings > 0)
+                    {
+                        <text>@totalRatings lượt đánh giá</text>
+                    }
+                    else
+                    {
+                        <text>Chưa có đánh giá</text>
+                    }
+                </div>
             </div>
         </div>
 
@@ -94,15 +138,27 @@
             </div>
 
             <div id="muaNgayForm">
+                @if (Model.HetHang)
+                {
+                    <div style="background:linear-gradient(135deg,#fff3f3,#ffeaea); border:1.5px solid #ffcccc; border-radius:12px; padding:14px 18px; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:22px;">🚫</span>
+                        <div>
+                            <strong style="color:#cc0000; font-size:0.95rem;">Sản phẩm hiện đã hết hàng</strong>
+                            <p style="margin:2px 0 0; color:#888; font-size:0.82rem;">Vui lòng quay lại sau hoặc xem các sản phẩm khác.</p>
+                        </div>
+                    </div>
+                }
                 <label for="quantity">Số Lượng:</label>
-                <div class="qty-stepper">
-                    <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng" onclick="var q=document.getElementById('quantity');var v=parseInt(q.value)||1;if(v>1)q.value=v-1;">−</button>
-                    <input type="number" id="quantity" name="quantity" min="1" value="1" />
-                    <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng" onclick="document.getElementById('quantity').stepUp();">+</button>
+                <div class="qty-stepper @(Model.HetHang ? "oos-disabled" : "")">
+                    <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng" @(Model.HetHang ? "disabled" : "") onclick="var q=document.getElementById('quantity');var v=parseInt(q.value)||1;if(v>1)q.value=v-1;">&#x2212;</button>
+                    <input type="number" id="quantity" name="quantity" min="1" value="1" @(Model.HetHang ? "disabled" : "") />
+                    <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng" @(Model.HetHang ? "disabled" : "") onclick="document.getElementById('quantity').stepUp();">+</button>
                 </div>
-                <button type="button" id="muaNgayButton" class="btn btn-primary"
-                        onclick="chiTietAddToCart()">
-                    🛒 Thêm vào giỏ hàng
+                <button type="button" id="muaNgayButton"
+                        class="btn btn-primary @(Model.HetHang ? "btn-oos-disabled" : "")"
+                        @(Model.HetHang ? "disabled" : "")
+                        onclick="@(Model.HetHang ? "" : "chiTietAddToCart()")">
+                    @(Model.HetHang ? "🚫 Sản phẩm đã hết hàng" : "🛒 Thêm vào giỏ hàng")
                 </button>
             </div>
         </div>

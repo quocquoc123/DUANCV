@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "Sản phẩm theo danh mục: " + ViewBag.TenDanhMuc;
     var tenDanhMuc = ViewBag.TenDanhMuc as string ?? "";
+    var isFallbackCategory = ViewBag.IsFallbackCategory as bool? ?? false;
+    var preferredCategoryCount = ViewBag.PreferredCategoryCount as int? ?? 0;
+    var heroLeftImage = ViewBag.HeroLeftImage as string ?? "/images/Burger-Zinger.jpg";
+    var heroLeftAlt = ViewBag.HeroLeftAlt as string ?? "Sản phẩm nổi bật";
+    var heroRightImage = ViewBag.HeroRightImage as string ?? "/images/Burger-Flava.jpg";
+    var heroRightAlt = ViewBag.HeroRightAlt as string ?? "Sản phẩm nổi bật";
     var displayNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
         ["THUCDON"] = "Thực Đơn",
@@ -37,6 +43,32 @@
     <link rel="stylesheet" href="~/css/foodfast-home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-category.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/foodfast-search.css" asp-append-version="true" />
+    <style>
+        .out-of-stock-badge {
+            position: absolute;
+            bottom: 10px; left: 10px;
+            background: rgba(30,30,30,0.82);
+            color: #fff;
+            font-weight: 800;
+            font-size: 11.5px;
+            padding: 5px 11px;
+            border-radius: 8px;
+            z-index: 10;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+        }
+        .btn-buy.disabled-oos,
+        .btn-buy[disabled] {
+            background: linear-gradient(135deg, #aaa, #888) !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+            box-shadow: none !important;
+            transform: none !important;
+            pointer-events: none;
+        }
+    </style>
 }
 
 <div class="category-page">
@@ -44,28 +76,30 @@
     <div class="home-hero-band">
         <div class="hero-section category-hero-section">
             <div class="hero-background"></div>
+            <partial name="_HeroDecorPartial" />
 
             <div class="hero-visual hero-visual-left">
-                <img src="@Url.Content("~/images/Burger-Flava.jpg")" alt="" class="hero-food-img hero-img-1">
-                <img src="@Url.Content("~/images/D-CBO-Bucket-2.jpg")" alt="" class="hero-food-img hero-img-2">
-                <img src="@Url.Content("~/images/P4-OR.jpg")" alt="" class="hero-food-img hero-img-3">
+                <img src="@heroLeftImage" class="hero-food-img" alt="@heroLeftAlt" />
             </div>
 
             <div class="hero-content">
-                @* <h1 class="hero-title">Danh mục</h1> *@
                 <h2 class="hero-subtitle category-hero-name">@categoryTitle</h2>
                 <p class="hero-description">@categoryDesc</p>
-                @if (productList.Count > 0)
+                @if (preferredCategoryCount > 0)
                 {
-                    <span class="category-count">@productList.Count sản phẩm</span>
+                    <span class="category-count">@preferredCategoryCount sản phẩm trong danh mục</span>
                 }
-                <a href="#category-products" class="hero-btn">Xem Sản Phẩm</a>
+                else if (isFallbackCategory)
+                {
+                    <span class="category-count">Danh mục đang trống, hiển thị sản phẩm gợi ý</span>
+                }
+                <a href="#category-products" class="hero-btn">
+                    Xem Sản Phẩm <span class="hero-btn-arrow">→</span>
+                </a>
             </div>
 
             <div class="hero-visual hero-visual-right">
-                <img src="@Url.Content("~/images/MI-Y-GA-VIEN.jpg")" alt="" class="hero-food-img hero-img-4">
-                <img src="@Url.Content("~/images/COM.jpg")" alt="" class="hero-food-img hero-img-5">
-                <img src="@Url.Content("~/images/MON AN NHE.jpg")" alt="" class="hero-food-img hero-img-6">
+                <img src="@heroRightImage" class="hero-food-img" alt="@heroRightAlt" />
             </div>
         </div>
     </div>
@@ -98,7 +132,16 @@
     <div id="category-products" class="products-container" data-ff-catalog data-ff-search-term="">
         <div class="section-header">
             <h2>@categoryTitle</h2>
-            <p>@categoryDesc</p>
+            <p>
+                @if (isFallbackCategory)
+                {
+                    @:Danh mục này hiện chưa có sản phẩm, đang hiển thị các món gợi ý từ danh mục khác.
+                }
+                else
+                {
+                    @categoryDesc
+                }
+            </p>
         </div>
 
         @if (productList.Count > 0)
@@ -136,6 +179,10 @@
                             {
                                 <div class="discount-badge">-@product.MaGiamGiaNavigation.GiaTri%</div>
                             }
+                            @if (product.HetHang)
+                            {
+                                <span class="out-of-stock-badge">🚫 Hết hàng</span>
+                            }
                             <div class="product-overlay">
                                 <a href="@Url.Action("ChiTietSanPham", "SanPhams", new { id = product.MaSp })" class="btn-view-detail">Xem Chi Tiết</a>
                             </div>
@@ -159,11 +206,12 @@
                         <p class="product-ingredient"><strong>Nguyên liệu:</strong> @product.ThanhPhan</p>
                     }
                     <div class="product-card-divider"></div>
-                    <button class="btn-buy"
+                    <button class="btn-buy @(product.HetHang ? "disabled-oos" : "")"
                             data-ma-sp="@product.MaSp"
                             data-img="@(product.HinhAnh1 ?? product.HinhAnh2 ?? "/images/logo.jpg")"
-                            aria-label="Thêm @product.TenSp vào giỏ hàng">
-                        🛒 Thêm vào giỏ hàng
+                            aria-label="Thêm @product.TenSp vào giỏ hàng"
+                            @(product.HetHang ? "disabled" : "")>
+                        @(product.HetHang ? "🚫 Hết Hàng" : "🛒 Thêm vào giỏ hàng")
                     </button>
                 </div>
                     </div>
@@ -175,7 +223,7 @@
             <div class="category-empty">
                 <div class="category-empty-icon">🍽️</div>
                 <h3>Chưa có sản phẩm</h3>
-                <p>Danh mục @categoryTitle hiện chưa có sản phẩm nào.</p>
+                <p>Hiện chưa có sản phẩm phù hợp để hiển thị.</p>
                 <a href="@Url.Action("TrangChu", "SanPhams")" class="btn-back">Về Trang Chủ</a>
             </div>
         }
